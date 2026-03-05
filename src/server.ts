@@ -14,6 +14,7 @@ import { searchTools } from './tools/search.js';
 import { groupTools } from './tools/group.js';
 import { statsTools } from './tools/stats.js';
 import { versionTools } from './tools/version.js';
+import { noteTools } from './tools/note.js';
 
 export function createServer(token: string) {
   const client = new YuqueClient(token);
@@ -39,6 +40,7 @@ export function createServer(token: string) {
     ...groupTools,
     ...statsTools,
     ...versionTools,
+    ...noteTools,
   };
 
   // Register list_tools handler

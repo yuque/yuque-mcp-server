@@ -14,6 +14,10 @@ import type {
   UpdateRepoData,
   CreateDocData,
   UpdateDocData,
+  YuqueNote,
+  YuqueNotesResponse,
+  CreateNoteData,
+  UpdateNoteData,
 } from './types.js';
 import { handleYuqueError } from '../utils/error.js';
 
@@ -274,6 +278,69 @@ export class YuqueClient {
     return withErrorHandling(async () => {
       const r = await this.client.get<YuqueApiResponse<{ message: string }>>('/hello');
       return r.data.data;
+    });
+  }
+
+  // ── Note APIs ──────────────────────────────────────────────
+
+  /** List all notes (小记) for the current user. */
+  async listNotes(status?: number): Promise<YuqueNotesResponse> {
+    return withErrorHandling(async () => {
+      const params = status !== undefined ? { status } : {};
+      const r = await this.client.get<YuqueApiResponse<YuqueNotesResponse>>('/notes', { params });
+      return r.data.data;
+    });
+  }
+
+  /** Get a specific note by ID. */
+  async getNote(noteId: number): Promise<YuqueNote> {
+    return withErrorHandling(async () => {
+      const r = await this.client.get<YuqueApiResponse<YuqueNote>>(`/notes/${noteId}`);
+      return r.data.data;
+    });
+  }
+
+  /** Create a new note. */
+  async createNote(data: CreateNoteData): Promise<{ note_url: string }> {
+    return withErrorHandling(async () => {
+      const r = await this.client.post<{ success: boolean; data: { note_url: string } }>('/notes', data);
+      return r.data.data;
+    });
+  }
+
+  /** Update an existing note. */
+  async updateNote(noteId: number, data: UpdateNoteData): Promise<YuqueNote> {
+    return withErrorHandling(async () => {
+      const r = await this.client.put<{ data: { data: YuqueNote } }>(`/notes/${noteId}`, data);
+      return r.data.data.data;
+    });
+  }
+
+  /** Delete a note (move to trash). */
+  async deleteNote(noteId: number): Promise<void> {
+    return withErrorHandling(async () => {
+      const note = await this.getNote(noteId);
+      const data: UpdateNoteData = {
+        source: note.content.source || '',
+        html: note.content.html || '',
+        abstract: note.content.abstract || '',
+        status: 9,
+      };
+      await this.client.put(`/notes/${noteId}`, data);
+    });
+  }
+
+  /** Restore a note from trash. */
+  async restoreNote(noteId: number): Promise<void> {
+    return withErrorHandling(async () => {
+      const note = await this.getNote(noteId);
+      const data: UpdateNoteData = {
+        source: note.content.source || '',
+        html: note.content.html || '',
+        abstract: note.content.abstract || '',
+        status: 0,
+      };
+      await this.client.put(`/notes/${noteId}`, data);
     });
   }
 }
