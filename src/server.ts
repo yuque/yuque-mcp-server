@@ -7,13 +7,10 @@ import {
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { YuqueClient } from './services/yuque-client.js';
 import { userTools } from './tools/user.js';
-import { repoTools } from './tools/repo.js';
+import { bookTools } from './tools/book.js';
 import { docTools } from './tools/doc.js';
 import { tocTools } from './tools/toc.js';
 import { searchTools } from './tools/search.js';
-import { groupTools } from './tools/group.js';
-import { statsTools } from './tools/stats.js';
-import { versionTools } from './tools/version.js';
 import { noteTools } from './tools/note.js';
 
 export function createServer(token: string) {
@@ -33,13 +30,10 @@ export function createServer(token: string) {
   // Combine all tools
   const allTools = {
     ...userTools,
-    ...repoTools,
+    ...bookTools,
     ...docTools,
     ...tocTools,
     ...searchTools,
-    ...groupTools,
-    ...statsTools,
-    ...versionTools,
     ...noteTools,
   };
 

@@ -7,7 +7,7 @@ describe('createServer', () => {
     expect(server).toBeDefined();
   });
 
-  it('should register all 25 tools', async () => {
+  it('should register all 16 tools', async () => {
     const server = createServer('test-token');
 
     // Access the internal server to list tools
