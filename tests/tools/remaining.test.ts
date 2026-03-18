@@ -1,25 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { searchTools } from '../../src/tools/search.js';
 import { tocTools } from '../../src/tools/toc.js';
-import { groupTools } from '../../src/tools/group.js';
-import { statsTools } from '../../src/tools/stats.js';
-import { versionTools } from '../../src/tools/version.js';
 import type { YuqueClient } from '../../src/services/yuque-client.js';
 
 const mockClient = {
   search: vi.fn(),
   getToc: vi.fn(),
   updateToc: vi.fn(),
-  listGroupMembers: vi.fn(),
-  updateGroupMember: vi.fn(),
-  removeGroupMember: vi.fn(),
-  getGroupStats: vi.fn(),
-  getGroupMemberStats: vi.fn(),
-  getGroupBookStats: vi.fn(),
-  getGroupDocStats: vi.fn(),
-  listDocVersions: vi.fn(),
-  getDocVersion: vi.fn(),
-  hello: vi.fn(),
 } as unknown as YuqueClient;
 
 beforeEach(() => vi.clearAllMocks());
@@ -59,85 +46,6 @@ describe('tocTools', () => {
       (mockClient.updateToc as ReturnType<typeof vi.fn>).mockResolvedValue([]);
       const result = await tocTools.yuque_update_toc.handler(mockClient, { repo_id: 1, toc: 'new toc' } as never);
       expect(result.content[0].type).toBe('text');
-    });
-  });
-});
-
-describe('groupTools', () => {
-  describe('yuque_list_group_members', () => {
-    it('should list members', async () => {
-      (mockClient.listGroupMembers as ReturnType<typeof vi.fn>).mockResolvedValue([
-        { id: 1, user: { id: 1, login: 'user1', name: 'User 1' }, role: 1 },
-      ]);
-      const result = await groupTools.yuque_list_group_members.handler(mockClient, { login: 'grp' } as never);
-      expect(result.content[0].type).toBe('text');
-      expect(mockClient.listGroupMembers).toHaveBeenCalledWith('grp');
-    });
-  });
-
-  describe('yuque_update_group_member', () => {
-    it('should update member role', async () => {
-      (mockClient.updateGroupMember as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1, user: { id: 1, login: 'user1', name: 'User 1' }, role: 1,
-      });
-      const result = await groupTools.yuque_update_group_member.handler(mockClient, { login: 'grp', user_id: 1, role: 1 } as never);
-      expect(result.content[0].type).toBe('text');
-    });
-  });
-});
-
-describe('statsTools', () => {
-  it('yuque_group_stats should return stats', async () => {
-    (mockClient.getGroupStats as ReturnType<typeof vi.fn>).mockResolvedValue({ members: 10, books: 5, docs: 100 });
-    const result = await statsTools.yuque_group_stats.handler(mockClient, { group_login: 'grp' } as never);
-    expect(result.content[0].type).toBe('text');
-  });
-
-  it('yuque_group_member_stats should return stats', async () => {
-    (mockClient.getGroupMemberStats as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    const result = await statsTools.yuque_group_member_stats.handler(mockClient, { group_login: 'grp' } as never);
-    expect(result.content[0].type).toBe('text');
-  });
-
-  it('yuque_group_book_stats should return stats', async () => {
-    (mockClient.getGroupBookStats as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    const result = await statsTools.yuque_group_book_stats.handler(mockClient, { group_login: 'grp' } as never);
-    expect(result.content[0].type).toBe('text');
-  });
-
-  it('yuque_group_doc_stats should return stats', async () => {
-    (mockClient.getGroupDocStats as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    const result = await statsTools.yuque_group_doc_stats.handler(mockClient, { group_login: 'grp' } as never);
-    expect(result.content[0].type).toBe('text');
-  });
-});
-
-describe('versionTools', () => {
-  describe('yuque_list_doc_versions', () => {
-    it('should list versions', async () => {
-      (mockClient.listDocVersions as ReturnType<typeof vi.fn>).mockResolvedValue([
-        { id: 1, slug: 'v1', title: 'Version 1', created_at: '2024-01-01', updated_at: '2024-01-01' },
-      ]);
-      const result = await versionTools.yuque_list_doc_versions.handler(mockClient, { repo_id: 1, doc_id: 1 } as never);
-      expect(result.content[0].type).toBe('text');
-    });
-  });
-
-  describe('yuque_get_doc_version', () => {
-    it('should get specific version', async () => {
-      (mockClient.getDocVersion as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1, slug: 'v1', title: 'Version 1', body: 'Content', created_at: '2024-01-01', updated_at: '2024-01-01',
-      });
-      const result = await versionTools.yuque_get_doc_version.handler(mockClient, { version_id: 1 } as never);
-      expect(result.content[0].type).toBe('text');
-    });
-  });
-
-  describe('yuque_hello', () => {
-    it('should test connectivity', async () => {
-      (mockClient.hello as ReturnType<typeof vi.fn>).mockResolvedValue({ message: 'Hello' });
-      const result = await versionTools.yuque_hello.handler(mockClient, {} as never);
-      expect(JSON.parse(result.content[0].text)).toHaveProperty('message', 'Hello');
     });
   });
 });

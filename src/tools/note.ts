@@ -135,22 +135,4 @@ export const noteTools = {
       };
     },
   },
-
-  yuque_restore_note: {
-    description: 'Restore a note from trash',
-    inputSchema: z.object({
-      note_id: z.number().describe('Note ID'),
-    }),
-    handler: async (client: YuqueClient, args: { note_id: number }) => {
-      await client.restoreNote(args.note_id);
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: 'Note restored successfully',
-          },
-        ],
-      };
-    },
-  },
 };
