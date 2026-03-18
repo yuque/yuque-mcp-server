@@ -24,7 +24,7 @@ Use the built-in CLI to auto-configure your MCP client in one command:
 npx yuque-mcp install --token=YOUR_TOKEN --client=cursor
 ```
 
-Supported clients: `claude-desktop`, `vscode`, `cursor`, `windsurf`, `cline`, `trae`
+Supported clients: `claude-desktop`, `vscode`, `cursor`, `windsurf`, `cline`, `trae`, `qoder`, `opencode`
 
 Or use the interactive setup wizard:
 
@@ -198,10 +198,9 @@ The server supports multiple ways to provide your Yuque API token:
 |--------|---------------------------|-------------|
 | **Personal Token** (recommended) | `YUQUE_PERSONAL_TOKEN` | For accessing your personal Yuque account |
 | **Group Token** | `YUQUE_GROUP_TOKEN` | For accessing a Yuque group |
-| **Legacy Token** | `YUQUE_TOKEN` | Backward-compatible, works the same |
 | **CLI Argument** | `--token=YOUR_TOKEN` | Pass directly as a command-line argument |
 
-**Priority order:** `YUQUE_PERSONAL_TOKEN` > `YUQUE_GROUP_TOKEN` > `YUQUE_TOKEN` > `--token`
+**Priority order:** `YUQUE_PERSONAL_TOKEN` > `YUQUE_GROUP_TOKEN` > `--token`
 
 ---
 
@@ -211,11 +210,12 @@ The server supports multiple ways to provide your Yuque API token:
 |----------|-------|
 | **User** | `yuque_get_user`, `yuque_list_groups` |
 | **Search** | `yuque_search` |
-| **Books** | `yuque_list_repos`, `yuque_get_repo`, `yuque_create_repo`, `yuque_update_repo`, `yuque_delete_repo` |
-| **Docs** | `yuque_list_docs`, `yuque_get_doc`, `yuque_create_doc`, `yuque_update_doc`, `yuque_delete_doc` |
+| **Books** | `yuque_list_repos`, `yuque_get_repo`, `yuque_create_repo`, `yuque_update_repo` |
+| **Docs** | `yuque_list_docs`, `yuque_get_doc`, `yuque_create_doc`, `yuque_update_doc` |
 | **TOC** | `yuque_get_toc`, `yuque_update_toc` |
 | **Versions** | `yuque_list_doc_versions`, `yuque_get_doc_version` |
-| **Groups** | `yuque_list_group_members`, `yuque_update_group_member`, `yuque_remove_group_member` |
+| **Notes** | `yuque_list_notes`, `yuque_get_note`, `yuque_create_note`, `yuque_update_note`, `yuque_restore_note` |
+| **Groups** | `yuque_list_group_members`, `yuque_update_group_member` |
 | **Stats** | `yuque_group_stats`, `yuque_group_member_stats`, `yuque_group_book_stats`, `yuque_group_doc_stats` |
 | **Utility** | `yuque_hello` |
 
@@ -225,9 +225,10 @@ The server supports multiple ways to provide your Yuque API token:
 
 | Error | Solution |
 |-------|----------|
-| `YUQUE_PERSONAL_TOKEN is required` | Set one of the environment variables (`YUQUE_PERSONAL_TOKEN`, `YUQUE_GROUP_TOKEN`, or `YUQUE_TOKEN`) or pass `--token=YOUR_TOKEN` |
+| `YUQUE_PERSONAL_TOKEN is required` | Set one of the environment variables (`YUQUE_PERSONAL_TOKEN` or `YUQUE_GROUP_TOKEN`) or pass `--token=YOUR_TOKEN` |
 | `401 Unauthorized` | Token is invalid or expired — regenerate at [Yuque Settings](https://www.yuque.com/settings/tokens) |
 | `429 Rate Limited` | Too many requests — wait a moment and retry |
+| `410 Gone` | The resource has been permanently deleted or the API endpoint is deprecated — verify the target document/repo still exists |
 | Tool not found | Update to the latest version: `npx -y yuque-mcp@latest` |
 | `npx` command not found | Install [Node.js](https://nodejs.org/) (v18 or later) |
 
