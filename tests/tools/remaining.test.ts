@@ -13,11 +13,11 @@ beforeEach(() => vi.clearAllMocks());
 
 describe('searchTools', () => {
   describe('yuque_search', () => {
-    it('should search with query', async () => {
+    it('should search with query and type', async () => {
       (mockClient.search as ReturnType<typeof vi.fn>).mockResolvedValue({ items: [{ id: 1, type: 'doc', title: 'Result' }], total: 1 });
-      const result = await searchTools.yuque_search.handler(mockClient, { query: 'test' } as never);
+      const result = await searchTools.yuque_search.handler(mockClient, { query: 'test', type: 'doc' } as never);
       expect(result.content[0].type).toBe('text');
-      expect(mockClient.search).toHaveBeenCalledWith('test', undefined);
+      expect(mockClient.search).toHaveBeenCalledWith('test', 'doc');
     });
 
     it('should search with type filter', async () => {
