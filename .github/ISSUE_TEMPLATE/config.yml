@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Help
+    url: https://github.com/yuque/yuque-mcp-server/discussions/categories/q-a
+    about: Ask questions or get help using yuque-mcp-server.
+  - name: Feature Requests
+    url: https://github.com/yuque/yuque-mcp-server/discussions/categories/ideas
+    about: Suggest new features or improvements.

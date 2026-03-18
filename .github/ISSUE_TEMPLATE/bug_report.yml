@@ -1,0 +1,56 @@
+name: Bug Report
+description: Report a bug to help us improve
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which version of yuque-mcp-server are you using?
+      placeholder: e.g. 0.1.6
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a minimal set of steps to reproduce the issue.
+      placeholder: |
+        1. Configure with ...
+        2. Call tool ...
+        3. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include error messages if any.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Please provide relevant environment info.
+        Run `node -v` and `npx envinfo --system --binaries` if possible.
+      render: shell
+      placeholder: |
+        - OS: macOS 14.0
+        - Node.js: 20.10.0
+        - MCP Client: Claude Desktop / Cursor / Claude Code
+    validations:
+      required: false

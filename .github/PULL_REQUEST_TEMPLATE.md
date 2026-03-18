@@ -1,28 +1,26 @@
-# Pull Request
+### What does this PR do?
 
-## Description
-Please include a summary of the changes and which issue is fixed.
+<!-- Brief description of the changes -->
 
-Fixes # (issue)
+### Related Issues
 
-## Type of change
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
+<!-- fixes #123, closes #456 -->
 
-## How Has This Been Tested?
-Please describe the tests that you ran to verify your changes.
+### Type of Change
 
-- [ ] Test A
-- [ ] Test B
+- [ ] 🐞 Bug fix
+- [ ] ✨ New feature
+- [ ] 📝 Documentation update
+- [ ] ♻️ Refactoring
+- [ ] ⚡️ Performance improvement
 
-## Checklist:
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published
+### Checklist
+
+- [ ] Tests added / updated
+- [ ] Documentation updated (if applicable)
+- [ ] Changelog entry added (if user-facing)
+- [ ] No breaking changes (or documented in description)
+
+### Changelog Entry
+
+<!-- What should appear in CHANGELOG.md? Leave empty if not user-facing. -->
