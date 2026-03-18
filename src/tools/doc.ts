@@ -2,6 +2,25 @@ import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
 import { formatDocSummary, formatDoc } from '../utils/format.js';
 
+async function appendDocToToc(
+  client: YuqueClient,
+  repoId: string | number,
+  docId: number
+): Promise<string | null> {
+  try {
+    const tocData = JSON.stringify({
+      action: 'appendNode',
+      action_mode: 'child',
+      target_uuid: '',
+      type: 'DOC',
+      doc_id: docId,
+    });
+    await client.updateToc(repoId, tocData);
+    return null; // success
+  } catch {
+    return 'Document created successfully but failed to auto-append to TOC. Please manually arrange it in the TOC via the Yuque web interface.';
+  }
+}
 
 export const docTools = {
   yuque_list_docs: {
@@ -80,12 +99,17 @@ export const docTools = {
         format: args.format,
         public: args.public,
       };
-            const doc = await client.createDoc(args.repo_id, data);
+      const doc = await client.createDoc(args.repo_id, data);
+
+      // Auto-append to TOC
+      const tocWarning = await appendDocToToc(client, args.repo_id, doc.id);
 
       const result: { type: 'text'; text: string }[] = [
         { type: 'text' as const, text: JSON.stringify(formatDoc(doc), null, 2) },
-        { type: 'text' as const, text: 'Note: The document has been created successfully but is currently uncatalogued (未编排文档). Due to Yuque OpenAPI limitations that create broken phantom nodes, automatic TOC appending has been disabled. Please manually drag it into your desired TOC location via the Yuque Web UI.' }
       ];
+      if (tocWarning) {
+        result.push({ type: 'text' as const, text: tocWarning });
+      }
       return { content: result };
     },
   },
