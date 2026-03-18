@@ -39,6 +39,7 @@ export class YuqueClient {
   constructor(token: string, baseURL = 'https://www.yuque.com/api/v2') {
     this.client = axios.create({
       baseURL,
+      timeout: 30000,
       headers: {
         'X-Auth-Token': token,
         'Content-Type': 'application/json',
