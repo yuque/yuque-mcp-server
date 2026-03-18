@@ -204,7 +204,7 @@ The server supports multiple ways to provide your Yuque API token:
 
 ---
 
-## Available Tools (25)
+## Available Tools (26)
 
 | Category | Tools |
 |----------|-------|

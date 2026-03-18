@@ -205,7 +205,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 ---
 
-## 可用工具（25 个）
+## 可用工具（26 个）
 
 | 分类 | 工具 |
 |------|------|
