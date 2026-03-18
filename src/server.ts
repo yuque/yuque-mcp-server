@@ -11,8 +11,6 @@ import { repoTools } from './tools/repo.js';
 import { docTools } from './tools/doc.js';
 import { tocTools } from './tools/toc.js';
 import { searchTools } from './tools/search.js';
-import { groupTools } from './tools/group.js';
-import { statsTools } from './tools/stats.js';
 import { versionTools } from './tools/version.js';
 import { noteTools } from './tools/note.js';
 
@@ -37,8 +35,6 @@ export function createServer(token: string) {
     ...docTools,
     ...tocTools,
     ...searchTools,
-    ...groupTools,
-    ...statsTools,
     ...versionTools,
     ...noteTools,
   };

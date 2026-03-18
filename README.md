@@ -197,14 +197,13 @@ The server supports multiple ways to provide your Yuque API token:
 | Method | Environment Variable / Flag | Description |
 |--------|---------------------------|-------------|
 | **Personal Token** (recommended) | `YUQUE_PERSONAL_TOKEN` | For accessing your personal Yuque account |
-| **Group Token** | `YUQUE_GROUP_TOKEN` | For accessing a Yuque group |
 | **CLI Argument** | `--token=YOUR_TOKEN` | Pass directly as a command-line argument |
 
-**Priority order:** `YUQUE_PERSONAL_TOKEN` > `YUQUE_GROUP_TOKEN` > `--token`
+**Priority order:** `YUQUE_PERSONAL_TOKEN` > `--token`
 
 ---
 
-## Available Tools (26)
+## Available Tools (21)
 
 | Category | Tools |
 |----------|-------|
@@ -215,8 +214,6 @@ The server supports multiple ways to provide your Yuque API token:
 | **TOC** | `yuque_get_toc`, `yuque_update_toc` |
 | **Versions** | `yuque_list_doc_versions`, `yuque_get_doc_version` |
 | **Notes** | `yuque_list_notes`, `yuque_get_note`, `yuque_create_note`, `yuque_update_note`, `yuque_restore_note` |
-| **Groups** | `yuque_list_group_members`, `yuque_update_group_member` |
-| **Stats** | `yuque_group_stats`, `yuque_group_member_stats`, `yuque_group_book_stats`, `yuque_group_doc_stats` |
 | **Utility** | `yuque_hello` |
 
 ---
@@ -225,7 +222,7 @@ The server supports multiple ways to provide your Yuque API token:
 
 | Error | Solution |
 |-------|----------|
-| `YUQUE_PERSONAL_TOKEN is required` | Set one of the environment variables (`YUQUE_PERSONAL_TOKEN` or `YUQUE_GROUP_TOKEN`) or pass `--token=YOUR_TOKEN` |
+| `YUQUE_PERSONAL_TOKEN is required` | Set the environment variable `YUQUE_PERSONAL_TOKEN` or pass `--token=YOUR_TOKEN` |
 | `401 Unauthorized` | Token is invalid or expired — regenerate at [Yuque Settings](https://www.yuque.com/settings/tokens) |
 | `429 Rate Limited` | Too many requests — wait a moment and retry |
 | `410 Gone` | The resource has been permanently deleted or the API endpoint is deprecated — verify the target document/repo still exists |

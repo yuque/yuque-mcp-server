@@ -4,16 +4,12 @@ import { formatRepo } from '../utils/format.js';
 
 export const repoTools = {
   yuque_list_repos: {
-    description: 'List all repos/books for a user or group',
+    description: 'List all repos/books for a user',
     inputSchema: z.object({
-      login: z.string().describe('User or group login name'),
-      type: z.enum(['user', 'group']).describe('Type: user or group'),
+      login: z.string().describe('User login name'),
     }),
-    handler: async (client: YuqueClient, args: { login: string; type: 'user' | 'group' }) => {
-      const repos =
-        args.type === 'user'
-          ? await client.listUserRepos(args.login)
-          : await client.listGroupRepos(args.login);
+    handler: async (client: YuqueClient, args: { login: string }) => {
+      const repos = await client.listUserRepos(args.login);
       return {
         content: [
           {
@@ -26,11 +22,11 @@ export const repoTools = {
   },
 
   yuque_get_repo: {
-    description: 'Get a specific repo/book by ID or namespace (group_login/book_slug)',
+    description: 'Get a specific repo/book by ID or namespace (user_login/book_slug)',
     inputSchema: z.object({
       id_or_namespace: z
         .union([z.string(), z.number()])
-        .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
+        .describe('Repo ID or namespace (e.g., "myuser/mybook")'),
     }),
     handler: async (client: YuqueClient, args: { id_or_namespace: string | number }) => {
       const repo = await client.getRepo(args.id_or_namespace);
@@ -46,10 +42,9 @@ export const repoTools = {
   },
 
   yuque_create_repo: {
-    description: 'Create a new repo/book for a user or group',
+    description: 'Create a new repo/book for a user',
     inputSchema: z.object({
-      login: z.string().describe('User or group login name'),
-      type: z.enum(['user', 'group']).describe('Type: user or group'),
+      login: z.string().describe('User login name'),
       name: z.string().describe('Repo name'),
       slug: z.string().describe('Repo slug (URL-friendly identifier)'),
       description: z.string().optional().describe('Repo description'),
@@ -60,7 +55,6 @@ export const repoTools = {
       client: YuqueClient,
       args: {
         login: string;
-        type: 'user' | 'group';
         name: string;
         slug: string;
         description?: string;
@@ -75,10 +69,7 @@ export const repoTools = {
         public: args.public,
         type: args.repo_type,
       };
-      const repo =
-        args.type === 'user'
-          ? await client.createUserRepo(args.login, data)
-          : await client.createGroupRepo(args.login, data);
+      const repo = await client.createUserRepo(args.login, data);
       return {
         content: [
           {
@@ -95,7 +86,7 @@ export const repoTools = {
     inputSchema: z.object({
       id_or_namespace: z
         .union([z.string(), z.number()])
-        .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
+        .describe('Repo ID or namespace (e.g., "myuser/mybook")'),
       name: z.string().optional().describe('New repo name'),
       slug: z.string().optional().describe('New repo slug'),
       description: z.string().optional().describe('New repo description'),

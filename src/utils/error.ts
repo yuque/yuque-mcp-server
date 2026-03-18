@@ -13,7 +13,7 @@ export class YuqueError extends Error {
 function statusHint(status: number): string {
   switch (status) {
     case 400: return 'Bad request — check the parameters';
-    case 401: return 'Unauthorized — the API token (YUQUE_PERSONAL_TOKEN, YUQUE_GROUP_TOKEN, or YUQUE_TOKEN) may be invalid or expired';
+    case 401: return 'Unauthorized — the API token (YUQUE_PERSONAL_TOKEN) may be invalid or expired';
     case 403: return 'Forbidden — insufficient permissions for this resource';
     case 404: return 'Not found — the resource does not exist or is not accessible';
     case 429: return 'Rate limited — too many requests, try again later';

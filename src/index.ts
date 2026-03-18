@@ -3,10 +3,10 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 
-const token = process.env.YUQUE_PERSONAL_TOKEN || process.env.YUQUE_GROUP_TOKEN || process.env.YUQUE_TOKEN;
+const token = process.env.YUQUE_PERSONAL_TOKEN;
 
 if (!token) {
-  console.error('Error: YUQUE_PERSONAL_TOKEN, YUQUE_GROUP_TOKEN, or YUQUE_TOKEN environment variable is required');
+  console.error('Error: YUQUE_PERSONAL_TOKEN environment variable is required');
   process.exit(1);
 }
 

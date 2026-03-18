@@ -4,12 +4,9 @@ import type { YuqueClient } from '../../src/services/yuque-client.js';
 
 const mockClient = {
   listUserRepos: vi.fn(),
-  listGroupRepos: vi.fn(),
   getRepo: vi.fn(),
   createUserRepo: vi.fn(),
-  createGroupRepo: vi.fn(),
   updateRepo: vi.fn(),
-  deleteRepo: vi.fn(),
 } as unknown as YuqueClient;
 
 beforeEach(() => vi.clearAllMocks());
@@ -20,16 +17,10 @@ describe('repoTools', () => {
   describe('yuque_list_repos', () => {
     it('should list user repos', async () => {
       (mockClient.listUserRepos as ReturnType<typeof vi.fn>).mockResolvedValue([mockRepo]);
-      const result = await repoTools.yuque_list_repos.handler(mockClient, { login: 'user', type: 'user' } as never);
+      const result = await repoTools.yuque_list_repos.handler(mockClient, { login: 'user' } as never);
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed).toHaveLength(1);
       expect(mockClient.listUserRepos).toHaveBeenCalledWith('user');
-    });
-
-    it('should list group repos', async () => {
-      (mockClient.listGroupRepos as ReturnType<typeof vi.fn>).mockResolvedValue([mockRepo]);
-      await repoTools.yuque_list_repos.handler(mockClient, { login: 'grp', type: 'group' } as never);
-      expect(mockClient.listGroupRepos).toHaveBeenCalledWith('grp');
     });
   });
 
@@ -51,17 +42,9 @@ describe('repoTools', () => {
     it('should create user repo', async () => {
       (mockClient.createUserRepo as ReturnType<typeof vi.fn>).mockResolvedValue(mockRepo);
       await repoTools.yuque_create_repo.handler(mockClient, {
-        login: 'user', type: 'user', name: 'Repo', slug: 'repo',
+        login: 'user', name: 'Repo', slug: 'repo',
       } as never);
       expect(mockClient.createUserRepo).toHaveBeenCalledWith('user', expect.objectContaining({ name: 'Repo', slug: 'repo' }));
-    });
-
-    it('should create group repo', async () => {
-      (mockClient.createGroupRepo as ReturnType<typeof vi.fn>).mockResolvedValue(mockRepo);
-      await repoTools.yuque_create_repo.handler(mockClient, {
-        login: 'grp', type: 'group', name: 'Repo', slug: 'repo',
-      } as never);
-      expect(mockClient.createGroupRepo).toHaveBeenCalledWith('grp', expect.objectContaining({ name: 'Repo' }));
     });
   });
 
