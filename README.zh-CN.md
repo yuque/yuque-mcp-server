@@ -24,7 +24,7 @@
 npx yuque-mcp install --token=YOUR_TOKEN --client=cursor
 ```
 
-支持的客户端：`claude-desktop`、`vscode`、`cursor`、`windsurf`、`cline`、`trae`
+支持的客户端：`claude-desktop`、`vscode`、`cursor`、`windsurf`、`cline`、`trae`、`qoder`、`opencode`
 
 或使用交互式安装向导：
 
@@ -198,10 +198,9 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 |------|----------------|------|
 | **个人 Token**（推荐） | `YUQUE_PERSONAL_TOKEN` | 访问个人语雀账号 |
 | **团队 Token** | `YUQUE_GROUP_TOKEN` | 访问语雀团队 |
-| **旧版 Token** | `YUQUE_TOKEN` | 向后兼容 |
 | **CLI 参数** | `--token=YOUR_TOKEN` | 通过命令行参数传入 |
 
-**优先级：** `YUQUE_PERSONAL_TOKEN` > `YUQUE_GROUP_TOKEN` > `YUQUE_TOKEN` > `--token`
+**优先级：** `YUQUE_PERSONAL_TOKEN` > `YUQUE_GROUP_TOKEN` > `--token`
 
 ---
 
@@ -211,11 +210,12 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 |------|------|
 | **用户** | `yuque_get_user`、`yuque_list_groups` |
 | **搜索** | `yuque_search` |
-| **知识库** | `yuque_list_repos`、`yuque_get_repo`、`yuque_create_repo`、`yuque_update_repo`、`yuque_delete_repo` |
-| **文档** | `yuque_list_docs`、`yuque_get_doc`、`yuque_create_doc`、`yuque_update_doc`、`yuque_delete_doc` |
+| **知识库** | `yuque_list_repos`、`yuque_get_repo`、`yuque_create_repo`、`yuque_update_repo` |
+| **文档** | `yuque_list_docs`、`yuque_get_doc`、`yuque_create_doc`、`yuque_update_doc` |
 | **目录** | `yuque_get_toc`、`yuque_update_toc` |
 | **版本** | `yuque_list_doc_versions`、`yuque_get_doc_version` |
-| **团队** | `yuque_list_group_members`、`yuque_update_group_member`、`yuque_remove_group_member` |
+| **小记** | `yuque_list_notes`、`yuque_get_note`、`yuque_create_note`、`yuque_update_note`、`yuque_restore_note` |
+| **团队** | `yuque_list_group_members`、`yuque_update_group_member` |
 | **统计** | `yuque_group_stats`、`yuque_group_member_stats`、`yuque_group_book_stats`、`yuque_group_doc_stats` |
 | **工具** | `yuque_hello` |
 
@@ -225,9 +225,10 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 | 错误 | 解决方案 |
 |------|----------|
-| `YUQUE_PERSONAL_TOKEN is required` | 设置环境变量（`YUQUE_PERSONAL_TOKEN`、`YUQUE_GROUP_TOKEN` 或 `YUQUE_TOKEN`）或传入 `--token=YOUR_TOKEN` |
+| `YUQUE_PERSONAL_TOKEN is required` | 设置环境变量（`YUQUE_PERSONAL_TOKEN` 或 `YUQUE_GROUP_TOKEN`）或传入 `--token=YOUR_TOKEN` |
 | `401 Unauthorized` | Token 无效或已过期 — 到[语雀设置](https://www.yuque.com/settings/tokens)重新生成 |
 | `429 Rate Limited` | 请求过于频繁，等待后重试 |
+| `410 Gone` | 资源已被永久删除或 API 端点已废弃 — 确认目标文档/知识库是否仍然存在 |
 | 找不到工具 | 更新到最新版本：`npx -y yuque-mcp@latest` |
 | 找不到 `npx` 命令 | 安装 [Node.js](https://nodejs.org/)（v18 或更高版本） |
 
