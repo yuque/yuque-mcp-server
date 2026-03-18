@@ -181,3 +181,55 @@ export interface UpdateDocData {
   body?: string;
   public?: number;
 }
+// 添加到 src/services/types.ts 的小记类型定义
+
+export interface YuqueNoteContent {
+  updated_at: string;
+  abstract: string;
+  format?: string;
+  source?: string;
+  html?: string;
+  draft_version?: number;
+  doc_dynamic_data?: any[];
+}
+
+export interface YuqueNote {
+  id: number;
+  slug: string;
+  doclet_id: number;
+  user_id: number;
+  content: YuqueNoteContent;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  pinned_at: string | null;
+  status: number;
+  save_from: string | null;
+  public: number;
+  likes_count: number;
+  comments_count: number;
+  has_image: boolean;
+  has_attachment: boolean;
+  has_bookmark: boolean;
+  word_count: number;
+  tags: string[];
+  share_expired_time: string | null;
+}
+
+export interface YuqueNotesResponse {
+  pin_notes: YuqueNote[];
+  notes: YuqueNote[];
+  has_more: boolean;
+}
+
+export interface CreateNoteData {
+  body: string;
+}
+
+export interface UpdateNoteData {
+  source: string;
+  html: string;
+  abstract: string;
+  status?: number;
+}
