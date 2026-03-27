@@ -52,17 +52,32 @@ export const docTools = {
       doc_id: z
         .union([z.string(), z.number()])
         .describe('Document ID or slug'),
+      include_lake: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe(
+          'Include raw Lake format body (preserves Mermaid source code, diagrams, etc.)'
+        ),
     }),
     handler: async (
       client: YuqueClient,
-      args: { repo_id: string | number; doc_id: string | number }
+      args: {
+        repo_id: string | number;
+        doc_id: string | number;
+        include_lake: boolean;
+      }
     ) => {
       const doc = await client.getDoc(args.repo_id, args.doc_id);
       return {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify(formatDoc(doc), null, 2),
+            text: JSON.stringify(
+              formatDoc(doc, { includeLake: args.include_lake }),
+              null,
+              2
+            ),
           },
         ],
       };

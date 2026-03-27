@@ -46,12 +46,13 @@ export function formatDocSummary(doc: YuqueDoc) {
 }
 
 /** Format full doc data including body content. */
-export function formatDoc(doc: YuqueDoc) {
+export function formatDoc(doc: YuqueDoc, options?: { includeLake?: boolean }) {
   return {
     ...formatDocSummary(doc),
     body: doc.body,
     body_html: doc.body_html,
     description: doc.description,
+    ...(options?.includeLake && { body_lake: doc.body_lake }),
   };
 }
 

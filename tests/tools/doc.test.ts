@@ -39,10 +39,22 @@ describe('docTools', () => {
         id: 1, slug: 'doc1', title: 'Doc 1', body: '# Hello', body_html: '<h1>Hello</h1>',
         format: 'markdown', created_at: '2024-01-01', updated_at: '2024-01-02', word_count: 100,
       });
-      const result = await docTools.yuque_get_doc.handler(mockClient, { repo_id: 1, doc_id: 1 } as never);
+      const result = await docTools.yuque_get_doc.handler(mockClient, { repo_id: 1, doc_id: 1, include_lake: false } as never);
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed).toHaveProperty('body', '# Hello');
+      expect(parsed).not.toHaveProperty('body_lake');
       expect(mockClient.getDoc).toHaveBeenCalledWith(1, 1);
+    });
+
+    it('should include body_lake when include_lake is true', async () => {
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 1, slug: 'doc1', title: 'Doc 1', body: '# Hello', body_html: '<h1>Hello</h1>',
+        body_lake: '<!doctype lake><p>Hello</p>',
+        format: 'markdown', created_at: '2024-01-01', updated_at: '2024-01-02', word_count: 100,
+      });
+      const result = await docTools.yuque_get_doc.handler(mockClient, { repo_id: 1, doc_id: 1, include_lake: true } as never);
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveProperty('body_lake', '<!doctype lake><p>Hello</p>');
     });
   });
 

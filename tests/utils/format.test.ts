@@ -96,22 +96,37 @@ describe('format utilities', () => {
   });
 
   describe('formatDoc', () => {
-    it('should format full doc with body', () => {
-      const doc: YuqueDoc = {
-        id: 1, slug: 'test-doc', title: 'Test Doc', book_id: 1, user_id: 1,
-        format: 'markdown', body: 'Test content', body_draft: '',
-        body_html: '<p>Test content</p>', body_lake: '', creator_id: 1,
-        public: 1, status: 1, likes_count: 5, comments_count: 2,
-        content_updated_at: '2024-01-01', deleted_at: null,
-        created_at: '2024-01-01', updated_at: '2024-01-02',
-        published_at: '2024-01-01', first_published_at: '2024-01-01',
-        word_count: 100, cover: null, description: 'Test description',
-      };
+    const doc: YuqueDoc = {
+      id: 1, slug: 'test-doc', title: 'Test Doc', book_id: 1, user_id: 1,
+      format: 'markdown', body: 'Test content', body_draft: '',
+      body_html: '<p>Test content</p>', body_lake: '<!doctype lake>', creator_id: 1,
+      public: 1, status: 1, likes_count: 5, comments_count: 2,
+      content_updated_at: '2024-01-01', deleted_at: null,
+      created_at: '2024-01-01', updated_at: '2024-01-02',
+      published_at: '2024-01-01', first_published_at: '2024-01-01',
+      word_count: 100, cover: null, description: 'Test description',
+    };
 
+    it('should format full doc with body', () => {
       const result = formatDoc(doc);
       expect(result).toHaveProperty('body', 'Test content');
       expect(result).toHaveProperty('body_html', '<p>Test content</p>');
       expect(result).toHaveProperty('description', 'Test description');
+    });
+
+    it('should not include body_lake by default', () => {
+      const result = formatDoc(doc);
+      expect(result).not.toHaveProperty('body_lake');
+    });
+
+    it('should include body_lake when includeLake is true', () => {
+      const result = formatDoc(doc, { includeLake: true });
+      expect(result).toHaveProperty('body_lake', '<!doctype lake>');
+    });
+
+    it('should not include body_lake when includeLake is false', () => {
+      const result = formatDoc(doc, { includeLake: false });
+      expect(result).not.toHaveProperty('body_lake');
     });
   });
 
