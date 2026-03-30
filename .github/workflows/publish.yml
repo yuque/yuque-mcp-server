@@ -18,6 +18,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '24.x'
+        registry-url: 'https://registry.npmjs.org'
         cache: 'npm'
 
     - name: Install dependencies
@@ -29,11 +30,15 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Debug npm config
+    - name: Debug OIDC environment
       run: |
-        echo "npm version: $(npm -v)"
-        echo "node version: $(node -v)"
+        echo "npm: $(npm -v), node: $(node -v)"
+        echo "GITHUB_ACTIONS: $GITHUB_ACTIONS"
+        echo "ACTIONS_ID_TOKEN_REQUEST_URL set: $([ -n \"$ACTIONS_ID_TOKEN_REQUEST_URL\" ] && echo YES || echo NO)"
+        echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN set: $([ -n \"$ACTIONS_ID_TOKEN_REQUEST_TOKEN\" ] && echo YES || echo NO)"
         npm config list
+        echo "--- .npmrc ---"
+        cat /home/runner/work/_temp/.npmrc 2>/dev/null || echo "No temp .npmrc"
         cat ~/.npmrc 2>/dev/null || echo "No user .npmrc"
 
     - name: Publish to npm (Trusted Publishing)
