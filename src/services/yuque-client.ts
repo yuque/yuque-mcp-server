@@ -17,6 +17,7 @@ import type {
   YuqueNote,
   YuqueNotesResponse,
   CreateNoteData,
+  CreateNoteResponse,
   UpdateNoteData,
 } from './types.js';
 import { handleYuqueError } from '../utils/error.js';
@@ -305,9 +306,9 @@ export class YuqueClient {
   }
 
   /** Create a new note. */
-  async createNote(data: CreateNoteData): Promise<{ note_url: string }> {
+  async createNote(data: CreateNoteData): Promise<CreateNoteResponse> {
     return withErrorHandling(async () => {
-      const r = await this.client.post<{ success: boolean; data: { note_url: string } }>('/notes', data);
+      const r = await this.client.post<{ success: boolean; data: CreateNoteResponse }>('/notes', data);
       return r.data.data;
     });
   }
