@@ -101,6 +101,8 @@ export const noteTools = {
             text: JSON.stringify(
               {
                 success: true,
+                id: result.id,
+                slug: result.slug,
                 note_url: result.note_url,
                 message: 'Note created successfully',
               },

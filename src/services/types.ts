@@ -227,6 +227,12 @@ export interface CreateNoteData {
   body: string;
 }
 
+export interface CreateNoteResponse {
+  id: number;
+  slug: string;
+  note_url: string;
+}
+
 export interface UpdateNoteData {
   source: string;
   html: string;
