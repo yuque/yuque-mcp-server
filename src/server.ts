@@ -5,6 +5,7 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import packageJson from '../package.json';
 import { YuqueClient } from './services/yuque-client.js';
 import { userTools } from './tools/user.js';
 import { bookTools } from './tools/book.js';
@@ -13,12 +14,14 @@ import { tocTools } from './tools/toc.js';
 import { searchTools } from './tools/search.js';
 import { noteTools } from './tools/note.js';
 
+export const MCP_SERVER_VERSION = packageJson.version;
+
 export function createServer(token: string) {
   const client = new YuqueClient(token);
   const server = new Server(
     {
       name: 'yuque-mcp',
-      version: '0.1.2',
+      version: MCP_SERVER_VERSION,
     },
     {
       capabilities: {
