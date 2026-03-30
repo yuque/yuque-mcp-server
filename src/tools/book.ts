@@ -24,12 +24,12 @@ export const bookTools = {
   yuque_get_book: {
     description: 'Get a specific book (知识库) by ID or namespace',
     inputSchema: z.object({
-      id_or_namespace: z
+      repo_id: z
         .union([z.string(), z.number()])
         .describe('Book ID or namespace (e.g., "user/book_slug")'),
     }),
-    handler: async (client: YuqueClient, args: { id_or_namespace: string | number }) => {
-      const repo = await client.getRepo(args.id_or_namespace);
+    handler: async (client: YuqueClient, args: { repo_id: string | number }) => {
+      const repo = await client.getRepo(args.repo_id);
       return {
         content: [
           {
@@ -84,7 +84,7 @@ export const bookTools = {
   yuque_update_book: {
     description: 'Update a book (知识库)',
     inputSchema: z.object({
-      id_or_namespace: z
+      repo_id: z
         .union([z.string(), z.number()])
         .describe('Book ID or namespace (e.g., "user/book_slug")'),
       name: z.string().optional().describe('New book name'),
@@ -95,7 +95,7 @@ export const bookTools = {
     handler: async (
       client: YuqueClient,
       args: {
-        id_or_namespace: string | number;
+        repo_id: string | number;
         name?: string;
         slug?: string;
         description?: string;
@@ -108,7 +108,7 @@ export const bookTools = {
         description: args.description,
         public: args.public,
       };
-      const repo = await client.updateRepo(args.id_or_namespace, data);
+      const repo = await client.updateRepo(args.repo_id, data);
       return {
         content: [
           {

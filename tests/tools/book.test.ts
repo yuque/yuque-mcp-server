@@ -27,13 +27,13 @@ describe('bookTools', () => {
   describe('yuque_get_book', () => {
     it('should get book by id', async () => {
       (mockClient.getRepo as ReturnType<typeof vi.fn>).mockResolvedValue(mockRepo);
-      const result = await bookTools.yuque_get_book.handler(mockClient, { id_or_namespace: 1 } as never);
+      const result = await bookTools.yuque_get_book.handler(mockClient, { repo_id: 1 } as never);
       expect(JSON.parse(result.content[0].text)).toHaveProperty('name', 'Book');
     });
 
     it('should get book by namespace', async () => {
       (mockClient.getRepo as ReturnType<typeof vi.fn>).mockResolvedValue(mockRepo);
-      await bookTools.yuque_get_book.handler(mockClient, { id_or_namespace: 'user/book' } as never);
+      await bookTools.yuque_get_book.handler(mockClient, { repo_id: 'user/book' } as never);
       expect(mockClient.getRepo).toHaveBeenCalledWith('user/book');
     });
   });
@@ -51,7 +51,7 @@ describe('bookTools', () => {
   describe('yuque_update_book', () => {
     it('should update book', async () => {
       (mockClient.updateRepo as ReturnType<typeof vi.fn>).mockResolvedValue(mockRepo);
-      await bookTools.yuque_update_book.handler(mockClient, { id_or_namespace: 1, name: 'Updated' } as never);
+      await bookTools.yuque_update_book.handler(mockClient, { repo_id: 1, name: 'Updated' } as never);
       expect(mockClient.updateRepo).toHaveBeenCalledWith(1, expect.objectContaining({ name: 'Updated' }));
     });
   });
