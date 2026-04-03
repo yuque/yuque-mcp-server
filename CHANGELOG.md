@@ -1,3 +1,9 @@
+## [0.1.13](https://github.com/yuque/yuque-mcp-server/compare/v0.1.12...v0.1.13) (2026-04-03)
+
+
+### Bug Fixes
+
+* support Node.js v24 by fixing package.json import ([#52](https://github.com/yuque/yuque-mcp-server/issues/52)) ([#53](https://github.com/yuque/yuque-mcp-server/issues/53)) ([900e2ce](https://github.com/yuque/yuque-mcp-server/commit/900e2ce5733155d1a81dafb2ff24bd2ab62f50dc))
 ## [0.1.12](https://github.com/yuque/yuque-mcp-server/compare/v0.1.11...v0.1.12) (2026-03-30)
 
 
