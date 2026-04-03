@@ -4,8 +4,8 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { createRequire } from 'node:module';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import packageJson from '../package.json';
 import { YuqueClient } from './services/yuque-client.js';
 import { userTools } from './tools/user.js';
 import { bookTools } from './tools/book.js';
@@ -13,6 +13,9 @@ import { docTools } from './tools/doc.js';
 import { tocTools } from './tools/toc.js';
 import { searchTools } from './tools/search.js';
 import { noteTools } from './tools/note.js';
+
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json');
 
 export const MCP_SERVER_VERSION = packageJson.version;
 

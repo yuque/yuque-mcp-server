@@ -1,6 +1,9 @@
+import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-import packageJson from '../package.json';
 import { createServer, MCP_SERVER_VERSION } from '../src/server.js';
+
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json');
 
 describe('createServer', () => {
   it('should create a server instance', () => {
