@@ -20,6 +20,11 @@ jobs:
         node-version: '24.x'
         cache: 'npm'
 
+    - name: Configure npm cache paths
+      run: |
+        echo "NPM_CONFIG_CACHE=$RUNNER_TEMP/npm-cache" >> "$GITHUB_ENV"
+        echo "YUQUE_MCP_SMOKE_NPM_CACHE=$RUNNER_TEMP/npm-cache" >> "$GITHUB_ENV"
+
     - name: Configure npm registry for Trusted Publishing
       run: npm config set registry https://registry.npmjs.org/
 
@@ -31,6 +36,9 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Run packed install smoke test
+      run: npm run smoke:pack-install
 
     - name: Publish to npm (Trusted Publishing)
       run: npm publish --provenance --access public
