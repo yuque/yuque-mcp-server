@@ -9,10 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
+      YUQUE_MCP_SMOKE_NPM_CACHE: ${{ runner.temp }}/npm-cache
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x, 24.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -38,8 +41,17 @@ jobs:
     - name: Build
       run: npm run build
 
+    - name: Run dist CLI smoke test
+      run: npm run smoke:dist
+
+    - name: Run packed install smoke test
+      run: npm run smoke:pack-install
+
   coverage:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
+      YUQUE_MCP_SMOKE_NPM_CACHE: ${{ runner.temp }}/npm-cache
 
     steps:
     - uses: actions/checkout@v4

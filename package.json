@@ -18,6 +18,8 @@
   "scripts": {
     "build": "tsc && chmod +x dist/cli.js",
     "dev": "tsx watch src/cli.ts",
+    "smoke:dist": "node scripts/smoke-dist-cli.js",
+    "smoke:pack-install": "node scripts/smoke-packed-install.js",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "lint": "eslint src tests",

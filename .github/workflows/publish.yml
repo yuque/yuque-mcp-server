@@ -10,6 +10,9 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
+      YUQUE_MCP_SMOKE_NPM_CACHE: ${{ runner.temp }}/npm-cache
 
     steps:
     - uses: actions/checkout@v4
@@ -31,6 +34,9 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Run packed install smoke test
+      run: npm run smoke:pack-install
 
     - name: Publish to npm (Trusted Publishing)
       run: npm publish --provenance --access public
