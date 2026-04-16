@@ -234,8 +234,9 @@ export interface CreateNoteResponse {
 }
 
 export interface UpdateNoteData {
-  source: string;
-  html: string;
-  abstract: string;
+  source?: string;
+  html?: string;
+  abstract?: string;
+  body?: string;
   status?: number;
 }

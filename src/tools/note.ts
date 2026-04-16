@@ -122,21 +122,8 @@ export const noteTools = {
       body: z.string().describe('New note content (plain text or markdown)'),
     }),
     handler: async (client: YuqueClient, args: { note_id: number; body: string }) => {
-      // Convert markdown/text to proper HTML paragraphs
-      const html = args.body
-        .split(/\n\n+/)
-        .map(block => {
-          const trimmed = block.trim();
-          if (!trimmed) return '';
-          if (trimmed === '---' || trimmed === '***' || trimmed === '___') return '<hr>';
-          return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
-        })
-        .filter(Boolean)
-        .join('\n');
       const note = await client.updateNote(args.note_id, {
-        source: args.body,
-        html,
-        abstract: args.body.substring(0, 200),
+        body: args.body,
       });
       return {
         content: [
