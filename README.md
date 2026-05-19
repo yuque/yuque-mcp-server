@@ -201,6 +201,23 @@ The server supports multiple ways to provide your Yuque API token:
 
 **Priority order:** `YUQUE_PERSONAL_TOKEN` > `--token`
 
+### Private Deployment
+
+For privately deployed Yuque instances, set the `YUQUE_BASE_URL` environment variable or use the `--base-url` CLI argument:
+
+```bash
+# Environment variable
+export YUQUE_BASE_URL=https://yuque.example.com/api/v2
+
+# CLI argument
+npx yuque-mcp --token=YOUR_TOKEN --base-url=https://yuque.example.com/api/v2
+
+# Install with custom base URL
+npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --base-url=https://yuque.example.com/api/v2
+```
+
+When not set, the default is `https://www.yuque.com/api/v2`.
+
 ---
 
 ## Available Tools (16)
