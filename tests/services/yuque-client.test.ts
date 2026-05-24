@@ -22,7 +22,7 @@ describe('YuqueClient', () => {
 
   describe('constructor', () => {
     it('should use default base URL when not provided', () => {
-      const c = new YuqueClient(mockToken);
+      new YuqueClient(mockToken);
       expect(mockedAxios.create).toHaveBeenCalledWith(
         expect.objectContaining({
           baseURL: 'https://www.yuque.com/api/v2',
@@ -32,7 +32,7 @@ describe('YuqueClient', () => {
 
     it('should use custom base URL when provided', () => {
       const customURL = 'https://yuque.internal.com/api/v2';
-      const c = new YuqueClient(mockToken, customURL);
+      new YuqueClient(mockToken, customURL);
       expect(mockedAxios.create).toHaveBeenCalledWith(
         expect.objectContaining({
           baseURL: customURL,
