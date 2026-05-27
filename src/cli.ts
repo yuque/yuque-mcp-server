@@ -46,7 +46,11 @@ if (handleCliSubcommands(process.argv)) {
     process.exit(0);
   }
 
-  runStdioServer(token).catch((error) => {
+  const baseURL =
+    process.env.YUQUE_BASE_URL ||
+    process.argv.find((arg) => arg.startsWith('--base-url='))?.split('=')[1];
+
+  runStdioServer(token, baseURL).catch((error) => {
     console.error('Fatal error:', error);
     process.exit(1);
   });

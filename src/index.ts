@@ -10,7 +10,11 @@ if (!token) {
   process.exit(1);
 }
 
-const mcpServer = createMCPServer(token);
+const baseURL =
+  process.env.YUQUE_BASE_URL ||
+  process.argv.find((arg) => arg.startsWith('--base-url='))?.split('=')[1];
+
+const mcpServer = createMCPServer(token, baseURL);
 const transport = new StreamableHTTPServerTransport({
   sessionIdGenerator: () => randomUUID(),
 });
