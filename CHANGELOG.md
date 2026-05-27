@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### ✨ Features
 
 - Add board resource tools for reading, creating, and updating YFM board cards.
+- Support custom API base URL via `YUQUE_BASE_URL` env var or `--base-url` CLI arg for private deployments
 
 ### 🐞 Bug Fixes
 

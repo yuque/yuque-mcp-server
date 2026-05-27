@@ -12,7 +12,7 @@ interface ClientConfig {
   configKey: 'mcpServers' | 'servers' | 'mcp';
   getConfigPath: () => string;
   /** Custom function to build the server entry for this client (if different from the default). */
-  buildEntry?: (token: string) => Record<string, unknown>;
+  buildEntry?: (token: string, baseURL?: string) => Record<string, unknown>;
 }
 
 function getAppDataPath(): string {
@@ -140,13 +140,13 @@ const CLIENT_CONFIGS: Record<ClientId, ClientConfig> = {
     getConfigPath() {
       return path.join(process.cwd(), 'opencode.json');
     },
-    buildEntry(token: string) {
+    buildEntry(token: string, baseURL?: string) {
+      const env: Record<string, string> = { YUQUE_PERSONAL_TOKEN: token };
+      if (baseURL) env.YUQUE_BASE_URL = baseURL;
       return {
         type: 'local',
         command: ['npx', '-y', 'yuque-mcp'],
-        environment: {
-          YUQUE_PERSONAL_TOKEN: token,
-        },
+        environment: env,
         enabled: true,
       };
     },
@@ -155,13 +155,13 @@ const CLIENT_CONFIGS: Record<ClientId, ClientConfig> = {
 
 // ─── Config Generation ────────────────────────────────────────────────
 
-function buildServerEntry(token: string) {
+function buildServerEntry(token: string, baseURL?: string) {
+  const env: Record<string, string> = { YUQUE_PERSONAL_TOKEN: token };
+  if (baseURL) env.YUQUE_BASE_URL = baseURL;
   return {
     command: 'npx',
     args: ['-y', 'yuque-mcp'],
-    env: {
-      YUQUE_PERSONAL_TOKEN: token,
-    },
+    env,
   };
 }
 
@@ -170,6 +170,7 @@ function buildServerEntry(token: string) {
 export interface InstallOptions {
   token: string;
   client: ClientId;
+  baseURL?: string;
 }
 
 export function getSupportedClients(): ClientId[] {
@@ -218,8 +219,8 @@ export function installToClient(options: InstallOptions): string {
   // Inject/update the yuque entry
   const serversObj = config[configKey] as Record<string, unknown>;
   serversObj['yuque'] = clientConfig.buildEntry
-    ? clientConfig.buildEntry(options.token)
-    : buildServerEntry(options.token);
+    ? clientConfig.buildEntry(options.token, options.baseURL)
+    : buildServerEntry(options.token, options.baseURL);
 
   // Create parent directories if needed
   const dir = path.dirname(configPath);
@@ -236,23 +237,25 @@ export function installToClient(options: InstallOptions): string {
 export function runInstall(args: string[]): void {
   const tokenArg = args.find((a) => a.startsWith('--token='));
   const clientArg = args.find((a) => a.startsWith('--client='));
+  const baseURLArg = args.find((a) => a.startsWith('--base-url='));
 
   if (!tokenArg) {
     console.error('Error: --token=YOUR_TOKEN is required.');
-    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT');
+    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]');
     console.error(`Supported clients: ${getSupportedClients().join(', ')}`);
     process.exit(1);
   }
 
   if (!clientArg) {
     console.error('Error: --client=CLIENT is required.');
-    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT');
+    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]');
     console.error(`Supported clients: ${getSupportedClients().join(', ')}`);
     process.exit(1);
   }
 
   const token = tokenArg.split('=').slice(1).join('=');
   const client = clientArg.split('=').slice(1).join('=') as ClientId;
+  const baseURL = baseURLArg?.split('=').slice(1).join('=');
 
   if (!token) {
     console.error('Error: Token value cannot be empty.');
@@ -260,7 +263,7 @@ export function runInstall(args: string[]): void {
   }
 
   try {
-    const configPath = installToClient({ token, client });
+    const configPath = installToClient({ token, client, baseURL });
     const clientName = CLIENT_CONFIGS[client]?.name ?? client;
     console.log(`\n✅ Successfully configured yuque-mcp for ${clientName}!`);
     console.log(`   Config file: ${configPath}`);
@@ -321,9 +324,14 @@ export async function runSetup(): Promise<void> {
 
     const client = clients[idx];
 
-    // Step 3: Install
+    // Step 3: Ask for base URL (optional, for private deployments)
+    console.log('\nStep 3: Enter your Yuque API base URL (optional)');
+    console.log('   (Leave empty for https://www.yuque.com/api/v2)\n');
+    const baseURL = (await askQuestion(rl, '   Base URL: ')) || undefined;
+
+    // Step 4: Install
     console.log('');
-    const configPath = installToClient({ token, client });
+    const configPath = installToClient({ token, client, baseURL });
     const clientName = CLIENT_CONFIGS[client].name;
     console.log(`✅ Successfully configured yuque-mcp for ${clientName}!`);
     console.log(`   Config file: ${configPath}`);

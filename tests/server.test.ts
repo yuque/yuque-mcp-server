@@ -15,6 +15,11 @@ describe('createServer', () => {
     expect(MCP_SERVER_VERSION).toBe(packageJson.version);
   });
 
+  it('should create a server with custom base URL', () => {
+    const server = createServer('test-token', 'https://yuque.internal.com/api/v2');
+    expect(server).toBeDefined();
+  });
+
   it('should register all 19 tools', async () => {
     const server = createServer('test-token');
     const listToolsHandler = (

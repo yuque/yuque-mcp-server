@@ -20,6 +20,27 @@ describe('YuqueClient', () => {
     client = new YuqueClient(mockToken);
   });
 
+  describe('constructor', () => {
+    it('should use default base URL when not provided', () => {
+      new YuqueClient(mockToken);
+      expect(mockedAxios.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseURL: 'https://www.yuque.com/api/v2',
+        })
+      );
+    });
+
+    it('should use custom base URL when provided', () => {
+      const customURL = 'https://yuque.internal.com/api/v2';
+      new YuqueClient(mockToken, customURL);
+      expect(mockedAxios.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseURL: customURL,
+        })
+      );
+    });
+  });
+
   describe('getUser', () => {
     it('should fetch user data', async () => {
       const mockUser = {

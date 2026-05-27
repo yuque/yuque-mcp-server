@@ -20,8 +20,8 @@ const packageJson = require('../package.json');
 
 export const MCP_SERVER_VERSION = packageJson.version;
 
-export function createServer(token: string) {
-  const client = new YuqueClient(token);
+export function createServer(token: string, baseURL?: string) {
+  const client = new YuqueClient(token, baseURL);
   const server = new Server(
     {
       name: 'yuque-mcp',
@@ -82,8 +82,8 @@ export function createServer(token: string) {
   return server;
 }
 
-export async function runStdioServer(token: string) {
-  const server = createServer(token);
+export async function runStdioServer(token: string, baseURL?: string) {
+  const server = createServer(token, baseURL);
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('Yuque MCP Server running on stdio');

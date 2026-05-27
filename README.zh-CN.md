@@ -201,6 +201,23 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 **优先级：** `YUQUE_PERSONAL_TOKEN` > `--token`
 
+### 私有化部署
+
+如果使用私有化部署的语雀实例，设置 `YUQUE_BASE_URL` 环境变量或使用 `--base-url` CLI 参数：
+
+```bash
+# 环境变量
+export YUQUE_BASE_URL=https://yuque.example.com/api/v2
+
+# CLI 参数
+npx yuque-mcp --token=YOUR_TOKEN --base-url=https://yuque.example.com/api/v2
+
+# 安装时指定
+npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --base-url=https://yuque.example.com/api/v2
+```
+
+不设置时默认为 `https://www.yuque.com/api/v2`。
+
 ---
 
 ## 可用工具（19 个）
