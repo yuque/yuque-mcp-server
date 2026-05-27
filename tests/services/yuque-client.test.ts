@@ -187,6 +187,25 @@ describe('YuqueClient', () => {
       expect(mockClient.get).toHaveBeenCalledWith('/repos/1/docs/1');
     });
 
+    it('should get YMD doc content', async () => {
+      const mockYmdDoc = {
+        doc_id: 1,
+        title: 'Test Doc',
+        url: '/user/repo/test-doc',
+        yfm: '# Test Doc',
+        updated_at: '2024-01-02',
+      };
+
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: mockYmdDoc } });
+
+      const result = await client.getYmdDoc(1);
+      expect(result).toEqual(mockYmdDoc);
+      expect(mockClient.get).toHaveBeenCalledWith('/yfm/docs', {
+        params: { doc_id: 1 },
+      });
+    });
+
     it('should create doc', async () => {
       const mockDoc = { id: 1, title: 'New Doc', body: 'Content' };
       const mockClient = client['client'] as { post: ReturnType<typeof vi.fn> };
@@ -212,6 +231,25 @@ describe('YuqueClient', () => {
       expect(result).toEqual(mockDoc);
       expect(mockClient.put).toHaveBeenCalledWith('/repos/1/docs/1', {
         title: 'Updated Doc',
+      });
+    });
+
+    it('should update YMD doc content', async () => {
+      const mockResult = {
+        doc_id: 1,
+        title: 'Updated Doc',
+        url: '/user/repo/test-doc',
+        updated_at: '2024-01-03',
+      };
+
+      const mockClient = client['client'] as { put: ReturnType<typeof vi.fn> };
+      mockClient.put.mockResolvedValue({ data: { data: mockResult } });
+
+      const result = await client.updateYmdDoc(1, '# Updated Doc');
+      expect(result).toEqual(mockResult);
+      expect(mockClient.put).toHaveBeenCalledWith('/yfm/docs', {
+        doc_id: 1,
+        yfm: '# Updated Doc',
       });
     });
 

@@ -76,6 +76,21 @@ export interface YuqueDoc {
   description: string;
 }
 
+export interface YuqueYmdDoc {
+  doc_id: number;
+  title: string;
+  url: string;
+  yfm: string;
+  updated_at: string;
+}
+
+export interface YuqueYmdDocWriteResult {
+  doc_id: number;
+  title: string;
+  url: string;
+  updated_at: string;
+}
+
 export interface YuqueTocItem {
   title: string;
   uuid: string;
@@ -179,6 +194,7 @@ export interface UpdateDocData {
   title?: string;
   slug?: string;
   body?: string;
+  format?: string;
   public?: number;
 }
 // 添加到 src/services/types.ts 的小记类型定义
@@ -190,7 +206,7 @@ export interface YuqueNoteContent {
   source?: string;
   html?: string;
   draft_version?: number;
-  doc_dynamic_data?: any[];
+  doc_dynamic_data?: unknown[];
 }
 
 export interface YuqueNote {

@@ -4,6 +4,8 @@ import type {
   YuqueGroup,
   YuqueRepo,
   YuqueDoc,
+  YuqueYmdDoc,
+  YuqueYmdDocWriteResult,
   YuqueTocItem,
   YuqueSearchResult,
   YuqueDocVersion,
@@ -153,6 +155,16 @@ export class YuqueClient {
     });
   }
 
+  /** Get a document body through the YMD/YFM-compatible reader. */
+  async getYmdDoc(docId: number): Promise<YuqueYmdDoc> {
+    return withErrorHandling(async () => {
+      const r = await this.client.get<YuqueApiResponse<YuqueYmdDoc>>('/yfm/docs', {
+        params: { doc_id: docId },
+      });
+      return r.data.data;
+    });
+  }
+
   /** Create a new document in a repo. */
   async createDoc(repoId: string | number, data: CreateDocData): Promise<YuqueDoc> {
     return withErrorHandling(async () => {
@@ -165,6 +177,17 @@ export class YuqueClient {
   async updateDoc(repoId: string | number, docId: string | number, data: UpdateDocData): Promise<YuqueDoc> {
     return withErrorHandling(async () => {
       const r = await this.client.put<YuqueApiResponse<YuqueDoc>>(`/repos/${repoId}/docs/${docId}`, data);
+      return r.data.data;
+    });
+  }
+
+  /** Update a document body through the YMD/YFM-compatible writer. */
+  async updateYmdDoc(docId: number, ymd: string): Promise<YuqueYmdDocWriteResult> {
+    return withErrorHandling(async () => {
+      const r = await this.client.put<YuqueApiResponse<YuqueYmdDocWriteResult>>('/yfm/docs', {
+        doc_id: docId,
+        yfm: ymd,
+      });
       return r.data.data;
     });
   }
