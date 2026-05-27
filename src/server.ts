@@ -13,6 +13,7 @@ import { docTools } from './tools/doc.js';
 import { tocTools } from './tools/toc.js';
 import { searchTools } from './tools/search.js';
 import { noteTools } from './tools/note.js';
+import { resourceTools } from './tools/resource.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
@@ -41,6 +42,7 @@ export function createServer(token: string) {
     ...tocTools,
     ...searchTools,
     ...noteTools,
+    ...resourceTools,
   };
 
   // Register list_tools handler

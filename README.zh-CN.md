@@ -203,7 +203,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 ---
 
-## 可用工具（16 个）
+## 可用工具（19 个）
 
 | 分类 | 工具 |
 |------|------|
@@ -211,6 +211,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 | **搜索** | `yuque_search` |
 | **知识库** | `yuque_list_books`、`yuque_get_book`、`yuque_create_book`、`yuque_update_book` |
 | **文档** | `yuque_list_docs`、`yuque_get_doc`、`yuque_create_doc`、`yuque_update_doc` |
+| **资源** | `yuque_get_resource`、`yuque_create_resource`、`yuque_update_resource` |
 | **目录** | `yuque_get_toc`、`yuque_update_toc` |
 | **小记** | `yuque_list_notes`、`yuque_get_note`、`yuque_create_note`、`yuque_update_note` |
 

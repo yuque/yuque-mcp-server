@@ -15,11 +15,26 @@ describe('createServer', () => {
     expect(MCP_SERVER_VERSION).toBe(packageJson.version);
   });
 
-  it('should register all 16 tools', async () => {
+  it('should register all 19 tools', async () => {
     const server = createServer('test-token');
+    const listToolsHandler = (
+      server as unknown as {
+        _requestHandlers: Map<
+          string,
+          (request: unknown, extra: unknown) => Promise<{ tools: Array<{ name: string }> }>
+        >;
+      }
+    )._requestHandlers.get('tools/list');
 
-    // Access the internal server to list tools
-    // The server should have handlers registered
-    expect(server).toBeDefined();
+    const result = await listToolsHandler?.({ method: 'tools/list', params: {} }, {});
+
+    expect(result?.tools).toHaveLength(19);
+    expect(result?.tools.map((tool) => tool.name)).toEqual(
+      expect.arrayContaining([
+        'yuque_get_resource',
+        'yuque_create_resource',
+        'yuque_update_resource',
+      ])
+    );
   });
 });

@@ -91,6 +91,60 @@ export interface YuqueYmdDocWriteResult {
   updated_at: string;
 }
 
+export type YuqueResourceType = 'board';
+export type YuqueBoardType = 'mindmap' | 'flowchart' | 'architecturediagram';
+export type YuqueBoardJsonScalar = string | number | boolean | null;
+export type YuqueBoardJsonValue =
+  | YuqueBoardJsonScalar
+  | YuqueBoardJsonValue[]
+  | { [key: string]: YuqueBoardJsonValue };
+export type YuqueBoardDsl = Record<string, YuqueBoardJsonValue>;
+
+export interface YuqueResourceLocatorData {
+  resource_type: YuqueResourceType;
+  doc_id?: number;
+  url?: string;
+}
+
+export interface YuqueResourceGetData extends YuqueResourceLocatorData {
+  resource_id: string;
+}
+
+export interface YuqueResourceCreateData extends YuqueResourceLocatorData {
+  type: YuqueBoardType;
+  dsl: string;
+  insert_after_lake_id?: string;
+}
+
+export interface YuqueResourceUpdateData extends YuqueResourceGetData {
+  text?: string;
+  dsl?: YuqueBoardDsl;
+}
+
+export interface YuqueResourceResult {
+  doc_id: number;
+  title: string;
+  url: string;
+  updated_at: string;
+  board: {
+    page_ref: {
+      src: string;
+    };
+    resource: {
+      id: string | null;
+      kind: string;
+    };
+    dsl: YuqueBoardDsl;
+    summary: {
+      cell_count: number;
+      type_counts: Record<string, number>;
+      shape_counts: Record<string, number>;
+      has_viewport: boolean;
+      has_search: boolean;
+    };
+  };
+}
+
 export interface YuqueTocItem {
   title: string;
   uuid: string;

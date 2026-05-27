@@ -21,6 +21,10 @@ import type {
   CreateNoteData,
   CreateNoteResponse,
   UpdateNoteData,
+  YuqueResourceCreateData,
+  YuqueResourceGetData,
+  YuqueResourceResult,
+  YuqueResourceUpdateData,
 } from './types.js';
 import { handleYuqueError } from '../utils/error.js';
 
@@ -34,6 +38,25 @@ async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
   } catch (error) {
     handleYuqueError(error);
   }
+}
+
+function toResourcePayload<T extends { resource_type: string }>(data: T): Record<string, unknown> {
+  const { resource_type: resourceType, ...payload } = data;
+  void resourceType;
+  return Object.fromEntries(
+    Object.entries(payload as Record<string, unknown>).filter(([, value]) => value !== undefined)
+  );
+}
+
+function toBoardResourcePayload<T extends { resource_type: string; resource_id?: string }>(
+  data: T
+): Record<string, unknown> {
+  const { resource_id: resourceId, ...payload } = toResourcePayload(data);
+  // The public v2 board API names this field src, but expects the raw resource id.
+  return {
+    ...payload,
+    ...(resourceId !== undefined && { src: resourceId }),
+  };
 }
 
 export class YuqueClient {
@@ -188,6 +211,38 @@ export class YuqueClient {
         doc_id: docId,
         yfm: ymd,
       });
+      return r.data.data;
+    });
+  }
+
+  /** Get a structured resource view from a document. */
+  async getResource(data: YuqueResourceGetData): Promise<YuqueResourceResult> {
+    return withErrorHandling(async () => {
+      const r = await this.client.get<YuqueApiResponse<YuqueResourceResult>>('/yfm/boards', {
+        params: toBoardResourcePayload(data),
+      });
+      return r.data.data;
+    });
+  }
+
+  /** Create a structured resource in a document. */
+  async createResource(data: YuqueResourceCreateData): Promise<YuqueResourceResult> {
+    return withErrorHandling(async () => {
+      const r = await this.client.post<YuqueApiResponse<YuqueResourceResult>>(
+        '/yfm/boards',
+        toResourcePayload(data)
+      );
+      return r.data.data;
+    });
+  }
+
+  /** Update a structured resource in a document. */
+  async updateResource(data: YuqueResourceUpdateData): Promise<YuqueResourceResult> {
+    return withErrorHandling(async () => {
+      const r = await this.client.put<YuqueApiResponse<YuqueResourceResult>>(
+        '/yfm/boards',
+        toBoardResourcePayload(data)
+      );
       return r.data.data;
     });
   }

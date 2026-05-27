@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ✨ Features
+
+- Add board resource tools for reading, creating, and updating YFM board cards.
+
 ### 🐞 Bug Fixes
 
 - Fix Node.js v24 compatibility by replacing ESM JSON import with createRequire (#52) (#52)
