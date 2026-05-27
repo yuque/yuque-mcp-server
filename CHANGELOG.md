@@ -1,3 +1,11 @@
+# [1.0.0](https://github.com/yuque/yuque-mcp-server/compare/v0.1.13...v1.0.0) (2026-05-27)
+
+
+### Features
+
+* route markdown document reads and writes through YMD/YFM-compatible APIs ([49eb60b](https://github.com/yuque/yuque-mcp-server/commit/49eb60be34f9f1ca7e6762169a753c7d768868be))
+* add board resource tools for reading, creating, and updating YFM board cards ([49eb60b](https://github.com/yuque/yuque-mcp-server/commit/49eb60be34f9f1ca7e6762169a753c7d768868be))
+* support custom base URL for private Yuque deployments ([#65](https://github.com/yuque/yuque-mcp-server/issues/65)) ([338d0cc](https://github.com/yuque/yuque-mcp-server/commit/338d0cc4b494d30341f54281ada1e8d8cbf9a814))
 ## [0.1.13](https://github.com/yuque/yuque-mcp-server/compare/v0.1.12...v0.1.13) (2026-04-03)
 
 
@@ -25,15 +33,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
-### ✨ Features
-
-- Add board resource tools for reading, creating, and updating YFM board cards.
-- Support custom API base URL via `YUQUE_BASE_URL` env var or `--base-url` CLI arg for private deployments
-
-### 🐞 Bug Fixes
-
-- Fix Node.js v24 compatibility by replacing ESM JSON import with createRequire (#52) (#52)
 
 ## [0.1.10] - 2026-03-30
 
