@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
+import type { YuqueDoc, YuqueYmdDoc } from '../services/types.js';
 import { formatDocSummary, formatDoc } from '../utils/format.js';
 
 async function appendDocToToc(
@@ -20,6 +21,20 @@ async function appendDocToToc(
   } catch {
     return 'Document created successfully but failed to auto-append to TOC. Please manually arrange it in the TOC via the Yuque web interface.';
   }
+}
+
+function shouldUseYmd(format?: string): boolean {
+  return !format || format === 'markdown';
+}
+
+function withYmdBody(doc: YuqueDoc, ymdDoc: YuqueYmdDoc): YuqueDoc {
+  return {
+    ...doc,
+    title: ymdDoc.title || doc.title,
+    body: ymdDoc.yfm,
+    format: 'markdown',
+    updated_at: ymdDoc.updated_at || doc.updated_at,
+  };
 }
 
 export const docTools = {
@@ -52,6 +67,12 @@ export const docTools = {
       doc_id: z
         .union([z.string(), z.number()])
         .describe('Document ID or slug'),
+      format: z
+        .enum(['markdown', 'lake', 'html'])
+        .optional()
+        .describe(
+          'Content format to read. Omit or use markdown to read through the YMD-compatible flow; use lake/html for the legacy document API.'
+        ),
       include_lake: z
         .boolean()
         .optional()
@@ -65,16 +86,20 @@ export const docTools = {
       args: {
         repo_id: string | number;
         doc_id: string | number;
+        format?: 'markdown' | 'lake' | 'html';
         include_lake: boolean;
       }
     ) => {
       const doc = await client.getDoc(args.repo_id, args.doc_id);
+      const formattedDoc = shouldUseYmd(args.format)
+        ? withYmdBody(doc, await client.getYmdDoc(doc.id))
+        : doc;
       return {
         content: [
           {
             type: 'text' as const,
             text: JSON.stringify(
-              formatDoc(doc, { includeLake: args.include_lake }),
+              formatDoc(formattedDoc, { includeLake: args.include_lake }),
               null,
               2
             ),
@@ -141,6 +166,12 @@ export const docTools = {
       title: z.string().optional().describe('New document title'),
       slug: z.string().optional().describe('New document slug'),
       body: z.string().optional().describe('New document content'),
+      format: z
+        .enum(['markdown', 'lake', 'html'])
+        .optional()
+        .describe(
+          'Content format for body. Omit or use markdown to write through the YMD-compatible flow; use lake/html for the legacy document API.'
+        ),
       public: z.number().optional().describe('Public visibility: 0 (private) or 1 (public)'),
     }),
     handler: async (
@@ -151,14 +182,38 @@ export const docTools = {
         title?: string;
         slug?: string;
         body?: string;
+        format?: 'markdown' | 'lake' | 'html';
         public?: number;
       }
     ) => {
-      const data = {
+      const metadata = {
         title: args.title,
         slug: args.slug,
-        body: args.body,
         public: args.public,
+      };
+      const hasMetadataUpdate = Object.values(metadata).some((value) => value !== undefined);
+
+      if (args.body !== undefined && shouldUseYmd(args.format)) {
+        const currentDoc = await client.getDoc(args.repo_id, args.doc_id);
+        const doc = hasMetadataUpdate
+          ? await client.updateDoc(args.repo_id, args.doc_id, metadata)
+          : currentDoc;
+        await client.updateYmdDoc(currentDoc.id, args.body);
+        const ymdDoc = await client.getYmdDoc(currentDoc.id);
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(formatDoc(withYmdBody(doc, ymdDoc)), null, 2),
+            },
+          ],
+        };
+      }
+
+      const data = {
+        ...metadata,
+        body: args.body,
+        format: args.format,
       };
       const doc = await client.updateDoc(args.repo_id, args.doc_id, data);
       return {

@@ -220,7 +220,7 @@ When not set, the default is `https://www.yuque.com/api/v2`.
 
 ---
 
-## Available Tools (16)
+## Available Tools (19)
 
 | Category | Tools |
 |----------|-------|
@@ -228,6 +228,7 @@ When not set, the default is `https://www.yuque.com/api/v2`.
 | **Search** | `yuque_search` |
 | **Books** | `yuque_list_books`, `yuque_get_book`, `yuque_create_book`, `yuque_update_book` |
 | **Docs** | `yuque_list_docs`, `yuque_get_doc`, `yuque_create_doc`, `yuque_update_doc` |
+| **Resources** | `yuque_get_resource`, `yuque_create_resource`, `yuque_update_resource` |
 | **TOC** | `yuque_get_toc`, `yuque_update_toc` |
 | **Notes** | `yuque_list_notes`, `yuque_get_note`, `yuque_create_note`, `yuque_update_note` |
 

@@ -208,6 +208,25 @@ describe('YuqueClient', () => {
       expect(mockClient.get).toHaveBeenCalledWith('/repos/1/docs/1');
     });
 
+    it('should get YMD doc content', async () => {
+      const mockYmdDoc = {
+        doc_id: 1,
+        title: 'Test Doc',
+        url: '/user/repo/test-doc',
+        yfm: '# Test Doc',
+        updated_at: '2024-01-02',
+      };
+
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: mockYmdDoc } });
+
+      const result = await client.getYmdDoc(1);
+      expect(result).toEqual(mockYmdDoc);
+      expect(mockClient.get).toHaveBeenCalledWith('/yfm/docs', {
+        params: { doc_id: 1 },
+      });
+    });
+
     it('should create doc', async () => {
       const mockDoc = { id: 1, title: 'New Doc', body: 'Content' };
       const mockClient = client['client'] as { post: ReturnType<typeof vi.fn> };
@@ -233,6 +252,142 @@ describe('YuqueClient', () => {
       expect(result).toEqual(mockDoc);
       expect(mockClient.put).toHaveBeenCalledWith('/repos/1/docs/1', {
         title: 'Updated Doc',
+      });
+    });
+
+    it('should update YMD doc content', async () => {
+      const mockResult = {
+        doc_id: 1,
+        title: 'Updated Doc',
+        url: '/user/repo/test-doc',
+        updated_at: '2024-01-03',
+      };
+
+      const mockClient = client['client'] as { put: ReturnType<typeof vi.fn> };
+      mockClient.put.mockResolvedValue({ data: { data: mockResult } });
+
+      const result = await client.updateYmdDoc(1, '# Updated Doc');
+      expect(result).toEqual(mockResult);
+      expect(mockClient.put).toHaveBeenCalledWith('/yfm/docs', {
+        doc_id: 1,
+        yfm: '# Updated Doc',
+      });
+    });
+
+    it('should get resource detail without forwarding resource_type', async () => {
+      const mockResult = {
+        doc_id: 1,
+        title: 'Test Doc',
+        url: '/user/repo/test-doc',
+        updated_at: '2024-01-03',
+        board: {
+          page_ref: { src: 'board://board-1' },
+          resource: { id: 'board-1', kind: 'mindmap' },
+          dsl: { text: '- root', format: 'text', language: 'mindmap' },
+          summary: {
+            cell_count: 1,
+            type_counts: {},
+            shape_counts: {},
+            has_viewport: false,
+            has_search: false,
+          },
+        },
+      };
+
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: mockResult } });
+
+      const result = await client.getResource({
+        resource_type: 'board',
+        doc_id: 1,
+        resource_id: 'board-1',
+      });
+      expect(result).toEqual(mockResult);
+      expect(mockClient.get).toHaveBeenCalledWith('/yfm/boards', {
+        params: { doc_id: 1, src: 'board-1' },
+      });
+    });
+
+    it('should create resource without forwarding resource_type or undefined fields', async () => {
+      const mockResult = {
+        doc_id: 1,
+        title: 'Test Doc',
+        url: '/user/repo/test-doc',
+        updated_at: '2024-01-03',
+        board: {
+          page_ref: { src: 'board://board-1' },
+          resource: { id: 'board-1', kind: 'mindmap' },
+          dsl: { text: '- root', format: 'text', language: 'mindmap' },
+          summary: {
+            cell_count: 1,
+            type_counts: {},
+            shape_counts: {},
+            has_viewport: false,
+            has_search: false,
+          },
+        },
+      };
+
+      const mockClient = client['client'] as { post: ReturnType<typeof vi.fn> };
+      mockClient.post.mockResolvedValue({ data: { data: mockResult } });
+
+      const result = await client.createResource({
+        resource_type: 'board',
+        doc_id: 1,
+        type: 'mindmap',
+        dsl: '- root',
+      });
+      expect(result).toEqual(mockResult);
+      expect(mockClient.post).toHaveBeenCalledWith('/yfm/boards', {
+        doc_id: 1,
+        type: 'mindmap',
+        dsl: '- root',
+      });
+    });
+
+    it('should update resource with JSON DSL body', async () => {
+      const nextDsl = {
+        value: {
+          diagramData: {
+            body: [],
+          },
+        },
+        format: 'json',
+        language: 'json',
+      };
+      const mockResult = {
+        doc_id: 1,
+        title: 'Test Doc',
+        url: '/user/repo/test-doc',
+        updated_at: '2024-01-03',
+        board: {
+          page_ref: { src: 'board://board-1' },
+          resource: { id: 'board-1', kind: 'flowchart' },
+          dsl: nextDsl,
+          summary: {
+            cell_count: 0,
+            type_counts: {},
+            shape_counts: {},
+            has_viewport: false,
+            has_search: false,
+          },
+        },
+      };
+
+      const mockClient = client['client'] as { put: ReturnType<typeof vi.fn> };
+      mockClient.put.mockResolvedValue({ data: { data: mockResult } });
+
+      const result = await client.updateResource({
+        resource_type: 'board',
+        url: 'https://www.yuque.com/user/repo/doc',
+        resource_id: 'board-1',
+        dsl: nextDsl,
+      });
+      expect(result).toEqual(mockResult);
+      expect(mockClient.put).toHaveBeenCalledWith('/yfm/boards', {
+        url: 'https://www.yuque.com/user/repo/doc',
+        src: 'board-1',
+        dsl: nextDsl,
       });
     });
 
