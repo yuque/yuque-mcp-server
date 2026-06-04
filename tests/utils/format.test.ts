@@ -124,6 +124,23 @@ describe('format utilities', () => {
       expect(result).toHaveProperty('body_lake', '<!doctype lake>');
     });
 
+    it('should expose body_sheet for sheet documents', () => {
+      const sheetDoc: YuqueDoc = {
+        ...doc,
+        type: 'Sheet',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: '{"version":"1.0","data":[]}',
+      };
+      const result = formatDoc(sheetDoc);
+      expect(result).toMatchObject({
+        type: 'Sheet',
+        format: 'lakesheet',
+        body: '{"version":"1.0","data":[]}',
+        body_sheet: '{"version":"1.0","data":[]}',
+      });
+    });
+
     it('should not include body_lake when includeLake is false', () => {
       const result = formatDoc(doc, { includeLake: false });
       expect(result).not.toHaveProperty('body_lake');
