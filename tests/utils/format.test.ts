@@ -4,6 +4,7 @@ import {
   formatRepo,
   formatDocSummary,
   formatDoc,
+  formatSheet,
   formatToc,
 } from '../../src/utils/format.js';
 import type { YuqueUser, YuqueRepo, YuqueDoc, YuqueTocItem } from '../../src/services/types.js';
@@ -144,6 +145,77 @@ describe('format utilities', () => {
     it('should not include body_lake when includeLake is false', () => {
       const result = formatDoc(doc, { includeLake: false });
       expect(result).not.toHaveProperty('body_lake');
+    });
+  });
+
+  describe('formatSheet', () => {
+    const baseDoc: YuqueDoc = {
+      id: 1, slug: 'test-sheet', title: 'Test Sheet', book_id: 1, user_id: 1,
+      format: 'lakesheet', body: '', body_draft: '',
+      body_html: '', body_lake: '', creator_id: 1,
+      public: 1, status: 1, likes_count: 0, comments_count: 0,
+      content_updated_at: '2024-01-01', deleted_at: null,
+      created_at: '2024-01-01', updated_at: '2024-01-02',
+      published_at: '2024-01-01', first_published_at: '2024-01-01',
+      word_count: 0, cover: null, description: '',
+    };
+
+    it('should format single sheet', () => {
+      const doc: YuqueDoc = {
+        ...baseDoc,
+        body_sheet: JSON.stringify({
+          version: '1.0',
+          data: [{ name: 'Sheet1', table: [['A', 'B'], ['1', '2'], ['3', '4']] }],
+        }),
+      };
+      const result = formatSheet(doc);
+      expect(result.success).toBe(true);
+      expect(result.formatted).toContain('### Sheet1');
+      expect(result.formatted).toContain('| A | B |');
+      expect(result.formatted).toContain('| 1 | 2 |');
+      expect(result.formatted).toContain('| 3 | 4 |');
+    });
+
+    it('should format multiple sheets preserving all tabs', () => {
+      const doc: YuqueDoc = {
+        ...baseDoc,
+        body_sheet: JSON.stringify({
+          version: '1.0',
+          data: [
+            { name: 'Sales', table: [['Month', 'Revenue'], ['Jan', '100'], ['Feb', '200']] },
+            { name: 'Users', table: [['Name', 'Age'], ['Alice', '30'], ['Bob', '25']] },
+            { name: 'Empty', table: [] },
+          ],
+        }),
+      };
+      const result = formatSheet(doc);
+      expect(result.success).toBe(true);
+      // First sheet
+      expect(result.formatted).toContain('### Sales');
+      expect(result.formatted).toContain('| Month | Revenue |');
+      expect(result.formatted).toContain('| Jan | 100 |');
+      // Second sheet — must not be dropped
+      expect(result.formatted).toContain('### Users');
+      expect(result.formatted).toContain('| Name | Age |');
+      expect(result.formatted).toContain('| Alice | 30 |');
+      expect(result.formatted).toContain('| Bob | 25 |');
+      // Empty table is skipped
+      expect(result.formatted).not.toContain('### Empty');
+    });
+
+    it('should fall back to raw data when data is empty', () => {
+      const raw = JSON.stringify({ version: '1.0', data: [] });
+      const doc: YuqueDoc = { ...baseDoc, body_sheet: raw };
+      const result = formatSheet(doc);
+      expect(result.success).toBe(false);
+      expect(result.formatted).toBe(raw);
+    });
+
+    it('should fall back to raw data when parse fails', () => {
+      const doc: YuqueDoc = { ...baseDoc, body_sheet: 'not-json' };
+      const result = formatSheet(doc);
+      expect(result.success).toBe(false);
+      expect(result.formatted).toBe('not-json');
     });
   });
 

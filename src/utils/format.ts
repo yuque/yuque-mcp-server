@@ -79,32 +79,40 @@ export function formatSheet(doc: YuqueDoc): { formatted: string; success: boolea
     const sheetBody = doc.body_sheet ?? doc.body;
     const sheetData = typeof sheetBody === 'string' ? JSON.parse(sheetBody) : sheetBody;
 
-    if (!sheetData?.data?.[0]?.table) {
+    if (!sheetData?.data?.length) {
       return { formatted: String(sheetBody), success: false };
     }
 
-    const table: string[][] = sheetData.data[0].table;
-    const sheetName = sheetData.data[0].name ?? 'Sheet1';
+    // Iterate over all sheets/tabs
+    const allLines: string[] = [];
+    for (const sheet of sheetData.data) {
+      if (!sheet?.table) continue;
 
-    if (!Array.isArray(table) || table.length === 0) {
+      const table: string[][] = sheet.table;
+      if (!Array.isArray(table) || table.length === 0) continue;
+
+      const sheetName = sheet.name ?? 'Sheet1';
+      allLines.push(`### ${sheetName}\n`);
+
+      // Header row
+      const header = table[0] ?? [];
+      allLines.push(`| ${header.map(escapeMarkdownCell).join(' | ')} |`);
+      allLines.push(`| ${header.map(() => '---').join(' | ')} |`);
+
+      // Data rows (skip header)
+      for (let i = 1; i < table.length; i++) {
+        const row = table[i] ?? [];
+        allLines.push(`| ${row.map(escapeMarkdownCell).join(' | ')} |`);
+      }
+
+      allLines.push(''); // blank line between sheets
+    }
+
+    if (allLines.length === 0) {
       return { formatted: String(sheetBody), success: false };
     }
 
-    // Build Markdown table
-    const lines: string[] = [`### ${sheetName}\n`];
-
-    // Header row
-    const header = table[0] ?? [];
-    lines.push(`| ${header.map(escapeMarkdownCell).join(' | ')} |`);
-    lines.push(`| ${header.map(() => '---').join(' | ')} |`);
-
-    // Data rows (skip header)
-    for (let i = 1; i < table.length; i++) {
-      const row = table[i] ?? [];
-      lines.push(`| ${row.map(escapeMarkdownCell).join(' | ')} |`);
-    }
-
-    return { formatted: lines.join('\n'), success: true };
+    return { formatted: allLines.join('\n').trimEnd(), success: true };
   } catch {
     // Graceful degradation: return original data
     return { formatted: String(doc.body_sheet ?? doc.body), success: false };
