@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { docTools } from '../../src/tools/doc.js';
 import type { YuqueClient } from '../../src/services/yuque-client.js';
+import { YuqueError } from '../../src/utils/error.js';
 
 const mockClient = {
   listDocs: vi.fn(),
@@ -69,6 +70,52 @@ describe('docTools', () => {
       expect(parsed).toHaveProperty('body_lake', '<!doctype lake><p>Hello</p>');
     });
 
+    it('should read sheet doc via legacy API without YMD', async () => {
+      const sheetJson = JSON.stringify({
+        version: '1.0',
+        data: [{
+          id: 'sheet1',
+          name: 'Sheet1',
+          index: 0,
+          rowCount: 2,
+          colCount: 3,
+          table: [
+            ['Header1', 'Header2', 'Header3'],
+            ['A1', 'B1', 'C1'],
+          ],
+        }],
+      });
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 2,
+        type: 'Sheet',
+        slug: 'sheet1',
+        title: 'Sheet 1',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: sheetJson,
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 2,
+        include_lake: false,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toMatchObject({
+        type: 'Sheet',
+        format: 'lakesheet',
+        format_note: 'Formatted as Markdown table',
+      });
+      // Body should be formatted as Markdown table
+      expect(parsed.body).toContain('|');
+      expect(mockClient.getYmdDoc).not.toHaveBeenCalled();
+    });
+
     it('should use legacy doc content when read format is lake', async () => {
       (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 1, slug: 'doc1', title: 'Doc 1', body: '# Hello', body_html: '<h1>Hello</h1>',
@@ -87,6 +134,17 @@ describe('docTools', () => {
   });
 
   describe('yuque_create_doc', () => {
+    it('should reject lakesheet create format before calling API', async () => {
+      await expect(
+        docTools.yuque_create_doc.handler(mockClient, {
+          repo_id: 1,
+          title: 'Sheet',
+          format: 'lakesheet',
+        } as never)
+      ).rejects.toThrow(YuqueError);
+      expect(mockClient.createDoc).not.toHaveBeenCalled();
+    });
+
     it('should create doc with title and body', async () => {
       (mockClient.createDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 2, slug: 'new-doc', title: 'New Doc', body: 'Content',
@@ -197,7 +255,64 @@ describe('docTools', () => {
       expect(mockClient.updateYmdDoc).toHaveBeenCalledWith(1, '# Updated YMD');
     });
 
+    it('should reject body update on sheet documents', async () => {
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 2,
+        type: 'Sheet',
+        slug: 'sheet1',
+        title: 'Sheet 1',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: '{}',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      await expect(
+        docTools.yuque_update_doc.handler(mockClient, {
+          repo_id: 1,
+          doc_id: 2,
+          body: '{}',
+        } as never)
+      ).rejects.toThrow(YuqueError);
+
+      expect(mockClient.updateDoc).not.toHaveBeenCalled();
+      expect(mockClient.updateYmdDoc).not.toHaveBeenCalled();
+    });
+
+    it('should allow metadata-only update on sheet documents', async () => {
+      (mockClient.updateDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 2,
+        type: 'Sheet',
+        slug: 'sheet1',
+        title: 'Renamed Sheet',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: '{}',
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-03',
+        word_count: 0,
+      });
+
+      const result = await docTools.yuque_update_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 2,
+        title: 'Renamed Sheet',
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveProperty('title', 'Renamed Sheet');
+      expect(mockClient.getDoc).not.toHaveBeenCalled();
+      expect(mockClient.updateDoc).toHaveBeenCalledWith(1, 2, { title: 'Renamed Sheet' });
+    });
+
     it('should use legacy doc update when body format is lake', async () => {
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 1, slug: 'doc1', title: 'Doc 1', body: '<!doctype lake><p>Old</p>',
+        format: 'lake', created_at: '2024-01-01', updated_at: '2024-01-02', word_count: 2,
+      });
       (mockClient.updateDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 1, slug: 'doc1', title: 'Updated', body: '<!doctype lake><p>Updated</p>',
         format: 'lake', created_at: '2024-01-01', updated_at: '2024-01-02', word_count: 2,
@@ -209,6 +324,7 @@ describe('docTools', () => {
 
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed).toHaveProperty('format', 'lake');
+      expect(mockClient.getDoc).toHaveBeenCalledWith(1, 1);
       expect(mockClient.updateDoc).toHaveBeenCalledWith(1, 1, expect.objectContaining({
         body: '<!doctype lake><p>Updated</p>',
         format: 'lake',

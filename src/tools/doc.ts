@@ -1,7 +1,13 @@
 import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
 import type { YuqueDoc, YuqueYmdDoc } from '../services/types.js';
-import { formatDocSummary, formatDoc } from '../utils/format.js';
+import { formatDocSummary, formatDoc, formatSheet } from '../utils/format.js';
+import {
+  assertCreateFormatSupported,
+  assertDocBodyWritable,
+  shouldUseYmdForDoc,
+  isSheetDoc,
+} from '../utils/doc-type.js';
 
 async function appendDocToToc(
   client: YuqueClient,
@@ -21,10 +27,6 @@ async function appendDocToToc(
   } catch {
     return 'Document created successfully but failed to auto-append to TOC. Please manually arrange it in the TOC via the Yuque web interface.';
   }
-}
-
-function shouldUseYmd(format?: string): boolean {
-  return !format || format === 'markdown';
 }
 
 function withYmdBody(doc: YuqueDoc, ymdDoc: YuqueYmdDoc): YuqueDoc {
@@ -59,7 +61,8 @@ export const docTools = {
   },
 
   yuque_get_doc: {
-    description: 'Get a specific document with full content',
+    description:
+      'Get a specific document with full content. Sheet documents (lakesheet) are read via the legacy docs API with body_sheet; they do not use /yfm/docs.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -91,7 +94,32 @@ export const docTools = {
       }
     ) => {
       const doc = await client.getDoc(args.repo_id, args.doc_id);
-      const formattedDoc = shouldUseYmd(args.format)
+
+      // Sheet documents: format as Markdown table with graceful degradation
+      if (isSheetDoc(doc)) {
+        const { formatted, success } = formatSheet(doc);
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(
+                {
+                  ...formatDocSummary(doc),
+                  body: success ? formatted : (doc.body_sheet ?? doc.body),
+                  format_note: success
+                    ? 'Formatted as Markdown table'
+                    : 'Raw format (formatting failed)',
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        };
+      }
+
+      // Regular documents
+      const formattedDoc = shouldUseYmdForDoc(doc, args.format)
         ? withYmdBody(doc, await client.getYmdDoc(doc.id))
         : doc;
       return {
@@ -110,7 +138,8 @@ export const docTools = {
   },
 
   yuque_create_doc: {
-    description: 'Create a new document in a repo/book',
+    description:
+      'Create a new document in a repo/book. Sheet (lakesheet) documents cannot be created via API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -132,6 +161,8 @@ export const docTools = {
         public?: number;
       }
     ) => {
+      assertCreateFormatSupported(args.format);
+
       const data = {
         title: args.title,
         slug: args.slug,
@@ -155,7 +186,8 @@ export const docTools = {
   },
 
   yuque_update_doc: {
-    description: 'Update an existing document',
+    description:
+      'Update an existing document. Sheet and other non-Doc types: metadata-only (title, slug, public); body updates are not supported by the Open API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -193,21 +225,25 @@ export const docTools = {
       };
       const hasMetadataUpdate = Object.values(metadata).some((value) => value !== undefined);
 
-      if (args.body !== undefined && shouldUseYmd(args.format)) {
+      if (args.body !== undefined) {
         const currentDoc = await client.getDoc(args.repo_id, args.doc_id);
-        const doc = hasMetadataUpdate
-          ? await client.updateDoc(args.repo_id, args.doc_id, metadata)
-          : currentDoc;
-        await client.updateYmdDoc(currentDoc.id, args.body);
-        const ymdDoc = await client.getYmdDoc(currentDoc.id);
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify(formatDoc(withYmdBody(doc, ymdDoc)), null, 2),
-            },
-          ],
-        };
+        assertDocBodyWritable(currentDoc);
+
+        if (shouldUseYmdForDoc(currentDoc, args.format)) {
+          const doc = hasMetadataUpdate
+            ? await client.updateDoc(args.repo_id, args.doc_id, metadata)
+            : currentDoc;
+          await client.updateYmdDoc(currentDoc.id, args.body);
+          const ymdDoc = await client.getYmdDoc(currentDoc.id);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(formatDoc(withYmdBody(doc, ymdDoc)), null, 2),
+              },
+            ],
+          };
+        }
       }
 
       const data = {

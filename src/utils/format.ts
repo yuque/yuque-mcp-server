@@ -4,6 +4,7 @@ import type {
   YuqueDoc,
   YuqueTocItem,
 } from '../services/types.js';
+import { isSheetDoc } from './doc-type.js';
 
 /** Format user data — strips fields that are noisy for AI consumption. */
 export function formatUser(user: YuqueUser) {
@@ -38,6 +39,7 @@ export function formatDocSummary(doc: YuqueDoc) {
     id: doc.id,
     slug: doc.slug,
     title: doc.title,
+    ...(doc.type && { type: doc.type }),
     format: doc.format,
     public: doc.public === 1,
     word_count: doc.word_count,
@@ -47,6 +49,18 @@ export function formatDocSummary(doc: YuqueDoc) {
 
 /** Format full doc data including body content. */
 export function formatDoc(doc: YuqueDoc, options?: { includeLake?: boolean }) {
+  if (isSheetDoc(doc)) {
+    const sheetBody = doc.body_sheet ?? doc.body;
+    return {
+      ...formatDocSummary(doc),
+      body: sheetBody,
+      body_sheet: sheetBody,
+      body_html: doc.body_html,
+      description: doc.description,
+      ...(options?.includeLake && doc.body_lake && { body_lake: doc.body_lake }),
+    };
+  }
+
   return {
     ...formatDocSummary(doc),
     body: doc.body,
@@ -54,6 +68,65 @@ export function formatDoc(doc: YuqueDoc, options?: { includeLake?: boolean }) {
     description: doc.description,
     ...(options?.includeLake && { body_lake: doc.body_lake }),
   };
+}
+
+/**
+ * Convert Sheet JSON data to Markdown table format.
+ * Returns original data on failure to ensure graceful degradation.
+ */
+export function formatSheet(doc: YuqueDoc): { formatted: string; success: boolean } {
+  try {
+    const sheetBody = doc.body_sheet ?? doc.body;
+    const sheetData = typeof sheetBody === 'string' ? JSON.parse(sheetBody) : sheetBody;
+
+    if (!sheetData?.data?.length) {
+      return { formatted: String(sheetBody), success: false };
+    }
+
+    // Iterate over all sheets/tabs
+    const allLines: string[] = [];
+    const nameCount = new Map<string, number>();
+    for (const sheet of sheetData.data) {
+      if (!sheet?.table) continue;
+
+      const table: string[][] = sheet.table;
+      if (!Array.isArray(table) || table.length === 0) continue;
+
+      // Deduplicate sheet names: Sheet1, Sheet1 → Sheet1, Sheet1 (2)
+      const baseName = sheet.name ?? 'Sheet1';
+      const count = nameCount.get(baseName) ?? 0;
+      nameCount.set(baseName, count + 1);
+      const sheetName = count > 0 ? `${baseName} (${count + 1})` : baseName;
+      allLines.push(`### ${sheetName}\n`);
+
+      // Header row
+      const header = table[0] ?? [];
+      allLines.push(`| ${header.map(escapeMarkdownCell).join(' | ')} |`);
+      allLines.push(`| ${header.map(() => '---').join(' | ')} |`);
+
+      // Data rows (skip header)
+      for (let i = 1; i < table.length; i++) {
+        const row = table[i] ?? [];
+        allLines.push(`| ${row.map(escapeMarkdownCell).join(' | ')} |`);
+      }
+
+      allLines.push(''); // blank line between sheets
+    }
+
+    if (allLines.length === 0) {
+      return { formatted: String(sheetBody), success: false };
+    }
+
+    return { formatted: allLines.join('\n').trimEnd(), success: true };
+  } catch {
+    // Graceful degradation: return original data
+    return { formatted: String(doc.body_sheet ?? doc.body), success: false };
+  }
+}
+
+/** Escape pipe characters in Markdown table cells. */
+function escapeMarkdownCell(cell: unknown): string {
+  return String(cell ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 }
 
 /** Format TOC items — flattens to essential navigation fields. */

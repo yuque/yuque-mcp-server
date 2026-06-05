@@ -49,6 +49,7 @@ export interface YuqueRepo {
 
 export interface YuqueDoc {
   id: number;
+  type?: string;
   slug: string;
   title: string;
   book_id: number;
@@ -60,6 +61,7 @@ export interface YuqueDoc {
   body_draft: string;
   body_html: string;
   body_lake: string;
+  body_sheet?: string;
   creator_id: number;
   public: number;
   status: number;
