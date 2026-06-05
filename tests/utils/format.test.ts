@@ -203,6 +203,29 @@ describe('format utilities', () => {
       expect(result.formatted).not.toContain('### Empty');
     });
 
+    it('should deduplicate identical sheet names', () => {
+      const doc: YuqueDoc = {
+        ...baseDoc,
+        body_sheet: JSON.stringify({
+          version: '1.0',
+          data: [
+            { table: [['A', 'B'], ['1', '2']] },
+            { name: 'Sheet1', table: [['C', 'D'], ['3', '4']] },
+            { table: [['E', 'F'], ['5', '6']] },
+          ],
+        }),
+      };
+      const result = formatSheet(doc);
+      expect(result.success).toBe(true);
+      expect(result.formatted).toContain('### Sheet1\n');
+      expect(result.formatted).toContain('### Sheet1 (2)');
+      expect(result.formatted).toContain('### Sheet1 (3)');
+      // Each sheet's data is present
+      expect(result.formatted).toContain('| A | B |');
+      expect(result.formatted).toContain('| C | D |');
+      expect(result.formatted).toContain('| E | F |');
+    });
+
     it('should fall back to raw data when data is empty', () => {
       const raw = JSON.stringify({ version: '1.0', data: [] });
       const doc: YuqueDoc = { ...baseDoc, body_sheet: raw };
