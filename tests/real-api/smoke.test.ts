@@ -98,6 +98,28 @@ describeRealApi('real Yuque API smoke through MCP tools/call', () => {
     expect(Array.isArray(docs)).toBe(true);
   });
 
+  it('should read the configured or discovered real repo', async () => {
+    const repo = parseJson(
+      await callRealTool('yuque_get_book', { repo_id: await resolveRepoId() })
+    ) as RealRepo;
+
+    expect(repo.id ?? repo.namespace).toBeTruthy();
+  });
+
+  it('should read the toc of the configured or discovered real repo', async () => {
+    const result = await callRealTool('yuque_get_toc', { repo_id: await resolveRepoId() });
+    const toc = parseJson(result);
+
+    expect(Array.isArray(toc)).toBe(true);
+  });
+
+  it('should search docs through the real API', async () => {
+    const result = await callRealTool('yuque_search', { query: 'test', type: 'doc' });
+    const hits = parseJson(result);
+
+    expect(Array.isArray(hits)).toBe(true);
+  });
+
   itWithWriteNote('should update a scratch note and read it back', async () => {
     const numericNoteId = Number(noteId);
     const original = parseJson(await callRealTool('yuque_get_note', { note_id: numericNoteId }));
