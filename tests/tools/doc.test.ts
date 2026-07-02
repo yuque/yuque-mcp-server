@@ -156,9 +156,10 @@ describe('docTools', () => {
         1,
         expect.objectContaining({ title: 'New Doc', body: 'Content' })
       );
+      expect(mockClient.updateToc).not.toHaveBeenCalled();
     });
 
-    it('should auto-append created doc to TOC', async () => {
+    it('should append created doc to TOC when requested', async () => {
       (mockClient.createDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 2,
         slug: 'new-doc',
@@ -174,6 +175,7 @@ describe('docTools', () => {
         repo_id: 1,
         title: 'New Doc',
         body: 'Content',
+        append_to_toc: true,
       } as never);
       expect(mockClient.updateToc).toHaveBeenCalledWith(1, expect.stringContaining('"appendNode"'));
       expect(result.content).toHaveLength(1); // no warning
@@ -194,9 +196,10 @@ describe('docTools', () => {
       const result = await docTools.yuque_create_doc.handler(mockClient, {
         repo_id: 1,
         title: 'Doc 3',
+        append_to_toc: true,
       } as never);
       expect(result.content).toHaveLength(2); // doc + warning
-      expect(result.content[1].text).toContain('failed to auto-append to TOC');
+      expect(result.content[1].text).toContain('failed to append it to TOC');
     });
   });
 

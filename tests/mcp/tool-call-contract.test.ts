@@ -235,7 +235,6 @@ const toolCases: ToolCase[] = [
     args: { repo_id: 1, title: 'New Doc', body: '# New Doc', format: 'markdown' },
     setup: (http) => {
       http.post.mockReturnValue(apiResponse(sampleDoc({ id: 3, title: 'New Doc' })));
-      http.put.mockReturnValue(apiResponse([]));
     },
     assert: (http, result) => {
       expect(parseJson(result)).toMatchObject({ id: 3, title: 'New Doc' });
@@ -243,7 +242,7 @@ const toolCases: ToolCase[] = [
         '/repos/1/docs',
         expect.objectContaining({ title: 'New Doc', body: '# New Doc', format: 'markdown' })
       );
-      expect(http.put).toHaveBeenCalledWith('/repos/1/toc', expect.stringContaining('"doc_id":3'));
+      expect(http.put).not.toHaveBeenCalled();
     },
   },
   {
@@ -416,6 +415,22 @@ describe('MCP tools/call contract', () => {
     const result = await callTool(testCase.name, testCase.args);
 
     testCase.assert(http, result);
+  });
+
+  it('should append created docs to TOC only when append_to_toc is true', async () => {
+    http.post.mockReturnValue(apiResponse(sampleDoc({ id: 3, title: 'New Doc' })));
+    http.put.mockReturnValue(apiResponse([]));
+
+    const result = await callTool('yuque_create_doc', {
+      repo_id: 1,
+      title: 'New Doc',
+      body: '# New Doc',
+      format: 'markdown',
+      append_to_toc: true,
+    });
+
+    expect(parseJson(result)).toMatchObject({ id: 3, title: 'New Doc' });
+    expect(http.put).toHaveBeenCalledWith('/repos/1/toc', expect.stringContaining('"doc_id":3'));
   });
 
   it('should map Yuque API errors into MCP tool errors', async () => {
