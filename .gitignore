@@ -10,9 +10,10 @@ dist/
 .env.local
 .env.*.local
 
-# IDE
+# IDE and AI agent local settings
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
