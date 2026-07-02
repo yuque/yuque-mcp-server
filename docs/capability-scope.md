@@ -36,7 +36,7 @@ Docs 对应语雀文档：
 
 - `yuque_list_docs`: 列出知识库下的文档。
 - `yuque_get_doc`: 读取文档完整内容。
-- `yuque_create_doc`: 创建文档，并尝试自动追加到 TOC。
+- `yuque_create_doc`: 创建文档；TOC 追加行为由当前工具 contract 控制，需要稳定目录位置时可用 TOC tools 读取或调整。
 - `yuque_update_doc`: 更新文档元数据或内容。
 
 文档 format（格式）当前限定为：
