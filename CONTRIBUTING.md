@@ -103,17 +103,6 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore:` — Maintenance, dependencies
 - `refactor:` — Code change that neither fixes a bug nor adds a feature
 
-## Docker
-
-Build and run with Docker:
-
-```bash
-docker build -t yuque-mcp .
-docker run --rm -i -e YUQUE_PERSONAL_TOKEN=your_token yuque-mcp
-# or
-docker run --rm -i -e YUQUE_PERSONAL_TOKEN=your_token yuque-mcp
-```
-
 ## Questions?
 
 Open an issue or start a discussion. We're happy to help!
