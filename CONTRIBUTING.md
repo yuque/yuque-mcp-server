@@ -29,13 +29,9 @@ npm run build
 2. Create a feature branch: `git checkout -b feat/my-feature`
 3. Make your changes
 4. Add tests for new functionality
-5. Ensure all checks pass:
+5. Ensure the quality gate passes (same command CI runs):
    ```bash
-   npm run lint
-   npm run format:check
-   npm run typecheck
-   npm test
-   npm run build
+   npm run check
    ```
 6. Commit with conventional commit messages
 7. Submit a pull request

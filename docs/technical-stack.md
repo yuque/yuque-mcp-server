@@ -65,7 +65,8 @@ YUQUE_REAL_API=1 YUQUE_PERSONAL_TOKEN=<token> npx vitest run tests/real-api/smok
 
 ## Continuous Integration
 
-CI（`.github/workflows/ci.yml`）在 Node.js 18/20/22/24 矩阵上运行 `npm run lint`、`npm run format:check`、`npm run typecheck`、`npm test`、`npm run build` 和两个 dist smoke tests，另有独立 job 收集测试覆盖率。
+- 主 CI（`.github/workflows/ci.yml`）在 Node.js 18/20/22/24 矩阵上运行 `npm run check`（lint、format:check、typecheck、test、build，与本地质量门同一条命令）和两个 dist smoke tests，另有独立 job 收集测试覆盖率。
+- Real API smoke（`.github/workflows/real-api-smoke.yml`）只跑读路径，使用 repo secret `YUQUE_MCP_TEST_TOKEN`（专用测试账号）和可选 repo variable `YUQUE_REAL_REPO_ID`。触发方式：手动 workflow_dispatch、每周定时、或给 PR 打 `real-api` label（label 权限即授权门槛）。写路径测试永不在 CI 开启。
 
 ## Release Shape
 

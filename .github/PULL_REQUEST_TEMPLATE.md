@@ -16,6 +16,7 @@
 
 ### Checklist
 
+- [ ] `npm run check` passes locally
 - [ ] Tests added / updated
 - [ ] Documentation updated (if applicable)
 - [ ] Changelog entry added (if user-facing)
