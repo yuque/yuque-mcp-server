@@ -110,6 +110,7 @@ describe('MCP tool registry contract', () => {
       'html',
     ]);
     expect(byName.yuque_get_doc.inputSchema.properties?.include_lake.default).toBe(false);
+    expect(byName.yuque_create_doc.inputSchema.properties?.append_to_toc.default).toBe(false);
     expect(byName.yuque_update_doc.inputSchema.properties?.format.enum).toEqual([
       'markdown',
       'lake',

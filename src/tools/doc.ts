@@ -19,7 +19,7 @@ async function appendDocToToc(
     await client.updateToc(repoId, tocData);
     return null; // success
   } catch {
-    return 'Document created successfully but failed to auto-append to TOC. Please manually arrange it in the TOC via the Yuque web interface.';
+    return 'Document created successfully but failed to append it to TOC. Please manually arrange it in the TOC via the Yuque web interface.';
   }
 }
 
@@ -116,6 +116,11 @@ export const docTools = {
       body: z.string().optional().describe('Document content (markdown or lake format)'),
       format: z.string().optional().describe('Content format: markdown, lake, html'),
       public: z.number().optional().describe('Public visibility: 0 (private) or 1 (public)'),
+      append_to_toc: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Append the created document to the repo TOC after creation. Defaults to false.'),
     }),
     handler: async (
       client: YuqueClient,
@@ -126,6 +131,7 @@ export const docTools = {
         body?: string;
         format?: string;
         public?: number;
+        append_to_toc?: boolean;
       }
     ) => {
       const data = {
@@ -137,8 +143,9 @@ export const docTools = {
       };
       const doc = await client.createDoc(args.repo_id, data);
 
-      // Auto-append to TOC
-      const tocWarning = await appendDocToToc(client, args.repo_id, doc.id);
+      const tocWarning = args.append_to_toc
+        ? await appendDocToToc(client, args.repo_id, doc.id)
+        : null;
 
       const result: { type: 'text'; text: string }[] = [
         { type: 'text' as const, text: JSON.stringify(formatDoc(doc), null, 2) },
