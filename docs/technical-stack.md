@@ -18,11 +18,11 @@
 
 ## Configuration and Authentication
 
-运行时配置集中在 `src/config.ts`：
+当前运行时配置在 CLI / HTTP 入口解析，然后传给 server 和 `YuqueClient`：
 
-- Token 读取优先级：`YUQUE_TOKEN` -> `YUQUE_PERSONAL_TOKEN` -> `--token`。
-- Host/base URL 读取优先级：`YUQUE_HOST` / `--host` -> `YUQUE_BASE_URL` / `--base-url`。
-- Host 会被规范化；如果只传 host 且没有 path，会自动补为 `/api/v2`。
+- Token 读取优先级：`YUQUE_PERSONAL_TOKEN` -> `--token`。
+- Base URL 读取优先级：`YUQUE_BASE_URL` -> `--base-url`。
+- `--base-url` 需要传完整 API base URL，例如 `https://yuque.example.com/api/v2`。
 - 默认语雀 API base URL 由 `YuqueClient` 提供：`https://www.yuque.com/api/v2`。
 - 请求认证 header 为 `X-Auth-Token`。
 

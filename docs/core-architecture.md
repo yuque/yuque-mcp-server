@@ -18,10 +18,9 @@ MCP client
 
 ## Entry Points
 
-- `src/cli.ts`: npm bin 入口，默认以 stdio transport 启动 MCP server。直接在终端运行时会打印安装指引，避免用户误以为服务卡住。
-- `src/index.ts`: HTTP 入口，使用 `StreamableHTTPServerTransport` 并监听 `PORT`，默认 `3000`。
+- `src/cli.ts`: npm bin 入口，读取 `YUQUE_PERSONAL_TOKEN` / `--token` 和可选 `YUQUE_BASE_URL` / `--base-url`，默认以 stdio transport 启动 MCP server。直接在终端运行时会打印安装指引，避免用户误以为服务卡住。
+- `src/index.ts`: HTTP 入口，读取同一组 token / base URL 配置，使用 `StreamableHTTPServerTransport` 并监听 `PORT`，默认 `3000`。
 - `src/cli-install.ts`: CLI 子命令入口，负责 `install` 和 `setup`，把 `yuque-mcp` 写入不同 MCP client 的配置文件。
-- `src/config.ts`: token、host 和 base URL 的统一解析入口。
 
 ## MCP Server Layer
 
