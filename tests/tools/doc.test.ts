@@ -9,7 +9,6 @@ const mockClient = {
   createDoc: vi.fn(),
   updateDoc: vi.fn(),
   updateYmdDoc: vi.fn(),
-  deleteDoc: vi.fn(),
   updateToc: vi.fn(),
 } as unknown as YuqueClient;
 

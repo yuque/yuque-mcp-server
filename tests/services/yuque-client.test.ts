@@ -102,16 +102,6 @@ describe('YuqueClient', () => {
   });
 
   describe('repo operations', () => {
-    it('should list groups for a user', async () => {
-      const mockGroups = [{ id: 1, login: 'team', name: 'Team' }];
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockGroups } });
-
-      const result = await client.listGroups(123);
-      expect(result).toEqual(mockGroups);
-      expect(mockClient.get).toHaveBeenCalledWith('/users/123/groups');
-    });
-
     it('should list user repos', async () => {
       const mockRepos = [
         {
@@ -131,16 +121,6 @@ describe('YuqueClient', () => {
       const result = await client.listUserRepos('testuser');
       expect(result).toEqual(mockRepos);
       expect(mockClient.get).toHaveBeenCalledWith('/users/testuser/repos');
-    });
-
-    it('should list group repos', async () => {
-      const mockRepos = [{ id: 1, name: 'Group Repo' }];
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockRepos } });
-
-      const result = await client.listGroupRepos('team');
-      expect(result).toEqual(mockRepos);
-      expect(mockClient.get).toHaveBeenCalledWith('/groups/team/repos');
     });
 
     it('should get repo by ID', async () => {
@@ -191,22 +171,6 @@ describe('YuqueClient', () => {
       });
     });
 
-    it('should create group repo', async () => {
-      const mockRepo = { id: 2, name: 'Group Repo', slug: 'group-repo' };
-      const mockClient = client['client'] as { post: ReturnType<typeof vi.fn> };
-      mockClient.post.mockResolvedValue({ data: { data: mockRepo } });
-
-      const result = await client.createGroupRepo('team', {
-        name: 'Group Repo',
-        slug: 'group-repo',
-      });
-      expect(result).toEqual(mockRepo);
-      expect(mockClient.post).toHaveBeenCalledWith('/groups/team/repos', {
-        name: 'Group Repo',
-        slug: 'group-repo',
-      });
-    });
-
     it('should update repo', async () => {
       const mockRepo = { id: 1, name: 'Updated Repo' };
       const mockClient = client['client'] as { put: ReturnType<typeof vi.fn> };
@@ -217,13 +181,6 @@ describe('YuqueClient', () => {
       expect(mockClient.put).toHaveBeenCalledWith('/repos/team/repo', { name: 'Updated Repo' });
     });
 
-    it('should delete repo', async () => {
-      const mockClient = client['client'] as { delete: ReturnType<typeof vi.fn> };
-      mockClient.delete.mockResolvedValue({});
-
-      await client.deleteRepo(1);
-      expect(mockClient.delete).toHaveBeenCalledWith('/repos/1');
-    });
   });
 
   describe('doc operations', () => {
@@ -445,13 +402,6 @@ describe('YuqueClient', () => {
       });
     });
 
-    it('should delete doc', async () => {
-      const mockClient = client['client'] as { delete: ReturnType<typeof vi.fn> };
-      mockClient.delete.mockResolvedValue({});
-
-      await client.deleteDoc(1, 1);
-      expect(mockClient.delete).toHaveBeenCalledWith('/repos/1/docs/1');
-    });
   });
 
   describe('toc operations', () => {
@@ -476,95 +426,7 @@ describe('YuqueClient', () => {
     });
   });
 
-  describe('doc version operations', () => {
-    it('should list doc versions', async () => {
-      const mockVersions = [{ id: 1, doc_id: 2, title: 'v1' }];
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockVersions } });
-
-      const result = await client.listDocVersions(2);
-      expect(result).toEqual(mockVersions);
-      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions', {
-        params: { doc_id: 2 },
-      });
-    });
-
-    it('should get a doc version', async () => {
-      const mockVersion = { id: 9, doc_id: 2, title: 'v9' };
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockVersion } });
-
-      const result = await client.getDocVersion(9);
-      expect(result).toEqual(mockVersion);
-      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions/9');
-    });
-  });
-
-  describe('group member and statistics operations', () => {
-    it('should list group members', async () => {
-      const mockMembers = [{ id: 1, login: 'member' }];
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockMembers } });
-
-      const result = await client.listGroupMembers('team');
-      expect(result).toEqual(mockMembers);
-      expect(mockClient.get).toHaveBeenCalledWith('/groups/team/users');
-    });
-
-    it('should update group member role', async () => {
-      const mockMember = { id: 1, role: 2 };
-      const mockClient = client['client'] as { put: ReturnType<typeof vi.fn> };
-      mockClient.put.mockResolvedValue({ data: { data: mockMember } });
-
-      const result = await client.updateGroupMember('team', 1, { role: 2 });
-      expect(result).toEqual(mockMember);
-      expect(mockClient.put).toHaveBeenCalledWith('/groups/team/users/1', { role: 2 });
-    });
-
-    it('should remove group member', async () => {
-      const mockClient = client['client'] as { delete: ReturnType<typeof vi.fn> };
-      mockClient.delete.mockResolvedValue({});
-
-      await client.removeGroupMember('team', 1);
-      expect(mockClient.delete).toHaveBeenCalledWith('/groups/team/users/1');
-    });
-
-    it('should get group statistics', async () => {
-      const mockStats = { books_count: 3, docs_count: 10 };
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockStats } });
-
-      const result = await client.getGroupStats('team');
-      expect(result).toEqual(mockStats);
-      expect(mockClient.get).toHaveBeenCalledWith('/groups/team/statistics');
-    });
-
-    it.each([
-      ['member', () => client.getGroupMemberStats('team'), '/groups/team/statistics/members'],
-      ['book', () => client.getGroupBookStats('team'), '/groups/team/statistics/books'],
-      ['doc', () => client.getGroupDocStats('team'), '/groups/team/statistics/docs'],
-    ])('should get %s statistics', async (_label, call, path) => {
-      const mockStats = { total: 1 };
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockStats } });
-
-      const result = await call();
-      expect(result).toEqual(mockStats);
-      expect(mockClient.get).toHaveBeenCalledWith(path);
-    });
-  });
-
-  describe('hello and note operations', () => {
-    it('should call hello', async () => {
-      const mockMessage = { message: 'ok' };
-      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
-      mockClient.get.mockResolvedValue({ data: { data: mockMessage } });
-
-      const result = await client.hello();
-      expect(result).toEqual(mockMessage);
-      expect(mockClient.get).toHaveBeenCalledWith('/hello');
-    });
-
+  describe('note operations', () => {
     it('should list notes with params', async () => {
       const mockNotes = { notes: [], pin_notes: [], has_more: false };
       const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
@@ -615,57 +477,6 @@ describe('YuqueClient', () => {
       });
     });
 
-    it('should delete note by moving it to trash', async () => {
-      const mockClient = client['client'] as {
-        get: ReturnType<typeof vi.fn>;
-        put: ReturnType<typeof vi.fn>;
-      };
-      mockClient.get.mockResolvedValue({
-        data: {
-          data: {
-            id: 1,
-            content: {
-              source: 'source',
-              html: '<p>source</p>',
-              abstract: 'source',
-            },
-          },
-        },
-      });
-      mockClient.put.mockResolvedValue({ data: { data: { data: { id: 1 } } } });
-
-      await client.deleteNote(1);
-      expect(mockClient.put).toHaveBeenCalledWith('/notes/1', {
-        source: 'source',
-        html: '<p>source</p>',
-        abstract: 'source',
-        status: 9,
-      });
-    });
-
-    it('should restore note from trash', async () => {
-      const mockClient = client['client'] as {
-        get: ReturnType<typeof vi.fn>;
-        put: ReturnType<typeof vi.fn>;
-      };
-      mockClient.get.mockResolvedValue({
-        data: {
-          data: {
-            id: 1,
-            content: {},
-          },
-        },
-      });
-      mockClient.put.mockResolvedValue({ data: { data: { data: { id: 1 } } } });
-
-      await client.restoreNote(1);
-      expect(mockClient.put).toHaveBeenCalledWith('/notes/1', {
-        source: '',
-        html: '',
-        abstract: '',
-        status: 0,
-      });
-    });
   });
 
   describe('error handling', () => {

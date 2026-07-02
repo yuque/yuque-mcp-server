@@ -14,7 +14,7 @@
 
 ### 1. 获取语雀 API Token
 
-前往 [语雀开发者设置](https://www.yuque.com/settings/tokens) 创建个人访问令牌。
+前往 [语雀开发者设置](https://www.yuque.com/settings/tokens) 创建个人访问令牌。如果使用空间里的团队 Token，也准备对应空间的 host，例如 `https://your-space.yuque.com`。
 
 ### 2. 快速安装（推荐）
 
@@ -24,7 +24,7 @@
 npx yuque-mcp install --token=YOUR_TOKEN --client=cursor
 ```
 
-支持的客户端：`claude-desktop`、`vscode`、`cursor`、`windsurf`、`cline`、`trae`
+支持的客户端：`claude-desktop`、`vscode`、`cursor`、`windsurf`、`cline`、`trae`、`qoder`、`opencode`
 
 或使用交互式安装向导：
 
@@ -51,7 +51,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp --token=YOUR_TOKEN
 或使用环境变量：
 
 ```bash
-export YUQUE_PERSONAL_TOKEN=YOUR_TOKEN
+export YUQUE_TOKEN=YOUR_TOKEN
 claude mcp add yuque-mcp -- npx -y yuque-mcp
 ```
 
@@ -72,7 +72,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -93,7 +93,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -116,7 +116,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -137,7 +137,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -158,7 +158,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -174,13 +174,13 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 - **Command:** `npx`
 - **Args:** `-y yuque-mcp`
-- **Env:** `YUQUE_PERSONAL_TOKEN=YOUR_TOKEN`
+- **Env:** `YUQUE_TOKEN=YOUR_TOKEN`
 
 详见 [Trae MCP 文档](https://docs.trae.ai/ide/model-context-protocol)。
 
 </details>
 
-> **更多客户端：** 任何支持 stdio 传输的 MCP 客户端均可使用 yuque-mcp。通用配置：command = `npx`，args = `["-y", "yuque-mcp"]`，env = `YUQUE_PERSONAL_TOKEN`。
+> **更多客户端：** 任何支持 stdio 传输的 MCP 客户端均可使用 yuque-mcp。通用配置：command = `npx`，args = `["-y", "yuque-mcp"]`，env = `YUQUE_TOKEN`。
 
 </details>
 
@@ -196,27 +196,33 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp
 
 | 方式 | 环境变量 / 参数 | 说明 |
 |------|----------------|------|
-| **个人 Token**（推荐） | `YUQUE_PERSONAL_TOKEN` | 访问个人语雀账号 |
+| **Token** | `YUQUE_TOKEN` | 个人或团队语雀 API Token |
+| **Host** | `YUQUE_HOST` / `--host=https://your-space.yuque.com` | 语雀站点或空间 host；使用绑定空间的团队 Token 时必须设置 |
 | **CLI 参数** | `--token=YOUR_TOKEN` | 通过命令行参数传入 |
 
-**优先级：** `YUQUE_PERSONAL_TOKEN` > `--token`
+**Token 优先级：** `YUQUE_TOKEN` > `YUQUE_PERSONAL_TOKEN` > `--token`
 
-### 私有化部署
+**Host 优先级：** `YUQUE_HOST` > `--host` > `YUQUE_BASE_URL` > `--base-url`
 
-如果使用私有化部署的语雀实例，设置 `YUQUE_BASE_URL` 环境变量或使用 `--base-url` CLI 参数：
+`YUQUE_PERSONAL_TOKEN`、`YUQUE_BASE_URL` 和 `--base-url` 继续作为旧配置的兼容 fallback。新配置建议使用 `YUQUE_TOKEN` 和 `YUQUE_HOST`。
+
+### 团队 Token 与私有化部署
+
+如果使用团队 Token、私有化部署实例或自定义语雀空间，设置 `YUQUE_HOST` 环境变量或使用 `--host` CLI 参数：
 
 ```bash
 # 环境变量
-export YUQUE_BASE_URL=https://yuque.example.com/api/v2
+export YUQUE_TOKEN=YOUR_TOKEN
+export YUQUE_HOST=https://your-space.yuque.com
 
 # CLI 参数
-npx yuque-mcp --token=YOUR_TOKEN --base-url=https://yuque.example.com/api/v2
+npx yuque-mcp --token=YOUR_TOKEN --host=https://your-space.yuque.com
 
 # 安装时指定
-npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --base-url=https://yuque.example.com/api/v2
+npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --host=https://your-space.yuque.com
 ```
 
-不设置时默认为 `https://www.yuque.com/api/v2`。
+`YUQUE_HOST` 可以是语雀站点根地址，例如 `https://www.yuque.com`，也可以是完整 API base URL，例如 `https://www.yuque.com/api/v2`。运行时会把站点根地址规范化到 `/api/v2`。不设置时默认 API base URL 为 `https://www.yuque.com/api/v2`。
 
 ---
 
@@ -238,7 +244,7 @@ npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --base-url=https://yuqu
 
 | 错误 | 解决方案 |
 |------|----------|
-| `YUQUE_PERSONAL_TOKEN is required` | 设置环境变量 `YUQUE_PERSONAL_TOKEN` 或传入 `--token=YOUR_TOKEN` |
+| `YUQUE_TOKEN ... is required` | 设置 `YUQUE_TOKEN=YOUR_TOKEN` 或传入 `--token=YOUR_TOKEN` |
 | `401 Unauthorized` | Token 无效或已过期 — 到[语雀设置](https://www.yuque.com/settings/tokens)重新生成 |
 | `429 Rate Limited` | 请求过于频繁，等待后重试 |
 | 找不到工具 | 更新到最新版本：`npx -y yuque-mcp@latest` |

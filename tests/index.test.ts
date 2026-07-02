@@ -42,8 +42,10 @@ vi.mock('node:crypto', () => ({
 }));
 
 const originalArgv = process.argv;
-const originalToken = process.env.YUQUE_PERSONAL_TOKEN;
-const originalBaseURL = process.env.YUQUE_BASE_URL;
+const originalToken = process.env.YUQUE_TOKEN;
+const originalLegacyToken = process.env.YUQUE_PERSONAL_TOKEN;
+const originalHost = process.env.YUQUE_HOST;
+const originalLegacyBaseURL = process.env.YUQUE_BASE_URL;
 const originalPort = process.env.PORT;
 let indexImportRun = 0;
 
@@ -89,7 +91,9 @@ describe('HTTP entry', () => {
     indexMocks.httpHandler = undefined;
     indexMocks.sessionId = undefined;
     process.argv = ['node', 'index.js'];
+    delete process.env.YUQUE_TOKEN;
     delete process.env.YUQUE_PERSONAL_TOKEN;
+    delete process.env.YUQUE_HOST;
     delete process.env.YUQUE_BASE_URL;
     delete process.env.PORT;
   });
@@ -97,8 +101,10 @@ describe('HTTP entry', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     process.argv = originalArgv;
-    restoreEnv('YUQUE_PERSONAL_TOKEN', originalToken);
-    restoreEnv('YUQUE_BASE_URL', originalBaseURL);
+    restoreEnv('YUQUE_TOKEN', originalToken);
+    restoreEnv('YUQUE_PERSONAL_TOKEN', originalLegacyToken);
+    restoreEnv('YUQUE_HOST', originalHost);
+    restoreEnv('YUQUE_BASE_URL', originalLegacyBaseURL);
     restoreEnv('PORT', originalPort);
   });
 
@@ -109,7 +115,7 @@ describe('HTTP entry', () => {
     await expect(importHttpEntry()).rejects.toThrow('exit:1');
 
     expect(error).toHaveBeenCalledWith(
-      'Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required'
+      'Error: YUQUE_TOKEN environment variable, YUQUE_PERSONAL_TOKEN environment variable, or --token argument is required'
     );
   });
 
@@ -120,7 +126,7 @@ describe('HTTP entry', () => {
       'node',
       'index.js',
       '--token=arg-token',
-      '--base-url=https://yuque.internal/api/v2',
+      '--host=https://yuque.internal',
     ];
     process.env.PORT = '4242';
 
@@ -150,8 +156,8 @@ describe('HTTP entry', () => {
 
   it('should use environment token and default port', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
-    process.env.YUQUE_PERSONAL_TOKEN = 'env-token';
-    process.env.YUQUE_BASE_URL = 'https://env.example/api/v2';
+    process.env.YUQUE_TOKEN = 'env-token';
+    process.env.YUQUE_HOST = 'https://env.example';
 
     await importHttpEntry();
     await Promise.resolve();
@@ -166,7 +172,7 @@ describe('HTTP entry', () => {
 
   it('should exit when MCP server connection fails', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    process.env.YUQUE_PERSONAL_TOKEN = 'env-token';
+    process.env.YUQUE_TOKEN = 'env-token';
     indexMocks.connect.mockRejectedValue(new Error('connect failed'));
     mockExit(false);
 
