@@ -46,7 +46,10 @@ export const noteTools = {
       page: z.number().optional().describe('Page number (default: 1)'),
       limit: z.number().optional().describe('Number of notes per page (default: 20)'),
     }),
-    handler: async (client: YuqueClient, args: { status?: number; page?: number; limit?: number }) => {
+    handler: async (
+      client: YuqueClient,
+      args: { status?: number; page?: number; limit?: number }
+    ) => {
       const result = await client.listNotes(args.status, args.page, args.limit);
       const allNotes = [...result.pin_notes, ...result.notes];
       return {

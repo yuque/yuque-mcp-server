@@ -6,7 +6,9 @@ export const searchTools = {
     description: 'Search for documents or repos in Yuque',
     inputSchema: z.object({
       query: z.string().describe('Search query string'),
-      type: z.enum(['doc', 'repo']).describe('Search type: doc (documents), repo (knowledge bases)'),
+      type: z
+        .enum(['doc', 'repo'])
+        .describe('Search type: doc (documents), repo (knowledge bases)'),
     }),
     handler: async (client: YuqueClient, args: { query: string; type: 'doc' | 'repo' }) => {
       const result = await client.search(args.query, args.type);

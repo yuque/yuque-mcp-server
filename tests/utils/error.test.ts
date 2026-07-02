@@ -44,6 +44,25 @@ describe('error utilities', () => {
       expect(() => handleYuqueError(axiosError)).toThrow('Unauthorized');
     });
 
+    it.each([
+      [400, 'Bad request'],
+      [403, 'Forbidden'],
+      [404, 'Not found'],
+      [429, 'Rate limited'],
+      [500, 'Yuque server error'],
+    ])('should include status hint for HTTP %s', (status, hint) => {
+      const axiosError = {
+        response: {
+          status,
+          data: {
+            message: 'API failed',
+          },
+        },
+      };
+
+      expect(() => handleYuqueError(axiosError)).toThrow(hint);
+    });
+
     it('should handle error with message', () => {
       const error = { message: 'Network error' };
       expect(() => handleYuqueError(error)).toThrow(YuqueError);

@@ -64,9 +64,7 @@ export const docTools = {
       repo_id: z
         .union([z.string(), z.number()])
         .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
-      doc_id: z
-        .union([z.string(), z.number()])
-        .describe('Document ID or slug'),
+      doc_id: z.union([z.string(), z.number()]).describe('Document ID or slug'),
       format: z
         .enum(['markdown', 'lake', 'html'])
         .optional()
@@ -77,9 +75,7 @@ export const docTools = {
         .boolean()
         .optional()
         .default(false)
-        .describe(
-          'Include raw Lake format body (preserves Mermaid source code, diagrams, etc.)'
-        ),
+        .describe('Include raw Lake format body (preserves Mermaid source code, diagrams, etc.)'),
     }),
     handler: async (
       client: YuqueClient,
@@ -160,9 +156,7 @@ export const docTools = {
       repo_id: z
         .union([z.string(), z.number()])
         .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
-      doc_id: z
-        .union([z.string(), z.number()])
-        .describe('Document ID or slug'),
+      doc_id: z.union([z.string(), z.number()]).describe('Document ID or slug'),
       title: z.string().optional().describe('New document title'),
       slug: z.string().optional().describe('New document slug'),
       body: z.string().optional().describe('New document content'),
@@ -226,5 +220,4 @@ export const docTools = {
       };
     },
   },
-
 };

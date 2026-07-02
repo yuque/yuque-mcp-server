@@ -5,7 +5,15 @@ import * as readline from 'node:readline';
 
 // ─── Client Definitions ───────────────────────────────────────────────
 
-type ClientId = 'claude-desktop' | 'vscode' | 'cursor' | 'windsurf' | 'cline' | 'trae' | 'qoder' | 'opencode';
+type ClientId =
+  | 'claude-desktop'
+  | 'vscode'
+  | 'cursor'
+  | 'windsurf'
+  | 'cline'
+  | 'trae'
+  | 'qoder'
+  | 'opencode';
 
 interface ClientConfig {
   name: string;
@@ -16,10 +24,7 @@ interface ClientConfig {
 }
 
 function getAppDataPath(): string {
-  if (process.platform === 'win32') {
-    return process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
-  }
-  return '';
+  return process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
 }
 
 function getConfigHome(): string {
@@ -36,11 +41,21 @@ const CLIENT_CONFIGS: Record<ClientId, ClientConfig> = {
     getConfigPath() {
       switch (process.platform) {
         case 'darwin':
-          return path.join(os.homedir(), 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json');
+          return path.join(
+            os.homedir(),
+            'Library',
+            'Application Support',
+            'Claude',
+            'claude_desktop_config.json'
+          );
         case 'win32':
           return path.join(getAppDataPath(), 'Claude', 'claude_desktop_config.json');
         default:
-          return path.join(getConfigHome() || path.join(os.homedir(), '.config'), 'Claude', 'claude_desktop_config.json');
+          return path.join(
+            getConfigHome() || path.join(os.homedir(), '.config'),
+            'Claude',
+            'claude_desktop_config.json'
+          );
       }
     },
   },
@@ -111,9 +126,27 @@ const CLIENT_CONFIGS: Record<ClientId, ClientConfig> = {
     getConfigPath() {
       switch (process.platform) {
         case 'darwin':
-          return path.join(os.homedir(), 'Library', 'Application Support', 'Trae', 'User', 'globalStorage', 'trae-ai.trae-core', 'settings', 'cline_mcp_settings.json');
+          return path.join(
+            os.homedir(),
+            'Library',
+            'Application Support',
+            'Trae',
+            'User',
+            'globalStorage',
+            'trae-ai.trae-core',
+            'settings',
+            'cline_mcp_settings.json'
+          );
         case 'win32':
-          return path.join(getAppDataPath(), 'Trae', 'User', 'globalStorage', 'trae-ai.trae-core', 'settings', 'cline_mcp_settings.json');
+          return path.join(
+            getAppDataPath(),
+            'Trae',
+            'User',
+            'globalStorage',
+            'trae-ai.trae-core',
+            'settings',
+            'cline_mcp_settings.json'
+          );
         default:
           return path.join(
             getConfigHome() || path.join(os.homedir(), '.config'),
@@ -241,14 +274,18 @@ export function runInstall(args: string[]): void {
 
   if (!tokenArg) {
     console.error('Error: --token=YOUR_TOKEN is required.');
-    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]');
+    console.error(
+      'Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]'
+    );
     console.error(`Supported clients: ${getSupportedClients().join(', ')}`);
     process.exit(1);
   }
 
   if (!clientArg) {
     console.error('Error: --client=CLIENT is required.');
-    console.error('Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]');
+    console.error(
+      'Usage: npx yuque-mcp install --token=YOUR_TOKEN --client=CLIENT [--base-url=URL]'
+    );
     console.error(`Supported clients: ${getSupportedClients().join(', ')}`);
     process.exit(1);
   }

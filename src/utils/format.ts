@@ -1,9 +1,4 @@
-import type {
-  YuqueUser,
-  YuqueRepo,
-  YuqueDoc,
-  YuqueTocItem,
-} from '../services/types.js';
+import type { YuqueUser, YuqueRepo, YuqueDoc, YuqueTocItem } from '../services/types.js';
 
 /** Format user data — strips fields that are noisy for AI consumption. */
 export function formatUser(user: YuqueUser) {
