@@ -15,7 +15,7 @@ function statusHint(status: number): string {
     case 400:
       return 'Bad request — check the parameters';
     case 401:
-      return 'Unauthorized — the API token (YUQUE_PERSONAL_TOKEN) may be invalid or expired';
+      return 'Unauthorized — the API token (YUQUE_TOKEN) may be invalid or expired';
     case 403:
       return 'Forbidden — insufficient permissions for this resource';
     case 404:
