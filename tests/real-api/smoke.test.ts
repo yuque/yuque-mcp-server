@@ -6,6 +6,16 @@ type ToolResult = {
   isError?: boolean;
 };
 
+type RealUser = {
+  login?: string;
+  name?: string;
+};
+
+type RealRepo = {
+  id?: number;
+  namespace?: string;
+};
+
 const realApiEnabled = process.env.YUQUE_REAL_API === '1';
 const repoId = process.env.YUQUE_REAL_REPO_ID;
 const noteId = process.env.YUQUE_REAL_WRITE_NOTE_ID;
@@ -47,21 +57,42 @@ function parseJson(result: ToolResult) {
   return JSON.parse(result.content[0].text);
 }
 
+async function readCurrentUser(): Promise<RealUser> {
+  return parseJson(await callRealTool('yuque_get_user', {})) as RealUser;
+}
+
+async function resolveRepoId(): Promise<string | number> {
+  if (repoId) return repoId;
+
+  const user = await readCurrentUser();
+  expect(user.login, 'YUQUE_REAL_REPO_ID is unset and current user login is missing').toBeTruthy();
+
+  const repos = parseJson(
+    await callRealTool('yuque_list_books', { login: user.login })
+  ) as RealRepo[];
+  expect(
+    repos.length,
+    'YUQUE_REAL_REPO_ID is unset and current user has no repos to smoke test'
+  ).toBeGreaterThan(0);
+
+  const repo = repos[0];
+  const discoveredRepoId = repo.id ?? repo.namespace;
+  expect(discoveredRepoId, 'Discovered repo is missing both id and namespace').toBeTruthy();
+  return discoveredRepoId;
+}
+
 const describeRealApi = realApiEnabled ? describe : describe.skip;
-const itWithRepo = realApiEnabled && repoId ? it : it.skip;
 const itWithWriteNote = writeEnabled ? it : it.skip;
 
 describeRealApi('real Yuque API smoke through MCP tools/call', () => {
   it('should read the authenticated user', async () => {
-    const result = await callRealTool('yuque_get_user', {});
-    const user = parseJson(result);
+    const user = await readCurrentUser();
 
-    expect(user.id).toBeDefined();
     expect(user.login || user.name).toBeTruthy();
   });
 
-  itWithRepo('should list docs from the configured real repo', async () => {
-    const result = await callRealTool('yuque_list_docs', { repo_id: repoId });
+  it('should list docs from the configured or discovered real repo', async () => {
+    const result = await callRealTool('yuque_list_docs', { repo_id: await resolveRepoId() });
     const docs = parseJson(result);
 
     expect(Array.isArray(docs)).toBe(true);
