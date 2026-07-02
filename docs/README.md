@@ -8,6 +8,14 @@
 2. [Core Architecture](./core-architecture.md) - MCP server 的入口、分层和核心数据流。
 3. [Capability Scope](./capability-scope.md) - 当前对外暴露的 MCP tools 和能力边界。
 
+## Workflows
+
+常见变更的标准操作步骤，人和 agent 执行对应任务前先读：
+
+- [新增 MCP tool](./workflows/add-tool.md)
+- [修改现有 tool 参数或行为](./workflows/modify-tool.md)
+- [修复 bug](./workflows/fix-bug.md)
+
 ## 维护约定
 
 - 改动 runtime、认证、host/base URL、CLI 入口或发布链路时，同步更新 [Technical Stack](./technical-stack.md)。
