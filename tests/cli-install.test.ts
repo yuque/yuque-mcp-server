@@ -19,15 +19,25 @@ const originalGetConfigPaths = new Map(
   getSupportedClients().map((client) => [client, getClientConfig(client)?.getConfigPath])
 );
 
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
+
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yuque-mcp-test-'));
   vi.restoreAllMocks();
-  process.env.APPDATA = originalAppData;
-  process.env.XDG_CONFIG_HOME = originalXdgConfigHome;
+  restoreEnv('APPDATA', originalAppData);
+  restoreEnv('XDG_CONFIG_HOME', originalXdgConfigHome);
 });
 
 afterEach(() => {
   fs.rmSync(tmpDir, { recursive: true, force: true });
+  restoreEnv('APPDATA', originalAppData);
+  restoreEnv('XDG_CONFIG_HOME', originalXdgConfigHome);
   for (const [client, getConfigPath] of originalGetConfigPaths) {
     const clientConfig = getClientConfig(client);
     if (clientConfig && getConfigPath) {

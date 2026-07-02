@@ -47,6 +47,14 @@ const originalBaseURL = process.env.YUQUE_BASE_URL;
 const originalPort = process.env.PORT;
 let indexImportRun = 0;
 
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
+
 async function importHttpEntry() {
   const importers = [
     () => import('../src/index.js?case=0'),
@@ -89,9 +97,9 @@ describe('HTTP entry', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     process.argv = originalArgv;
-    process.env.YUQUE_PERSONAL_TOKEN = originalToken;
-    process.env.YUQUE_BASE_URL = originalBaseURL;
-    process.env.PORT = originalPort;
+    restoreEnv('YUQUE_PERSONAL_TOKEN', originalToken);
+    restoreEnv('YUQUE_BASE_URL', originalBaseURL);
+    restoreEnv('PORT', originalPort);
   });
 
   it('should exit when token is missing', async () => {

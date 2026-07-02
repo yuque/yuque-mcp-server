@@ -19,6 +19,14 @@ const originalBaseURL = process.env.YUQUE_BASE_URL;
 const originalIsTTY = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
 let cliImportRun = 0;
 
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
+
 function setIsTTY(value: boolean) {
   Object.defineProperty(process.stdin, 'isTTY', {
     value,
@@ -63,8 +71,8 @@ describe('CLI entry', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     process.argv = originalArgv;
-    process.env.YUQUE_PERSONAL_TOKEN = originalToken;
-    process.env.YUQUE_BASE_URL = originalBaseURL;
+    restoreEnv('YUQUE_PERSONAL_TOKEN', originalToken);
+    restoreEnv('YUQUE_BASE_URL', originalBaseURL);
     if (originalIsTTY) {
       Object.defineProperty(process.stdin, 'isTTY', originalIsTTY);
     }
