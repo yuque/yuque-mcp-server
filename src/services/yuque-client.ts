@@ -197,9 +197,16 @@ export class YuqueClient {
   }
 
   /** Update an existing document. */
-  async updateDoc(repoId: string | number, docId: string | number, data: UpdateDocData): Promise<YuqueDoc> {
+  async updateDoc(
+    repoId: string | number,
+    docId: string | number,
+    data: UpdateDocData
+  ): Promise<YuqueDoc> {
     return withErrorHandling(async () => {
-      const r = await this.client.put<YuqueApiResponse<YuqueDoc>>(`/repos/${repoId}/docs/${docId}`, data);
+      const r = await this.client.put<YuqueApiResponse<YuqueDoc>>(
+        `/repos/${repoId}/docs/${docId}`,
+        data
+      );
       return r.data.data;
     });
   }
@@ -267,7 +274,10 @@ export class YuqueClient {
   /** Update the table of contents for a repo. */
   async updateToc(repoId: string | number, data: string): Promise<YuqueTocItem[]> {
     return withErrorHandling(async () => {
-      const r = await this.client.put<YuqueApiResponse<YuqueTocItem[]>>(`/repos/${repoId}/toc`, data);
+      const r = await this.client.put<YuqueApiResponse<YuqueTocItem[]>>(
+        `/repos/${repoId}/toc`,
+        data
+      );
       return r.data.data;
     });
   }
@@ -287,7 +297,9 @@ export class YuqueClient {
   /** Get a specific version of a document. */
   async getDocVersion(versionId: number): Promise<YuqueDocVersion> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<YuqueDocVersion>>(`/doc_versions/${versionId}`);
+      const r = await this.client.get<YuqueApiResponse<YuqueDocVersion>>(
+        `/doc_versions/${versionId}`
+      );
       return r.data.data;
     });
   }
@@ -297,15 +309,24 @@ export class YuqueClient {
   /** List all members of a group. */
   async listGroupMembers(login: string): Promise<YuqueGroupMember[]> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<YuqueGroupMember[]>>(`/groups/${login}/users`);
+      const r = await this.client.get<YuqueApiResponse<YuqueGroupMember[]>>(
+        `/groups/${login}/users`
+      );
       return r.data.data;
     });
   }
 
   /** Update a group member's role. */
-  async updateGroupMember(login: string, userId: number, data: { role: number }): Promise<YuqueGroupMember> {
+  async updateGroupMember(
+    login: string,
+    userId: number,
+    data: { role: number }
+  ): Promise<YuqueGroupMember> {
     return withErrorHandling(async () => {
-      const r = await this.client.put<YuqueApiResponse<YuqueGroupMember>>(`/groups/${login}/users/${userId}`, data);
+      const r = await this.client.put<YuqueApiResponse<YuqueGroupMember>>(
+        `/groups/${login}/users/${userId}`,
+        data
+      );
       return r.data.data;
     });
   }
@@ -322,7 +343,9 @@ export class YuqueClient {
   /** Get overall statistics for a group. */
   async getGroupStats(login: string): Promise<YuqueStatistics> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<YuqueStatistics>>(`/groups/${login}/statistics`);
+      const r = await this.client.get<YuqueApiResponse<YuqueStatistics>>(
+        `/groups/${login}/statistics`
+      );
       return r.data.data;
     });
   }
@@ -330,7 +353,9 @@ export class YuqueClient {
   /** Get member statistics for a group. */
   async getGroupMemberStats(login: string): Promise<unknown> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<unknown>>(`/groups/${login}/statistics/members`);
+      const r = await this.client.get<YuqueApiResponse<unknown>>(
+        `/groups/${login}/statistics/members`
+      );
       return r.data.data;
     });
   }
@@ -338,7 +363,9 @@ export class YuqueClient {
   /** Get book/repo statistics for a group. */
   async getGroupBookStats(login: string): Promise<unknown> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<unknown>>(`/groups/${login}/statistics/books`);
+      const r = await this.client.get<YuqueApiResponse<unknown>>(
+        `/groups/${login}/statistics/books`
+      );
       return r.data.data;
     });
   }
@@ -346,7 +373,9 @@ export class YuqueClient {
   /** Get document statistics for a group. */
   async getGroupDocStats(login: string): Promise<unknown> {
     return withErrorHandling(async () => {
-      const r = await this.client.get<YuqueApiResponse<unknown>>(`/groups/${login}/statistics/docs`);
+      const r = await this.client.get<YuqueApiResponse<unknown>>(
+        `/groups/${login}/statistics/docs`
+      );
       return r.data.data;
     });
   }
@@ -386,7 +415,10 @@ export class YuqueClient {
   /** Create a new note. */
   async createNote(data: CreateNoteData): Promise<CreateNoteResponse> {
     return withErrorHandling(async () => {
-      const r = await this.client.post<{ success: boolean; data: CreateNoteResponse }>('/notes', data);
+      const r = await this.client.post<{ success: boolean; data: CreateNoteResponse }>(
+        '/notes',
+        data
+      );
       return r.data.data;
     });
   }

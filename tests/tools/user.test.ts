@@ -12,8 +12,14 @@ describe('userTools', () => {
   describe('yuque_get_user', () => {
     it('should return formatted user', async () => {
       (mockClient.getUser as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1, type: 'User', login: 'test', name: 'Test', description: '',
-        avatar_url: '', books_count: 5, followers_count: 10,
+        id: 1,
+        type: 'User',
+        login: 'test',
+        name: 'Test',
+        description: '',
+        avatar_url: '',
+        books_count: 5,
+        followers_count: 10,
       });
       const result = await userTools.yuque_get_user.handler(mockClient, {} as never);
       expect(result.content[0].type).toBe('text');

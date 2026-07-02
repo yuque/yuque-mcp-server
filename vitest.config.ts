@@ -8,8 +8,9 @@ export default defineConfig({
     hookTimeout: 10000,
     coverage: {
       provider: 'v8',
+      include: ['src/**/*.ts'],
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'dist/', 'tests/'],
+      exclude: ['node_modules/', 'dist/', 'tests/', 'src/services/types.ts'],
     },
   },
 });

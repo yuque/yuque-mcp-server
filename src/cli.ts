@@ -14,7 +14,9 @@ if (handleCliSubcommands(process.argv)) {
     process.argv.find((arg) => arg.startsWith('--token='))?.split('=')[1];
 
   if (!token) {
-    console.error('Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required');
+    console.error(
+      'Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required'
+    );
     process.exit(1);
   }
 
