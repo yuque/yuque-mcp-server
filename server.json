@@ -6,35 +6,28 @@
     "url": "https://github.com/yuque/yuque-mcp-server",
     "source": "github"
   },
-  "version": "0.1.4",
+  "version": "1.0.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "yuque-mcp",
-      "version": "0.1.4",
+      "version": "1.0.0",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
-          "name": "YUQUE_PERSONAL_TOKEN",
-          "description": "Yuque personal API token (get from https://www.yuque.com/settings/tokens). Use one of: YUQUE_PERSONAL_TOKEN, YUQUE_GROUP_TOKEN, or YUQUE_TOKEN.",
-          "isRequired": false,
-          "isSecret": true,
-          "format": "string"
-        },
-        {
-          "name": "YUQUE_GROUP_TOKEN",
-          "description": "Yuque group/team API token (alternative to YUQUE_PERSONAL_TOKEN for team workspaces).",
-          "isRequired": false,
-          "isSecret": true,
-          "format": "string"
-        },
-        {
           "name": "YUQUE_TOKEN",
-          "description": "Yuque API token (legacy, use YUQUE_PERSONAL_TOKEN or YUQUE_GROUP_TOKEN instead).",
-          "isRequired": false,
+          "description": "Yuque API token. Use a personal token for your account, or a team token together with YUQUE_HOST for the matching Yuque space.",
+          "isRequired": true,
           "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "YUQUE_HOST",
+          "description": "Yuque site or space host, for example https://www.yuque.com or https://your-space.yuque.com. Required when using a team token from a specific space.",
+          "isRequired": false,
+          "isSecret": false,
           "format": "string"
         }
       ]

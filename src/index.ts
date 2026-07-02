@@ -2,19 +2,16 @@ import { createServer as createMCPServer } from './server.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
+import { MISSING_TOKEN_MESSAGE, resolveYuqueBaseURL, resolveYuqueToken } from './config.js';
 
-const token =
-  process.env.YUQUE_PERSONAL_TOKEN ||
-  process.argv.find((arg) => arg.startsWith('--token='))?.split('=')[1];
+const token = resolveYuqueToken();
 
 if (!token) {
-  console.error('Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required');
+  console.error(MISSING_TOKEN_MESSAGE);
   process.exit(1);
 }
 
-const baseURL =
-  process.env.YUQUE_BASE_URL ||
-  process.argv.find((arg) => arg.startsWith('--base-url='))?.split('=')[1];
+const baseURL = resolveYuqueBaseURL();
 
 const mcpServer = createMCPServer(token, baseURL);
 const transport = new StreamableHTTPServerTransport({

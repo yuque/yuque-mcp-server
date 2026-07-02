@@ -62,14 +62,14 @@ describe('runSetup', () => {
     const clientConfig = module.getClientConfig('claude-desktop');
     if (!clientConfig) throw new Error('claude-desktop config missing');
     clientConfig.getConfigPath = () => configPath;
-    readlineMock.answers = ['setup-token', '1', 'https://yuque.internal/api/v2'];
+    readlineMock.answers = ['setup-token', '1', 'https://yuque.internal'];
 
     await module.runSetup();
 
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     expect(content.mcpServers.yuque.env).toEqual({
-      YUQUE_PERSONAL_TOKEN: 'setup-token',
-      YUQUE_BASE_URL: 'https://yuque.internal/api/v2',
+      YUQUE_TOKEN: 'setup-token',
+      YUQUE_HOST: 'https://yuque.internal',
     });
     expect(readlineMock.close).toHaveBeenCalledTimes(1);
     expect(log).toHaveBeenCalledWith(expect.stringContaining('Successfully configured'));
