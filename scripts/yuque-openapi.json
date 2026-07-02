@@ -1,0 +1,5301 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "语雀 OpenAPI",
+    "description": "",
+    "license": {
+      "name": "Apache 2.0",
+      "identifier": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "version": "2.0.1"
+  },
+  "servers": [
+    {
+      "url": "https://www.yuque.com",
+      "description": "线上访问地址"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "authToken": {
+        "type": "apiKey",
+        "description": "使用指南: https://www.yuque.com/yuque/developer/api",
+        "name": "X-Auth-Token",
+        "in": "header"
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "请求参数非法"
+      },
+      "401": {
+        "description": "Token/Scope 未通过鉴权"
+      },
+      "403": {
+        "description": "无操作权限"
+      },
+      "404": {
+        "description": "实体未找到"
+      },
+      "422": {
+        "description": "请求参数校验失败"
+      },
+      "429": {
+        "description": "访问频率超限"
+      },
+      "500": {
+        "description": "内部错误"
+      }
+    },
+    "requestBodies": {
+      "ApiV2GroupMemberUpdatePut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 1,
+                  "description": "角色\n(0:管理员, 1:成员, 2:只读成员)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ApiV2DocCreateByIdPost": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "title": {
+                  "type": "string",
+                  "default": "无标题",
+                  "description": "标题"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)\n\n\n- 不填则继承知识库的公开性\n\n"
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "lake"
+                  ],
+                  "default": "markdown",
+                  "description": "内容格式\n(markdown:Markdown 格式, html:HTML 标准格式, lake:语雀 Lake 格式)"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "正文内容"
+                }
+              },
+              "required": [
+                "body"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2DocUpdateByIdPut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "标题"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "lake"
+                  ],
+                  "default": "markdown",
+                  "description": "内容格式\n(markdown:Markdown 格式, html:HTML 标准格式, lake:语雀 Lake 格式)"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "正文内容"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ApiV2DocCreatePost": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "title": {
+                  "type": "string",
+                  "default": "无标题",
+                  "description": "标题"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)\n\n\n- 不填则继承知识库的公开性\n\n"
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "lake"
+                  ],
+                  "default": "markdown",
+                  "description": "内容格式\n(markdown:Markdown 格式, html:HTML 标准格式, lake:语雀 Lake 格式)"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "正文内容"
+                }
+              },
+              "required": [
+                "body"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2DocUpdatePut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "标题"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "lake"
+                  ],
+                  "default": "markdown",
+                  "description": "内容格式\n(markdown:Markdown 格式, html:HTML 标准格式, lake:语雀 Lake 格式)"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "正文内容"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ApiV2RepoTocUpdateByIdPut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "appendNode",
+                    "prependNode",
+                    "editNode",
+                    "removeNode"
+                  ],
+                  "description": "操作\n(appendNode:尾插, prependNode:头插, editNode:编辑节点, removeNode:删除节点)\n\n\n- action_mode 必填\n- 创建场景下不支持同级头插 prependNode\n- 删除节点不会删除关联文档\n- 删除节点时: action_mode=sibling (删除当前节点), action_mode=child (删除当前节点及子节点)\n\n"
+                },
+                "action_mode": {
+                  "type": "string",
+                  "enum": [
+                    "sibling",
+                    "child"
+                  ],
+                  "description": "操作模式\n(sibling:同级, child:子级)"
+                },
+                "target_uuid": {
+                  "type": "string",
+                  "description": "目标节点 UUID, 不填默认为根节点\n\n\n- 获取方式: 调用\"获取知识库目录\"接口获取"
+                },
+                "node_uuid": {
+                  "type": "string",
+                  "description": "操作节点 UUID [移动/更新/删除必填]\n\n\n- 获取方式: 调用\"获取知识库目录\"接口获取"
+                },
+                "doc_id": {
+                  "type": "integer",
+                  "description": "文档 ID [创建文档必填]",
+                  "deprecated": true
+                },
+                "doc_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "文档 ID 数组 [创建文档必填]"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "DOC",
+                    "LINK",
+                    "TITLE"
+                  ],
+                  "default": "DOC",
+                  "description": "节点类型 [创建必填]\n(DOC:文档, LINK:外链, TITLE:分组)"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "节点名称 [创建分组/外链必填]"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "节点 URL [创建外链必填]"
+                },
+                "open_window": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "default": 0,
+                  "description": "是否新窗口打开 [外链选填]\n(0:当前页打开, 1:新窗口打开)"
+                },
+                "visible": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "default": 1,
+                  "description": "是否可见\n(0:不可见, 1:可见)"
+                }
+              },
+              "required": [
+                "action"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2RepoTocUpdatePut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "appendNode",
+                    "prependNode",
+                    "editNode",
+                    "removeNode"
+                  ],
+                  "description": "操作\n(appendNode:尾插, prependNode:头插, editNode:编辑节点, removeNode:删除节点)\n\n\n- action_mode 必填\n- 创建场景下不支持同级头插 prependNode\n- 删除节点不会删除关联文档\n- 删除节点时: action_mode=sibling (删除当前节点), action_mode=child (删除当前节点及子节点)\n\n"
+                },
+                "action_mode": {
+                  "type": "string",
+                  "enum": [
+                    "sibling",
+                    "child"
+                  ],
+                  "description": "操作模式\n(sibling:同级, child:子级)"
+                },
+                "target_uuid": {
+                  "type": "string",
+                  "description": "目标节点 UUID, 不填默认为根节点\n\n\n- 获取方式: 调用\"获取知识库目录\"接口获取"
+                },
+                "node_uuid": {
+                  "type": "string",
+                  "description": "操作节点 UUID [移动/更新/删除必填]\n\n\n- 获取方式: 调用\"获取知识库目录\"接口获取"
+                },
+                "doc_id": {
+                  "type": "integer",
+                  "description": "文档 ID [创建文档必填]",
+                  "deprecated": true
+                },
+                "doc_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "文档 ID 数组 [创建文档必填]"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "DOC",
+                    "LINK",
+                    "TITLE"
+                  ],
+                  "default": "DOC",
+                  "description": "节点类型 [创建必填]\n(DOC:文档, LINK:外链, TITLE:分组)"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "节点名称 [创建分组/外链必填]"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "节点 URL [创建外链必填]"
+                },
+                "open_window": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "default": 0,
+                  "description": "是否新窗口打开 [外链选填]\n(0:当前页打开, 1:新窗口打开)"
+                },
+                "visible": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "default": 1,
+                  "description": "是否可见\n(0:不可见, 1:可见)"
+                }
+              },
+              "required": [
+                "action"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2RepoCreateByGroupPost": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "简介"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "enhancedPrivacy": {
+                  "type": "boolean",
+                  "description": "增强私密性\n- 将除团队管理员之外的团队成员、团队只读成员也设置为无权限"
+                }
+              },
+              "required": [
+                "name",
+                "slug"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2RepoCreatePost": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "简介"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "enhancedPrivacy": {
+                  "type": "boolean",
+                  "description": "增强私密性\n- 将除团队管理员之外的团队成员、团队只读成员也设置为无权限"
+                }
+              },
+              "required": [
+                "name",
+                "slug"
+              ]
+            }
+          }
+        }
+      },
+      "ApiV2RepoUpdateByIdPut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "简介"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "toc": {
+                  "type": "string",
+                  "description": "目录\n\n\n- 可利用此字段批量更新知识库的目录\n\n\n- 必须是 Markdown 格式, `[名称](文档路径)` 示例:\n```markdown\n- [新手指引]()\n  - [语雀是什么](about)\n  - [常见问题](faq)\n- [基础功能]()\n  - [工作台](dashboard)\n  - [如何设置自定义路径](nkt888)\n  - [外链](http://www.alipay.com)\n```\n\n"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ApiV2RepoUpdatePut": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "路径"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "简介"
+                },
+                "public": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "default": 0,
+                  "description": "公开性\n(0:私密, 1:公开, 2:企业内公开)"
+                },
+                "toc": {
+                  "type": "string",
+                  "description": "目录\n\n\n- 可利用此字段批量更新知识库的目录\n\n\n- 必须是 Markdown 格式, `[名称](文档路径)` 示例:\n```markdown\n- [新手指引]()\n  - [语雀是什么](about)\n  - [常见问题](faq)\n- [基础功能]()\n  - [工作台](dashboard)\n  - [如何设置自定义路径](nkt888)\n  - [外链](http://www.alipay.com)\n```\n\n"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "V2User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n用户 ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "\n类型\nAlways 'User'",
+            "deprecated": true
+          },
+          "login": {
+            "type": "string",
+            "description": "\n登录名"
+          },
+          "name": {
+            "type": "string",
+            "description": "\n昵称"
+          },
+          "avatar_url": {
+            "type": "string",
+            "description": "\n头像"
+          },
+          "books_count": {
+            "type": "integer",
+            "description": "\n知识库数量"
+          },
+          "public_books_count": {
+            "type": "integer",
+            "description": "\n公开的知识库数量"
+          },
+          "followers_count": {
+            "type": "integer",
+            "description": "\n被关注的人数"
+          },
+          "following_count": {
+            "type": "integer",
+            "description": "\n关注的人数"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n介绍"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          }
+        }
+      },
+      "V2SearchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\nID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "doc",
+              "repo"
+            ],
+            "description": "\n类型\n(doc:文档, repo:知识库)"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n标题\n`<em></em>` 高亮关键词"
+          },
+          "summary": {
+            "type": "string",
+            "description": "\n摘要\n`<em></em>` 高亮关键词"
+          },
+          "url": {
+            "type": "string",
+            "description": "\n访问路径"
+          },
+          "info": {
+            "type": "string",
+            "description": "\n归属信息"
+          },
+          "target": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V2Doc"
+              },
+              {
+                "$ref": "#/components/schemas/V2Book"
+              }
+            ]
+          }
+        }
+      },
+      "V2Doc": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "Doc",
+              "Sheet",
+              "Thread",
+              "Board",
+              "Table",
+              "HtmlDoc"
+            ],
+            "description": "\n文档类型\n(Doc:普通文档, Sheet:表格, Thread:话题, Board:图集, Table:数据表, HtmlDoc:HTML 文档)"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n路径"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n标题"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n摘要"
+          },
+          "cover": {
+            "type": "string",
+            "description": "\n封面"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属用户/团队 ID"
+          },
+          "book_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属知识库 ID"
+          },
+          "last_editor_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n最后编辑者 ID"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "status": {
+            "type": "string",
+            "description": "\n状态\n(0:草稿, 1:发布)"
+          },
+          "likes_count": {
+            "type": "integer",
+            "description": "\n点赞数"
+          },
+          "read_count": {
+            "type": "integer",
+            "description": "\n阅读数\n\n\n- 需要传入 `optional_properties=hits` 获取\n\n"
+          },
+          "hits": {
+            "type": "integer",
+            "description": "\n阅读数\n\n\n- 需要传入 `optional_properties=hits` 获取\n\n",
+            "deprecated": true
+          },
+          "comments_count": {
+            "type": "integer",
+            "description": "\n评论数"
+          },
+          "word_count": {
+            "type": "integer",
+            "description": "\n内容字数"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "content_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n内容更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n删除时间\n仅在已删除文档视图下返回\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "deleted_slug": {
+            "type": "string",
+            "description": "\n删除前路径\n仅在已删除文档视图下返回"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n发布时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "first_published_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n首次发布时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "book": {
+            "$ref": "#/components/schemas/V2Book"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "last_editor": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "latest_version_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n最新已发版本 ID\n\n\n- 需要传入 `optional_properties=latest_version_id` 获取\n\n"
+          },
+          "tags": {
+            "$ref": "#/components/schemas/V2Tag"
+          }
+        }
+      },
+      "V2Book": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n知识库 ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "\n类型\n(Book:文档, Design:图集, Sheet:表格, Resource:资源)"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n路径"
+          },
+          "name": {
+            "type": "string",
+            "description": "\n名称"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属用户/团队 ID"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n简介"
+          },
+          "creator_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n创建者 ID"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "items_count": {
+            "type": "integer",
+            "description": "\n文档数量"
+          },
+          "likes_count": {
+            "type": "integer",
+            "description": "\n点赞数量"
+          },
+          "watches_count": {
+            "type": "integer",
+            "description": "\n订阅数量"
+          },
+          "content_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n知识库 META 更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "\n完整路径"
+          }
+        }
+      },
+      "V2Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\nTAG ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "\nTAG NAME"
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "book_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n知识库 ID"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n创建者 ID"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          }
+        }
+      },
+      "V2Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n团队 ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "\n类型\nAlways 'Group'",
+            "deprecated": true
+          },
+          "login": {
+            "type": "string",
+            "description": "\n路径"
+          },
+          "name": {
+            "type": "string",
+            "description": "\n名称"
+          },
+          "avatar_url": {
+            "type": "string",
+            "description": "\n头像"
+          },
+          "books_count": {
+            "type": "integer",
+            "description": "\n知识库数量"
+          },
+          "public_books_count": {
+            "type": "integer",
+            "description": "\n公开的知识库数量"
+          },
+          "members_count": {
+            "type": "integer",
+            "description": "\n成员人数"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n介绍"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          }
+        }
+      },
+      "V2GroupUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\nID"
+          },
+          "group_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n团队 ID"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n成员 ID"
+          },
+          "role": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n成员角色\n(0:管理员, 1:成员, 2:只读成员)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "group": {
+            "$ref": "#/components/schemas/V2Group"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          }
+        }
+      },
+      "V2DocDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "Doc",
+              "Sheet",
+              "Thread",
+              "Board",
+              "Table",
+              "HtmlDoc"
+            ],
+            "description": "\n文档类型\n(Doc:普通文档, Sheet:表格, Thread:话题, Board:图集, Table:数据表, HtmlDoc:HTML 文档)"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n路径"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n标题"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n摘要"
+          },
+          "cover": {
+            "type": "string",
+            "description": "\n封面"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属用户/团队 ID"
+          },
+          "book_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属知识库 ID"
+          },
+          "last_editor_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n最后编辑者 ID"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "markdown",
+              "lake",
+              "html",
+              "lakesheet"
+            ],
+            "description": "\n内容格式\n(markdown:Markdown 格式, lake:语雀 Lake 格式, html:HTML 标准格式, lakesheet:语雀表格)"
+          },
+          "body_draft": {
+            "type": "string",
+            "description": "\n正文草稿内容"
+          },
+          "body": {
+            "type": "string",
+            "description": "\n正文原始内容"
+          },
+          "body_sheet": {
+            "type": "string",
+            "description": "\n表格正文内容\n\n\n用本字段读取表格内容, 在文档为表格 (sheet) 类型时会返回。\n\n\n语雀表格 (sheet) 正文格式示例如下, JSON 反序列化后的结构:\n(注意: 所有项的值均为字符串, 公式项为计算后的值, 日期格式: yyyy-mm-dd HH:MM:SS)\n\n\n```json\n{\n  \"version\": \"1.0\",\n  \"data\": [\n    {\n      \"name\": \"Sheet1\",\n      \"index\": 0,\n      \"rowCount\": 100,\n      \"colCount\": 4,\n      \"table\": [\n        [\"参数名\", \"类型\", \"必填\", \"默认值\"],\n        [\"name\", \"string\", \"1\", \"\"],\n        [\"flag\", \"boolean\", \"0\", \"false\"]\n      ]\n    },\n    {\n      \"name\": \"Sheet2\",\n      \"index\": 0,\n      \"rowCount\": 100,\n      \"colCount\": 8,\n      \"table\": []\n    }\n  ]\n}\n```\n\n"
+          },
+          "body_table": {
+            "type": "string",
+            "description": "\n数据表正文内容, 用本字段读取数据表内容, 在文档为数据表 (Table) 类型时会返回。\n\n\n```json\n{\ntotalCount: 1000, // 总行数\nrecords: [{\n  {\n values为数组，顺序按meta中的columns顺序排列\nvalues:[{\n 复选框，值为true/false\n\"value\": \"true\"\n},{\n 多选框，对应选中的options\n\"value\": [\n\"AUb7o2\",\n\"rkGdKP\"\n]\n},{\n 评分：0-5\n\"value\": \"4\"\n}, {\n 进度：0-100\n\"value\": \"34\"\n}, {\n 文件\n\"value\": [\n{\n\"name\": \"emails.csv\",\n\"uid\": \"rc-upload-1722830344900-3\",\n\"src\": \"https://host/xx.csv\",\n\"size\": 148,\n\"fileKey\": \"sheet\"\n}\n]\n}, {\n\"value\": \"文本\"\n}, {\n 单选\n\"value\": \"waiting\"\n}, {\n 日期\n\"value\": {\n\"seconds\": 3932799476,\n\"text\": \"2024-08-14\",\n\"time\": \"2024-08-14T04:12:13.318Z\"\n}\n}, {\n 用户\n\"value\": [\n{\n\"id\": 1,\n\"name\": \"txy\",\n\"login\": \"u1\",\n\"avatar_url\": \"https://host/xx_url\",\n\"work_id\": \"\",\n\"description\": null\n}\n]\n}, {\n 图片\n\"value\": [\n{\n\"name\": \"test.png\",\n\"uid\": \"rc-upload-1722831237360-3\",\n\"src\": \"https://host/xx.png\",\n\"size\": 19154,\n\"width\": 90,\n\"height\": 88\n}\n]\n}],\n\"createdAt\": \"2024-08-02T10:14:13.368Z\",\n\"updatedAt\": \"2024-08-05T11:56:01.102Z\",\n}\n }],\n pageSize: 100,\n page: 1,\n}\n```"
+          },
+          "body_html": {
+            "type": "string",
+            "description": "\n正文 HTML 标准格式内容"
+          },
+          "body_lake": {
+            "type": "string",
+            "description": "\n正文语雀 Lake 格式内容"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "status": {
+            "type": "string",
+            "description": "\n状态\n(0:草稿, 1:发布)"
+          },
+          "likes_count": {
+            "type": "integer",
+            "description": "\n点赞数"
+          },
+          "read_count": {
+            "type": "integer",
+            "description": "\n阅读数\n\n"
+          },
+          "hits": {
+            "type": "integer",
+            "description": "\n阅读数\n\n",
+            "deprecated": true
+          },
+          "comments_count": {
+            "type": "integer",
+            "description": "\n评论数"
+          },
+          "word_count": {
+            "type": "integer",
+            "description": "\n内容字数"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "content_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n内容更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n发布时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "first_published_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n首次发布时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "book": {
+            "$ref": "#/components/schemas/V2Book"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "tags": {
+            "$ref": "#/components/schemas/V2Tag"
+          },
+          "latest_version_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n最新已发版本 ID\n\n"
+          }
+        }
+      },
+      "V2DocVersion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n版本 ID"
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n文档路径"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n文档标题"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n发版人 ID"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          }
+        }
+      },
+      "V2DocVersionDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n版本 ID"
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n文档路径"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n文档标题"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n发版人 ID"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "markdown",
+              "lake",
+              "html",
+              "lakesheet"
+            ],
+            "description": "\n内容格式\n(markdown:Markdown 格式, lake:语雀 Lake 格式, html:HTML 标准格式, lakesheet:语雀表格)"
+          },
+          "body": {
+            "type": "string",
+            "description": "\n正文原始内容"
+          },
+          "body_html": {
+            "type": "string",
+            "description": "\n正文 HTML 标准格式内容"
+          },
+          "body_md": {
+            "type": "string",
+            "description": "\n正文 MD 标准格式内容"
+          },
+          "body_asl": {
+            "type": "string",
+            "description": "\n正文语雀 Lake 格式内容"
+          },
+          "diff": {
+            "type": "string",
+            "description": "\n版本 DIFF"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          }
+        }
+      },
+      "V2TocItem": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "\n节点唯一 ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DOC",
+              "LINK",
+              "TITLE"
+            ],
+            "description": "\n节点类型\n(DOC:文档, LINK:外链, TITLE:分组)"
+          },
+          "title": {
+            "type": "string",
+            "description": "\n节点名称"
+          },
+          "url": {
+            "type": "string",
+            "description": "\n节点 URL"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n节点 URL",
+            "deprecated": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID",
+            "deprecated": true
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n文档 ID"
+          },
+          "level": {
+            "type": "integer",
+            "description": "\n节点层级"
+          },
+          "depth": {
+            "type": "integer",
+            "description": "\n节点层级",
+            "deprecated": true
+          },
+          "open_window": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "\n是否在新窗口打开\n(0:当前页打开, 1:新窗口打开)"
+          },
+          "visible": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "\n是否可见\n(0:不可见, 1:可见)"
+          },
+          "prev_uuid": {
+            "type": "string",
+            "description": "\n同级前一个节点 uuid"
+          },
+          "sibling_uuid": {
+            "type": "string",
+            "description": "\n同级后一个节点 uuid"
+          },
+          "child_uuid": {
+            "type": "string",
+            "description": "\n子级第一个节点 uuid"
+          },
+          "parent_uuid": {
+            "type": "string",
+            "description": "\n父级节点 uuid"
+          }
+        }
+      },
+      "V2BookDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n知识库 ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "\n类型\n(Book:文档, Design:图集, Sheet:表格, Resource:资源)"
+          },
+          "slug": {
+            "type": "string",
+            "description": "\n路径"
+          },
+          "name": {
+            "type": "string",
+            "description": "\n名称"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n归属用户/团队 ID"
+          },
+          "description": {
+            "type": "string",
+            "description": "\n简介"
+          },
+          "toc_yml": {
+            "type": "string",
+            "description": "\n目录"
+          },
+          "creator_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "\n创建者 ID"
+          },
+          "public": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "\n公开性\n(0:私密, 1:公开, 2:企业内公开)"
+          },
+          "items_count": {
+            "type": "integer",
+            "description": "\n文档数量"
+          },
+          "likes_count": {
+            "type": "integer",
+            "description": "\n点赞数量"
+          },
+          "watches_count": {
+            "type": "integer",
+            "description": "\n订阅数量"
+          },
+          "content_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n知识库 META 更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n创建时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "\n更新时间\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)"
+          },
+          "user": {
+            "$ref": "#/components/schemas/V2User"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "\n完整路径"
+          }
+        }
+      },
+      "V2GroupStatistics": {
+        "type": "object",
+        "properties": {
+          "bizdate": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "string",
+            "description": "统计日期 (YYYYMMDD)"
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "团队 ID"
+          },
+          "member_count": {
+            "type": "string",
+            "description": "归属空间 ID"
+          },
+          "collaborator_count": {
+            "type": "string",
+            "description": "成员数"
+          },
+          "day_read_count": {
+            "type": "string",
+            "description": "协作者数"
+          },
+          "day_write_count": {
+            "type": "string",
+            "description": "当日阅读量"
+          },
+          "write_count": {
+            "type": "string",
+            "description": "当日编辑次数"
+          },
+          "read_count": {
+            "type": "string",
+            "description": "编辑次数"
+          },
+          "read_count_30": {
+            "type": "string",
+            "description": "阅读量"
+          },
+          "read_count_365": {
+            "type": "string",
+            "description": "阅读量 (30天)"
+          },
+          "comment_count": {
+            "type": "string",
+            "description": "阅读量 (一年)"
+          },
+          "comment_count_30": {
+            "type": "string",
+            "description": "评论量"
+          },
+          "comment_count_365": {
+            "type": "string",
+            "description": "评论量 (30天)"
+          },
+          "like_count": {
+            "type": "string",
+            "description": "评论量 (一年)"
+          },
+          "like_count_30": {
+            "type": "string",
+            "description": "点赞量"
+          },
+          "like_count_365": {
+            "type": "string",
+            "description": "点赞量 (30天)"
+          },
+          "follow_count": {
+            "type": "string",
+            "description": "点赞量 (一年)"
+          },
+          "collect_count": {
+            "type": "string",
+            "description": "关注量"
+          },
+          "doc_count": {
+            "type": "string",
+            "description": "收藏量"
+          },
+          "sheet_count": {
+            "type": "string",
+            "description": "文档数量"
+          },
+          "board_count": {
+            "type": "string",
+            "description": "表格数量"
+          },
+          "show_count": {
+            "type": "string",
+            "description": "画板数量"
+          },
+          "resource_count": {
+            "type": "string",
+            "description": "演示文稿数量"
+          },
+          "artboard_count": {
+            "type": "string",
+            "description": "资源数量"
+          },
+          "attachment_count": {
+            "type": "string",
+            "description": "图集数量"
+          },
+          "book_count": {
+            "type": "string",
+            "description": "附件数量"
+          },
+          "public_book_count": {
+            "type": "string",
+            "description": "知识库总数量"
+          },
+          "private_book_count": {
+            "type": "string",
+            "description": "公开知识库数量"
+          },
+          "book_book_count": {
+            "type": "string",
+            "description": "私密知识库数量"
+          },
+          "book_resource_count": {
+            "type": "string",
+            "description": "文档知识库数量"
+          },
+          "book_design_count": {
+            "type": "string",
+            "description": "资源知识库数量"
+          },
+          "book_thread_count": {
+            "type": "string",
+            "description": "图片知识库数量"
+          },
+          "data_usage": {
+            "type": "string",
+            "description": "话题知识库数量"
+          },
+          "grains_count": {
+            "type": "string",
+            "description": "流量使用量"
+          },
+          "grains_count_sum": {
+            "type": "string",
+            "description": "当前稻谷数"
+          },
+          "grains_count_consume": {
+            "type": "string",
+            "description": "累计获得稻谷数"
+          },
+          "interaction_people_count": {
+            "type": "string",
+            "description": "已消耗稻谷数"
+          },
+          "content_count": {
+            "type": "string",
+            "description": "知识交流人数"
+          },
+          "collaboration_count": {
+            "type": "string",
+            "description": "知识财富数"
+          },
+          "working_hours": {
+            "type": "string",
+            "description": "知识协同次数"
+          },
+          "baike": {
+            "type": "string",
+            "description": "协同提效时长 (小时)"
+          },
+          "table_count": {
+            "type": "string",
+            "description": "百科全书卷数"
+          }
+        }
+      },
+      "V2MemberStatistics": {
+        "type": "object",
+        "properties": {
+          "bizdate": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "string",
+            "description": "统计日期 (YYYYMMDD)"
+          },
+          "group_id": {
+            "type": "string",
+            "description": "成员 ID"
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "团队 ID"
+          },
+          "write_count": {
+            "type": "string",
+            "description": "空间 ID"
+          },
+          "write_count_30": {
+            "type": "string",
+            "description": "编辑次数"
+          },
+          "write_count_365": {
+            "type": "string",
+            "description": "编辑次数 (30天)"
+          },
+          "write_doc_count": {
+            "type": "string",
+            "description": "编辑次数 (一年)"
+          },
+          "write_doc_count_30": {
+            "type": "string",
+            "description": "编辑文档数"
+          },
+          "write_doc_count_365": {
+            "type": "string",
+            "description": "编辑文档数 (30天)"
+          },
+          "read_count": {
+            "type": "string",
+            "description": "编辑文档数 (一年)"
+          },
+          "read_count_30": {
+            "type": "string",
+            "description": "阅读量"
+          },
+          "read_count_365": {
+            "type": "string",
+            "description": "阅读量 (30天)"
+          },
+          "like_count": {
+            "type": "string",
+            "description": "阅读量 (一年)"
+          },
+          "like_count_30": {
+            "type": "string",
+            "description": "点赞量"
+          },
+          "like_count_365": {
+            "type": "string",
+            "description": "点赞量 (30天)"
+          },
+          "user": {
+            "type": "string",
+            "description": "点赞量 (一年)"
+          }
+        }
+      },
+      "V2BookStatistics": {
+        "type": "object",
+        "properties": {
+          "bizdate": {
+            "type": "string",
+            "description": ""
+          },
+          "book_id": {
+            "type": "string",
+            "description": "统计日期 (YYYYMMDD)"
+          },
+          "slug": {
+            "type": "string",
+            "description": "知识库 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "知识库 slug"
+          },
+          "type": {
+            "type": "string",
+            "description": "知识库名称"
+          },
+          "is_public": {
+            "type": "string",
+            "description": "知识库类型"
+          },
+          "content_updated_at_ms": {
+            "type": "string",
+            "description": "是否公开"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "最近更新时间"
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "知识库归属 ID"
+          },
+          "day_read_count": {
+            "type": "string",
+            "description": "知识库归属空间 ID"
+          },
+          "day_write_count": {
+            "type": "string",
+            "description": "当日阅读量"
+          },
+          "day_like_count": {
+            "type": "string",
+            "description": "当日编辑次数"
+          },
+          "post_count": {
+            "type": "string",
+            "description": "当日点赞量"
+          },
+          "word_count": {
+            "type": "string",
+            "description": "文档数"
+          },
+          "write_count": {
+            "type": "string",
+            "description": "字数"
+          },
+          "write_count_30": {
+            "type": "string",
+            "description": "编辑次数"
+          },
+          "read_count": {
+            "type": "string",
+            "description": "编辑次数 (30天)"
+          },
+          "read_count_30": {
+            "type": "string",
+            "description": "阅读量"
+          },
+          "read_count_365": {
+            "type": "string",
+            "description": "阅读量 (30天)"
+          },
+          "like_count": {
+            "type": "string",
+            "description": "阅读量 (一年)"
+          },
+          "like_count_7": {
+            "type": "string",
+            "description": "点赞量"
+          },
+          "like_count_30": {
+            "type": "string",
+            "description": "点赞量 (7天)"
+          },
+          "like_count_365": {
+            "type": "string",
+            "description": "点赞量 (30天)"
+          },
+          "watch_count": {
+            "type": "string",
+            "description": "点赞量 (一年)"
+          },
+          "watch_count_7": {
+            "type": "string",
+            "description": "关注量"
+          },
+          "watch_count_30": {
+            "type": "string",
+            "description": "关注量 (7天)"
+          },
+          "watch_count_365": {
+            "type": "string",
+            "description": "关注量 (30天)"
+          },
+          "comment_count": {
+            "type": "string",
+            "description": "关注量 (一年)"
+          },
+          "comment_count_30": {
+            "type": "string",
+            "description": "评论量"
+          },
+          "comment_count_365": {
+            "type": "string",
+            "description": "评论量 (30天)"
+          },
+          "like_rank_rate": {
+            "type": "string",
+            "description": "评论量 (一年)"
+          },
+          "popularity_30": {
+            "type": "string",
+            "description": "知识库点赞数排名"
+          },
+          "doc_count": {
+            "type": "string",
+            "description": "30 天热度"
+          },
+          "sheet_count": {
+            "type": "string",
+            "description": "文档数量"
+          },
+          "board_count": {
+            "type": "string",
+            "description": "表格数量"
+          },
+          "show_count": {
+            "type": "string",
+            "description": "画板数量"
+          },
+          "resource_count": {
+            "type": "string",
+            "description": "演示文稿数量"
+          },
+          "artboard_count": {
+            "type": "string",
+            "description": "资源数量"
+          },
+          "attachment_count": {
+            "type": "string",
+            "description": "图集数量"
+          },
+          "interaction_people_count": {
+            "type": "string",
+            "description": "附件数量"
+          },
+          "content_count": {
+            "type": "string",
+            "description": "知识交流人数"
+          },
+          "collaboration_count": {
+            "type": "string",
+            "description": "知识财富数"
+          },
+          "working_hours": {
+            "type": "string",
+            "description": "知识协同次数"
+          },
+          "baike": {
+            "type": "string",
+            "description": "协同提效时长 (小时)"
+          },
+          "table_count": {
+            "type": "string",
+            "description": "百科全书卷数"
+          }
+        }
+      },
+      "V2DocStatistics": {
+        "type": "object",
+        "properties": {
+          "bizdate": {
+            "type": "string",
+            "description": ""
+          },
+          "book_id": {
+            "type": "string",
+            "description": "统计日期 (YYYYMMDD)"
+          },
+          "doc_id": {
+            "type": "string",
+            "description": "知识库 ID"
+          },
+          "slug": {
+            "type": "string",
+            "description": "文档 ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "文档 slug"
+          },
+          "type": {
+            "type": "string",
+            "description": "文档标题"
+          },
+          "is_public": {
+            "type": "string",
+            "description": "知识库类型"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "是否公开"
+          },
+          "content_updated_at": {
+            "type": "string",
+            "description": "创建时间"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "最近更新时间"
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "文档归属 ID"
+          },
+          "day_read_count": {
+            "type": "string",
+            "description": "文档归属空间 ID"
+          },
+          "day_write_count": {
+            "type": "string",
+            "description": "当日阅读量"
+          },
+          "day_like_count": {
+            "type": "string",
+            "description": "当日编辑次数"
+          },
+          "word_count": {
+            "type": "string",
+            "description": "当日点赞量"
+          },
+          "write_count": {
+            "type": "string",
+            "description": "字数"
+          },
+          "read_count": {
+            "type": "string",
+            "description": "编辑次数"
+          },
+          "read_count_7": {
+            "type": "string",
+            "description": "阅读量"
+          },
+          "read_count_30": {
+            "type": "string",
+            "description": "阅读量 (7天)"
+          },
+          "read_count_365": {
+            "type": "string",
+            "description": "阅读量 (30天)"
+          },
+          "like_count": {
+            "type": "string",
+            "description": "阅读量 (一年)"
+          },
+          "like_count_7": {
+            "type": "string",
+            "description": "点赞量"
+          },
+          "like_count_30": {
+            "type": "string",
+            "description": "点赞量 (7天)"
+          },
+          "like_count_365": {
+            "type": "string",
+            "description": "点赞量 (30天)"
+          },
+          "comment_count": {
+            "type": "string",
+            "description": "点赞量 (一年)"
+          },
+          "comment_count_30": {
+            "type": "string",
+            "description": "评论量"
+          },
+          "comment_count_365": {
+            "type": "string",
+            "description": "评论量 (30天)"
+          },
+          "popularity_30": {
+            "type": "string",
+            "description": "评论量 (一年)"
+          },
+          "attachment_count": {
+            "type": "string",
+            "description": "30 天热度"
+          },
+          "user": {
+            "type": "string",
+            "description": "附件数量"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "authToken": [
+
+      ]
+    }
+  ],
+  "paths": {
+    "/api/v2/hello": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "心跳",
+        "operationId": "user_api_v2_hello",
+        "description": "心跳\nGET /api/v2/hello",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "description": "欢迎消息"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "获取当前 Token 的用户详情",
+        "operationId": "user_api_v2_user_info",
+        "description": "获取当前 Token 的用户详情\nGET /api/v2/user\n\n",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/search": {
+      "get": {
+        "tags": [
+          "search"
+        ],
+        "summary": "通用搜索",
+        "operationId": "search_api_v2_search",
+        "description": "通用搜索\nGET /api/v2/search\n\n\n- 支持分页, PageSize 固定为 20\n\n",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "搜索关键词",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "搜索类型\n(doc:文档, repo:知识库)",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "doc",
+                "repo"
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "搜索范围, 不填默认为搜索当前用户/团队\n\n\n[例子]\n```\n- 假设:\n  - 团队 URL = https://yuque_domain/group_a\n  - 知识库 URL = https://yuque_domain/group_a/book_x\n- 则:\n  - 搜索团队里的文档: { type: 'doc', scope: 'group_a' }\n  - 搜索团队里的知识库: { type: 'repo', scope: 'group_a' }\n  - 搜索知识库里的文档: { type: 'doc', scope: 'group_a/book_x' }\n```",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 400
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "页码, 非偏移量 [分页参数]",
+            "required": false,
+            "deprecated": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "creatorId",
+            "in": "query",
+            "description": "仅搜索指定作者 ID [筛选条件]",
+            "required": false,
+            "deprecated": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "creator",
+            "in": "query",
+            "description": "仅搜索指定作者 login [筛选条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "结果总量"
+                        },
+                        "pageNo": {
+                          "type": "integer",
+                          "description": "页码"
+                        },
+                        "pageSize": {
+                          "type": "integer",
+                          "description": "每页数量"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2SearchResult"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/users/{id}/groups": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "获取用户的团队",
+        "operationId": "user_api_v2_user_group_list",
+        "description": "获取用户的团队\nGET /api/v2/users/:id/groups\n\n\n- 支持分页, PageSize 固定为 100\n\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "用户 login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "角色 [过滤条件]\n(0:管理员, 1:成员)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Group"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/users": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "获取团队的成员",
+        "operationId": "group_api_v2_group_member_list",
+        "description": "获取团队的成员\nGET /api/v2/groups/:login/users\n\n\n- 支持分页, PageSize 固定为 100\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队 Login or ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "角色 [筛选条件]\n(0:管理员, 1:成员, 2:只读成员)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2GroupUser"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/users/{id}": {
+      "put": {
+        "tags": [
+          "group"
+        ],
+        "summary": "变更成员",
+        "operationId": "group_api_v2_group_member_update",
+        "description": "变更成员\nPUT /api/v2/groups/:login/users/:id\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队 Login or ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "用户 Login or ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2GroupMemberUpdatePut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2GroupUser"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "group"
+        ],
+        "summary": "删除成员",
+        "operationId": "group_api_v2_group_member_destroy",
+        "description": "删除成员\nDELETE /api/v2/groups/:login/users/:id",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队 Login or ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "用户 Login or ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user_id": {
+                          "type": "string",
+                          "description": "删除用户 ID"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{book_id}/docs": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取知识库的文档列表",
+        "operationId": "doc_api_v2_doc_list-by_id",
+        "description": "获取知识库的文档列表\nGET /api/v2/repos/:book_id/docs\nGET /api/v2/repos/:group_login/:book_slug/docs\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "deleted",
+            "in": "query",
+            "description": "是否查询已删除文档",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "changed_at_gte",
+            "in": "query",
+            "description": "变更时间下界\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "optional_properties",
+            "in": "query",
+            "description": "获取的额外字段, 多个字段以逗号分隔\n\n\n- 注意: 每页数量超过 100 本字段会失效\n\n\n- 支持的字段有:\n  - hits: 文档阅读数\n  - tags: 标签\n  - latest_version_id: 最新已发版本 ID\n\n",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "结果总量"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2Doc"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "创建文档",
+        "operationId": "doc_api_v2_doc_create-by_id",
+        "description": "创建文档\nPOST /api/v2/repos/:book_id/docs\nPOST /api/v2/repos/:group_login/:book_slug/docs\n\n\n- 注意: 创建文档后不会自动添加到目录，需要调用\"知识库目录更新接口\"更新到目录中\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2DocCreateByIdPost"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/docs/{id}": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取文档详情",
+        "operationId": "doc_api_v2_doc_show-by_id",
+        "description": "获取文档详情\nGET /api/v2/repos/docs/:id\nGET /api/v2/repos/:book_id/docs/:id\nGET /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "数据表使用，分页大小",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "数据表使用，页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{book_id}/docs/{id}": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取文档详情",
+        "operationId": "doc_api_v2_doc_show-by_book_and_id",
+        "description": "获取文档详情\nGET /api/v2/repos/docs/:id\nGET /api/v2/repos/:book_id/docs/:id\nGET /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "数据表使用，分页大小",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "数据表使用，页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "更新文档",
+        "operationId": "doc_api_v2_doc_update-by_id",
+        "description": "更新文档\nPUT /api/v2/repos/:book_id/docs/:id\nPUT /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2DocUpdateByIdPut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "删除文档",
+        "operationId": "doc_api_v2_doc_destroy-by_id",
+        "description": "删除文档\nDELETE /api/v2/repos/:book_id/docs/:id\nDELETE /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{group_login}/{book_slug}/docs": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取知识库的文档列表",
+        "operationId": "doc_api_v2_doc_list",
+        "description": "获取知识库的文档列表\nGET /api/v2/repos/:book_id/docs\nGET /api/v2/repos/:group_login/:book_slug/docs\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "deleted",
+            "in": "query",
+            "description": "是否查询已删除文档",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "changed_at_gte",
+            "in": "query",
+            "description": "变更时间下界\n格式: YYYY-MM-DDTHH:mm:ss.sssZ (ISO_8601)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "optional_properties",
+            "in": "query",
+            "description": "获取的额外字段, 多个字段以逗号分隔\n\n\n- 注意: 每页数量超过 100 本字段会失效\n\n\n- 支持的字段有:\n  - hits: 文档阅读数\n  - tags: 标签\n  - latest_version_id: 最新已发版本 ID\n\n",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "结果总量"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2Doc"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "创建文档",
+        "operationId": "doc_api_v2_doc_create",
+        "description": "创建文档\nPOST /api/v2/repos/:book_id/docs\nPOST /api/v2/repos/:group_login/:book_slug/docs\n\n\n- 注意: 创建文档后不会自动添加到目录，需要调用\"知识库目录更新接口\"更新到目录中\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2DocCreatePost"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{group_login}/{book_slug}/docs/{id}": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取文档详情",
+        "operationId": "doc_api_v2_doc_show",
+        "description": "获取文档详情\nGET /api/v2/repos/docs/:id\nGET /api/v2/repos/:book_id/docs/:id\nGET /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "数据表使用，分页大小",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "数据表使用，页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "更新文档",
+        "operationId": "doc_api_v2_doc_update",
+        "description": "更新文档\nPUT /api/v2/repos/:book_id/docs/:id\nPUT /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2DocUpdatePut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "删除文档",
+        "operationId": "doc_api_v2_doc_destroy",
+        "description": "删除文档\nDELETE /api/v2/repos/:book_id/docs/:id\nDELETE /api/v2/repos/:group_login/:book_slug/docs/:id\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文档 ID or 路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/doc_versions": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取文档历史版本列表",
+        "operationId": "doc_api_v2_doc_version_list",
+        "description": "获取文档历史版本列表\nGET /api/v2/doc_versions\n\n\n- 按时间倒序返回最近 100 个已发布版本\n\n",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "query",
+            "description": "文档 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2DocVersion"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/doc_versions/{id}": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取文档历史版本详情",
+        "operationId": "doc_api_v2_doc_version_show",
+        "description": "获取文档历史版本详情\nGET /api/v2/doc_versions/:id\n\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "版本 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2DocVersionDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{book_id}/toc": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取目录",
+        "operationId": "doc_api_v2_repo_toc_show-by_id",
+        "description": "获取目录\nGET /api/v2/repos/:book_id/toc\nGET /api/v2/repos/:group_login/:book_slug/toc\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2TocItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "更新目录",
+        "operationId": "doc_api_v2_repo_toc_update-by_id",
+        "description": "更新目录\nPUT /api/v2/repos/:book_id/toc\nPUT /api/v2/repos/:group_login/:book_slug/toc\n\n\n字段说明:\n\n\n- 所有场景\n  - 必填字段\n    - action\n    - action_mode\n  - 选填字段\n    - target_uuid\n    - visible\n- 创建场景\n  - 必填字段\n    - 创建文档节点\n      - type\n      - doc_ids\n    - 创建分组节点\n      - type\n      - title\n    - 创建外链节点\n      - type\n      - title\n      - url\n      - open_window\n- 移动场景\n  - 必填字段\n    - target_uuid\n    - node_uuid\n- 编辑场景\n  - 必填字段\n    - node_uuid\n  - 选填字段\n    - type\n    - title\n    - url\n    - open_window\n- 删除场景\n  - 必填字段\n    - node_uuid\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoTocUpdateByIdPut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2TocItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{group_login}/{book_slug}/toc": {
+      "get": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "获取目录",
+        "operationId": "doc_api_v2_repo_toc_show",
+        "description": "获取目录\nGET /api/v2/repos/:book_id/toc\nGET /api/v2/repos/:group_login/:book_slug/toc\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2TocItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "doc"
+        ],
+        "summary": "更新目录",
+        "operationId": "doc_api_v2_repo_toc_update",
+        "description": "更新目录\nPUT /api/v2/repos/:book_id/toc\nPUT /api/v2/repos/:group_login/:book_slug/toc\n\n\n字段说明:\n\n\n- 所有场景\n  - 必填字段\n    - action\n    - action_mode\n  - 选填字段\n    - target_uuid\n    - visible\n- 创建场景\n  - 必填字段\n    - 创建文档节点\n      - type\n      - doc_ids\n    - 创建分组节点\n      - type\n      - title\n    - 创建外链节点\n      - type\n      - title\n      - url\n      - open_window\n- 移动场景\n  - 必填字段\n    - target_uuid\n    - node_uuid\n- 编辑场景\n  - 必填字段\n    - node_uuid\n  - 选填字段\n    - type\n    - title\n    - url\n    - open_window\n- 删除场景\n  - 必填字段\n    - node_uuid\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoTocUpdatePut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2TocItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/repos": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "获取知识库列表",
+        "operationId": "repo_api_v2_repo_list-by_group",
+        "description": "获取知识库列表\nGET /api/v2/groups/:id/repos\nGET /api/v2/groups/:login/repos\n\n\nGET /api/v2/users/:id/repos\nGET /api/v2/users/:login/repos\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "用户/团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "类型 [筛选条件]\n(Book:文档型知识库, Design: 画板型知识库)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Book",
+                "Design"
+              ]
+            }
+          },
+          {
+            "name": "filterByAbility",
+            "in": "query",
+            "description": "操作权限 [筛选条件] 默认为空\n(create_doc:仅返回具有创建文档权限的知识库)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2Book"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "创建知识库",
+        "operationId": "repo_api_v2_repo_create-by_group",
+        "description": "创建知识库\nPOST /api/v2/groups/:id/repos\nPOST /api/v2/groups/:login/repos\n\n\nPOST /api/v2/users/:id/repos\nPOST /api/v2/users/:login/repos\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "用户/团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoCreateByGroupPost"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/users/{login}/repos": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "获取知识库列表",
+        "operationId": "repo_api_v2_repo_list",
+        "description": "获取知识库列表\nGET /api/v2/groups/:id/repos\nGET /api/v2/groups/:login/repos\n\n\nGET /api/v2/users/:id/repos\nGET /api/v2/users/:login/repos\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "用户/团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量 [分页参数]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "类型 [筛选条件]\n(Book:文档型知识库, Design: 画板型知识库)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Book",
+                "Design"
+              ]
+            }
+          },
+          {
+            "name": "filterByAbility",
+            "in": "query",
+            "description": "操作权限 [筛选条件] 默认为空\n(create_doc:仅返回具有创建文档权限的知识库)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/V2Book"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "创建知识库",
+        "operationId": "repo_api_v2_repo_create",
+        "description": "创建知识库\nPOST /api/v2/groups/:id/repos\nPOST /api/v2/groups/:login/repos\n\n\nPOST /api/v2/users/:id/repos\nPOST /api/v2/users/:login/repos\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "用户/团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoCreatePost"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{book_id}": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "获取知识库详情",
+        "operationId": "repo_api_v2_repo_show-by_id",
+        "description": "获取知识库详情\nGET /api/v2/repos/:book_id\nGET /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2BookDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "更新知识库",
+        "operationId": "repo_api_v2_repo_update-by_id",
+        "description": "更新知识库\nPUT /api/v2/repos/:book_id\nPUT /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoUpdateByIdPut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "删除知识库",
+        "operationId": "repo_api_v2_repo_destroy-by_id",
+        "description": "删除知识库\nDELETE /api/v2/repos/:book_id\nDELETE /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "知识库 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/repos/{group_login}/{book_slug}": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "获取知识库详情",
+        "operationId": "repo_api_v2_repo_show",
+        "description": "获取知识库详情\nGET /api/v2/repos/:book_id\nGET /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2BookDetail"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "更新知识库",
+        "operationId": "repo_api_v2_repo_update",
+        "description": "更新知识库\nPUT /api/v2/repos/:book_id\nPUT /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ApiV2RepoUpdatePut"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "删除知识库",
+        "operationId": "repo_api_v2_repo_destroy",
+        "description": "删除知识库\nDELETE /api/v2/repos/:book_id\nDELETE /api/v2/repos/:group_login/:book_slug\n\n",
+        "parameters": [
+          {
+            "name": "group_login",
+            "in": "path",
+            "description": "团队 Login",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_slug",
+            "in": "path",
+            "description": "知识库路径",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2Book"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/statistics": {
+      "get": {
+        "tags": [
+          "statistic"
+        ],
+        "summary": "团队.汇总统计数据",
+        "operationId": "statistic_api_v2_statistic_all",
+        "description": "团队.汇总统计数据\nGET /api/v2/groups/:login/statistics\n\n",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/V2GroupStatistics"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/statistics/members": {
+      "get": {
+        "tags": [
+          "statistic"
+        ],
+        "summary": "团队.成员统计数据",
+        "operationId": "statistic_api_v2_statistic_by_members",
+        "description": "团队.成员统计数据\nGET /api/v2/groups/:login/statistics/members",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "成员名 [过滤条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "description": "时间范围 [过滤条件]\n(0:全部, 30:近 30 天, 365:近一年)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                30,
+                365
+              ],
+              "default": 0
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "分页数量",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "default": 10
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "write_doc_count",
+                "write_count",
+                "read_count",
+                "like_count"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "members": {
+                          "$ref": "#/components/schemas/V2MemberStatistics"
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "总数量"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/statistics/books": {
+      "get": {
+        "tags": [
+          "statistic"
+        ],
+        "summary": "团队.知识库统计数据",
+        "operationId": "statistic_api_v2_statistic_by_books",
+        "description": "团队.知识库统计数据\nGET /api/v2/groups/:login/statistics/books",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "知识库名 [过滤条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "description": "时间范围 [过滤条件]\n(0:全部, 30:近 30 天, 365:近一年)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                30,
+                365
+              ],
+              "default": 0
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "分页数量",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "default": 10
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "content_updated_at_ms",
+                "word_count",
+                "post_count",
+                "read_count",
+                "like_count",
+                "watch_count",
+                "comment_count"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "books": {
+                          "$ref": "#/components/schemas/V2BookStatistics"
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "总数量"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{login}/statistics/docs": {
+      "get": {
+        "tags": [
+          "statistic"
+        ],
+        "summary": "团队.文档统计数据",
+        "operationId": "statistic_api_v2_statistic_by_docs",
+        "description": "团队.文档统计数据\nGET /api/v2/groups/:login/statistics/docs",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "团队的 Login 或 ID",
+            "required": true,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bookId",
+            "in": "query",
+            "description": "指定知识库 [过滤条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "文档名 [过滤条件]",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "description": "时间范围 [过滤条件]\n(0:全部, 30:近 30 天, 365:近一年)",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                30,
+                365
+              ],
+              "default": 0
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "分页数量",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "default": 10
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "content_updated_at",
+                "word_count",
+                "read_count",
+                "like_count",
+                "comment_count",
+                "created_at"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方向",
+            "required": false,
+            "deprecated": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "docs": {
+                          "$ref": "#/components/schemas/V2DocStatistics"
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "总数量"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "user",
+      "description": "user"
+    },
+    {
+      "name": "search",
+      "description": "search"
+    },
+    {
+      "name": "group",
+      "description": "group"
+    },
+    {
+      "name": "doc",
+      "description": "doc"
+    },
+    {
+      "name": "repo",
+      "description": "repo"
+    },
+    {
+      "name": "statistic",
+      "description": "statistic"
+    }
+  ]
+}
