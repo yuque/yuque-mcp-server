@@ -25,8 +25,12 @@
 ## 常用命令
 
 ```bash
-npm run lint
-npm run typecheck
-npm test
-npm run build
+npm run lint        # ESLint 检查 src 和 tests
+npm run typecheck   # tsc --noEmit 类型检查
+npm test            # 全量单元 + contract tests，单次运行（watch 用 npm run test:watch）
+npm run build       # 编译到 dist/
 ```
+
+- 跑单个测试文件：`npx vitest run tests/tools/doc.test.ts`。
+- 提交前四条命令全部跑通；CI 还会跑 `npm run format:check` 和两个 dist smoke tests（`smoke:dist`、`smoke:pack-install`）。
+- Real API smoke tests 默认跳过，开启所需的环境变量见 `docs/technical-stack.md`。
