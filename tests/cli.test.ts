@@ -14,8 +14,10 @@ vi.mock('../src/server.js', () => ({
 }));
 
 const originalArgv = process.argv;
-const originalToken = process.env.YUQUE_PERSONAL_TOKEN;
-const originalBaseURL = process.env.YUQUE_BASE_URL;
+const originalToken = process.env.YUQUE_TOKEN;
+const originalLegacyToken = process.env.YUQUE_PERSONAL_TOKEN;
+const originalHost = process.env.YUQUE_HOST;
+const originalLegacyBaseURL = process.env.YUQUE_BASE_URL;
 const originalIsTTY = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
 let cliImportRun = 0;
 
@@ -63,7 +65,9 @@ describe('CLI entry', () => {
     cliMocks.handleCliSubcommands.mockReturnValue(false);
     cliMocks.runStdioServer.mockResolvedValue(undefined);
     process.argv = ['node', 'cli.js'];
+    delete process.env.YUQUE_TOKEN;
     delete process.env.YUQUE_PERSONAL_TOKEN;
+    delete process.env.YUQUE_HOST;
     delete process.env.YUQUE_BASE_URL;
     setIsTTY(false);
   });
@@ -71,8 +75,10 @@ describe('CLI entry', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     process.argv = originalArgv;
-    restoreEnv('YUQUE_PERSONAL_TOKEN', originalToken);
-    restoreEnv('YUQUE_BASE_URL', originalBaseURL);
+    restoreEnv('YUQUE_TOKEN', originalToken);
+    restoreEnv('YUQUE_PERSONAL_TOKEN', originalLegacyToken);
+    restoreEnv('YUQUE_HOST', originalHost);
+    restoreEnv('YUQUE_BASE_URL', originalLegacyBaseURL);
     if (originalIsTTY) {
       Object.defineProperty(process.stdin, 'isTTY', originalIsTTY);
     }
@@ -95,13 +101,13 @@ describe('CLI entry', () => {
     await expect(importCli()).rejects.toThrow('exit:1');
 
     expect(error).toHaveBeenCalledWith(
-      'Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required'
+      'Error: YUQUE_TOKEN environment variable, YUQUE_PERSONAL_TOKEN environment variable, or --token argument is required'
     );
   });
 
   it('should print terminal guidance when run directly in a TTY', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
-    process.env.YUQUE_PERSONAL_TOKEN = 'env-token';
+    process.env.YUQUE_TOKEN = 'env-token';
     setIsTTY(true);
     mockExit();
 
@@ -112,12 +118,7 @@ describe('CLI entry', () => {
   });
 
   it('should start stdio server with token and base URL arguments', async () => {
-    process.argv = [
-      'node',
-      'cli.js',
-      '--token=arg-token',
-      '--base-url=https://yuque.internal/api/v2',
-    ];
+    process.argv = ['node', 'cli.js', '--token=arg-token', '--host=https://yuque.internal'];
 
     await importCli();
 
@@ -129,7 +130,7 @@ describe('CLI entry', () => {
 
   it('should exit when stdio startup fails', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    process.env.YUQUE_PERSONAL_TOKEN = 'env-token';
+    process.env.YUQUE_TOKEN = 'env-token';
     cliMocks.runStdioServer.mockRejectedValue(new Error('stdio failed'));
     mockExit(false);
 

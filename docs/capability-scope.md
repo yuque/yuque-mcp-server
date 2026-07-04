@@ -19,13 +19,13 @@
 ## User and Search
 
 - `yuque_get_user`: 读取当前 token 对应的认证用户。
-- `yuque_search`: 搜索语雀内容，`type` 当前限定为 `doc` 或 `repo`。
+- `yuque_search`: 搜索语雀内容，`type` 当前限定为 `doc` 或 `repo`，支持可选 `page` 分页。返回值为精简结构（`total` + `items`），并会剥离语雀搜索结果中的 `<em>` 高亮标签。
 
 ## Books
 
 Books 对应语雀知识库：
 
-- `yuque_list_books`: 按用户 login 列出知识库。
+- `yuque_list_books`: 列出知识库。`login` 可选，省略时自动取当前认证用户；支持可选 `offset` / `limit` 分页。
 - `yuque_get_book`: 按 repo ID 或 namespace 读取知识库。
 - `yuque_create_book`: 在指定用户下创建知识库。
 - `yuque_update_book`: 更新知识库名称、slug、描述或公开状态。
@@ -34,18 +34,18 @@ Books 对应语雀知识库：
 
 Docs 对应语雀文档：
 
-- `yuque_list_docs`: 列出知识库下的文档。
+- `yuque_list_docs`: 列出知识库下的文档，支持可选 `offset` / `limit` 分页（API 单页上限 100）。
 - `yuque_get_doc`: 读取文档完整内容。
 - `yuque_create_doc`: 创建文档；TOC 追加行为由当前工具 contract 控制，需要稳定目录位置时可用 TOC tools 读取或调整。
 - `yuque_update_doc`: 更新文档元数据或内容。
 
-文档 format（格式）当前限定为：
+文档 format（格式）当前限定为 `markdown` / `lake` / `html`，并按 format 二选一路由，单次调用只走一条语雀 API 链路：
 
-- `markdown`: 默认路径，读写走 YMD/YFM-compatible API。
-- `lake`: 走 legacy document API。
-- `html`: 走 legacy document API。
+- `yuque_get_doc`: format 省略或 `markdown` 时只走 YMD markdown API，返回 YMD 视图（`id`、`title`、`url`、`format`、`body`、`updated_at`）；format 为 `lake` / `html` 或 `include_lake: true` 时只走 legacy document API，返回完整文档字段。
+- `yuque_update_doc`: markdown body 只走 YMD markdown API，且不能与 `title` / `slug` / `public` 混在同一次调用（会显式报错，提示分两次调用）；纯元数据更新或 `lake` / `html` body 只走 legacy document API。
+- YMD API 只接受数字 doc ID；传 slug 时会先做一次 ID 解析调用，传数字 ID 可省掉这次调用。
 
-`yuque_get_doc` 还支持 `include_lake`，用于在需要保留 Mermaid source、diagram 等 Lake 内容时返回 raw Lake body。
+`yuque_get_doc` 还支持 `include_lake`，用于在需要保留 Mermaid source、diagram 等 Lake 内容时返回 raw Lake body（强制走 legacy 路径）。
 
 ## TOC
 

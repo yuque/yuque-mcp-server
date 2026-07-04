@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { resolveYuqueBaseURL } from '../../src/config.js';
 import { createServer } from '../../src/server.js';
 
 type ToolResult = {
@@ -20,7 +21,9 @@ const realApiEnabled = process.env.YUQUE_REAL_API === '1';
 const repoId = process.env.YUQUE_REAL_REPO_ID;
 const noteId = process.env.YUQUE_REAL_WRITE_NOTE_ID;
 const writeEnabled = realApiEnabled && process.env.YUQUE_REAL_WRITE === '1' && noteId;
-const token = process.env.YUQUE_PERSONAL_TOKEN ?? process.env.YUQUE_MCP_TEST_TOKEN;
+const token =
+  process.env.YUQUE_TOKEN ?? process.env.YUQUE_PERSONAL_TOKEN ?? process.env.YUQUE_MCP_TEST_TOKEN;
+const baseURL = resolveYuqueBaseURL(['node', 'smoke.test.ts'], process.env);
 
 function getRequestHandler<T>(server: unknown, method: string) {
   return (
@@ -33,10 +36,10 @@ function getRequestHandler<T>(server: unknown, method: string) {
 async function callRealTool(name: string, args: Record<string, unknown>) {
   if (!token) {
     throw new Error(
-      'YUQUE_PERSONAL_TOKEN or YUQUE_MCP_TEST_TOKEN is required for real API smoke tests'
+      'YUQUE_TOKEN, YUQUE_PERSONAL_TOKEN, or YUQUE_MCP_TEST_TOKEN is required for real API smoke tests'
     );
   }
-  const server = createServer(token, process.env.YUQUE_BASE_URL);
+  const server = createServer(token, baseURL);
   const handler = getRequestHandler<ToolResult>(server, 'tools/call');
   if (!handler) throw new Error('tools/call handler missing');
 

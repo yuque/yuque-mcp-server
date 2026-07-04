@@ -18,9 +18,10 @@ MCP client
 
 ## Entry Points
 
-- `src/cli.ts`: npm bin 入口，读取 `YUQUE_PERSONAL_TOKEN` / `--token` 和可选 `YUQUE_BASE_URL` / `--base-url`，默认以 stdio transport 启动 MCP server。直接在终端运行时会打印安装指引，避免用户误以为服务卡住。
-- `src/index.ts`: HTTP 入口，读取同一组 token / base URL 配置，使用 `StreamableHTTPServerTransport` 并监听 `PORT`，默认 `3000`。
+- `src/cli.ts`: npm bin 入口，通过 `src/config.ts` 解析 token 和 base URL，默认以 stdio transport 启动 MCP server。直接在终端运行时会打印安装指引，避免用户误以为服务卡住。
+- `src/index.ts`: HTTP 入口，读取同一组 token / base URL 配置，使用 `StreamableHTTPServerTransport` 并监听 `PORT`（默认 `3000`）。每个 MCP session 对应一对独立的 transport + server 实例（initialize 时创建，session 关闭时清理）；默认只绑定 `127.0.0.1` 并开启 DNS rebinding 防护，设置 `HOST` 环境变量可显式暴露到其他网卡（此时防护关闭，需自行加防护层）。
 - `src/cli-install.ts`: CLI 子命令入口，负责 `install` 和 `setup`，把 `yuque-mcp` 写入不同 MCP client 的配置文件。
+- `src/config.ts`: 统一的 token / host 解析逻辑，被 CLI 和 HTTP 入口共用。
 
 ## MCP Server Layer
 
@@ -58,10 +59,15 @@ MCP client
 
 ## Document Content Path
 
-文档内容有两条路径：
+文档内容有两条路径，按 format 二选一路由，单次工具调用只走其中一条：
 
-- `markdown` 或未显式指定 format 时，读写走 YMD/YFM-compatible API：`/yfm/docs`。
-- `lake` / `html` 时，走 legacy document API：`/repos/{repo}/docs/{doc}`。
+- `markdown` 或未显式指定 format 时，读写只走 YMD/YFM-compatible API：`/yfm/docs`。
+- `lake` / `html`（以及 `include_lake: true` 的读取）时，只走 legacy document API：`/repos/{repo}/docs/{doc}`。
+
+补充约束：
+
+- YMD API 只接受数字 doc ID，传 slug 时会先经 legacy API 解析出 ID。
+- markdown body 更新不与 title/slug/public 元数据混在同一次调用；混合传参会显式报错，引导分两次调用，避免跨两条链路的部分更新。
 
 这个设计把用户常用的 Markdown 体验放在 YMD/YFM flow 上，同时保留 Lake/HTML 的兼容路径。
 
