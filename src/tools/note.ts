@@ -2,6 +2,15 @@ import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
 import type { YuqueNote } from '../services/types.js';
 
+/** Escape HTML special characters so note content cannot break the HTML wrapper. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 /** Format note summary — excludes full content to reduce token usage. */
 function formatNoteSummary(note: YuqueNote) {
   return {
@@ -127,7 +136,7 @@ export const noteTools = {
     handler: async (client: YuqueClient, args: { note_id: number; body: string }) => {
       const note = await client.updateNote(args.note_id, {
         source: args.body,
-        html: `<p>${args.body}</p>`,
+        html: `<p>${escapeHtml(args.body)}</p>`,
         abstract: args.body.substring(0, 200),
       });
       return {

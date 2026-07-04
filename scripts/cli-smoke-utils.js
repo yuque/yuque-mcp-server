@@ -4,7 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 
 export const EXPECTED_MISSING_TOKEN_MESSAGE =
-  'Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required';
+  'Error: YUQUE_TOKEN environment variable, YUQUE_PERSONAL_TOKEN environment variable, or --token argument is required';
 
 const DEFAULT_TIMEOUT_MS = 5000;
 
@@ -23,6 +23,7 @@ export async function assertCliStartsAndFailsWithoutToken(
     cwd,
     env: {
       ...process.env,
+      YUQUE_TOKEN: '',
       YUQUE_PERSONAL_TOKEN: '',
     },
     stdio: [ 'pipe', 'pipe', 'pipe' ],

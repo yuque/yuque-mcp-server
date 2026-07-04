@@ -4,12 +4,29 @@ import { formatRepo } from '../utils/format.js';
 
 export const bookTools = {
   yuque_list_books: {
-    description: 'List all books (知识库) for the current user',
+    description: 'List books (知识库) for a user (defaults to the current user)',
     inputSchema: z.object({
-      login: z.string().describe('User login name'),
+      login: z
+        .string()
+        .optional()
+        .describe('User login name. Omit to list books for the current authenticated user.'),
+      offset: z
+        .number()
+        .int()
+        .min(0)
+        .optional()
+        .describe('Pagination offset (number of books to skip)'),
+      limit: z.number().int().min(1).max(100).optional().describe('Number of books per page'),
     }),
-    handler: async (client: YuqueClient, args: { login: string }) => {
-      const repos = await client.listUserRepos(args.login);
+    handler: async (
+      client: YuqueClient,
+      args: { login?: string; offset?: number; limit?: number }
+    ) => {
+      const login = args.login ?? (await client.getUser()).login;
+      const repos = await client.listUserRepos(login, {
+        offset: args.offset,
+        limit: args.limit,
+      });
       return {
         content: [
           {

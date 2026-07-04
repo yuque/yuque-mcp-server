@@ -13,9 +13,9 @@ beforeEach(() => vi.clearAllMocks());
 
 describe('searchTools', () => {
   describe('yuque_search', () => {
-    it('should search with query and type', async () => {
+    it('should search and strip highlight markup', async () => {
       (mockClient.search as ReturnType<typeof vi.fn>).mockResolvedValue({
-        items: [{ id: 1, type: 'doc', title: 'Result' }],
+        items: [{ id: 1, type: 'doc', title: '<em>Result</em>', body: 'Some <em>match</em>' }],
         total: 1,
       });
       const result = await searchTools.yuque_search.handler(mockClient, {
@@ -23,13 +23,29 @@ describe('searchTools', () => {
         type: 'doc',
       } as never);
       expect(result.content[0].type).toBe('text');
-      expect(mockClient.search).toHaveBeenCalledWith('test', 'doc');
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.total).toBe(1);
+      expect(parsed.items[0]).toMatchObject({ title: 'Result', summary: 'Some match' });
+      expect(mockClient.search).toHaveBeenCalledWith('test', 'doc', undefined);
     });
 
-    it('should search with type filter', async () => {
+    it('should pass the page number through', async () => {
       (mockClient.search as ReturnType<typeof vi.fn>).mockResolvedValue({ items: [], total: 0 });
-      await searchTools.yuque_search.handler(mockClient, { query: 'test', type: 'doc' } as never);
-      expect(mockClient.search).toHaveBeenCalledWith('test', 'doc');
+      await searchTools.yuque_search.handler(mockClient, {
+        query: 'test',
+        type: 'doc',
+        page: 2,
+      } as never);
+      expect(mockClient.search).toHaveBeenCalledWith('test', 'doc', 2);
+    });
+
+    it('should return an empty result shape when the API returns nothing', async () => {
+      (mockClient.search as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      const result = await searchTools.yuque_search.handler(mockClient, {
+        query: 'test',
+        type: 'doc',
+      } as never);
+      expect(JSON.parse(result.content[0].text)).toEqual({ total: 0, items: [] });
     });
   });
 });
