@@ -37,6 +37,7 @@
 - `eslint`: TypeScript lint。
 - `prettier`: 代码格式化。
 - `conventional-changelog-cli`: 生成 changelog。
+- `scripts/new-tool.js`: `npm run new:tool -- <domain> <yuque_tool_name>` 生成新 tool 骨架和步骤清单。
 
 ## Test Layers
 
