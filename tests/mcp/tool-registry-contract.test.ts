@@ -80,7 +80,10 @@ describe('MCP tool registry contract', () => {
   it('should expose the complete supported tool surface', async () => {
     const result = await listTools();
 
-    expect(result.tools.map((tool) => tool.name).sort()).toEqual(expectedToolNames);
+    expect(
+      result.tools.map((tool) => tool.name).sort(),
+      'The registered tool surface diverged from the pinned contract. If this change is intentional: update expectedToolNames and requiredFieldsByTool in this file, cover the tool in tests/mcp/tool-call-contract.test.ts, and update docs/capability-scope.md. If not intentional: you broke the public MCP surface — restore the registration in src/tools/ and src/server.ts.'
+    ).toEqual(expectedToolNames);
   });
 
   it('should expose JSON-schema input contracts for every tool', async () => {
@@ -93,13 +96,17 @@ describe('MCP tool registry contract', () => {
       expect(Object.keys(tool.inputSchema.properties ?? {})).toEqual(
         expect.arrayContaining(requiredFieldsByTool[tool.name])
       );
-      expect((tool.inputSchema.required ?? []).sort()).toEqual(
-        requiredFieldsByTool[tool.name].sort()
-      );
+      expect(
+        (tool.inputSchema.required ?? []).sort(),
+        `Required parameters of ${tool.name} diverged from the pinned contract. Changing required params is a breaking change for every MCP client. If intentional: update requiredFieldsByTool in this file and docs/capability-scope.md, and state the breaking change in the PR description.`
+      ).toEqual(requiredFieldsByTool[tool.name].sort());
     }
   });
 
   it('should preserve enum/default constraints that AI clients rely on', async () => {
+    // On failure: if the enum/default change is intentional, update the assertion
+    // here AND the documented enums in docs/capability-scope.md; removing or
+    // renaming enum values is a breaking change and must be stated in the PR.
     const result = await listTools();
     const byName = Object.fromEntries(result.tools.map((tool) => [tool.name, tool]));
 

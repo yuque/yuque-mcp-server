@@ -10,7 +10,7 @@ git clone https://github.com/yuque/yuque-mcp-server.git
 cd yuque-mcp-server
 npm install
 
-# Run tests
+# Run tests (single run; use npm run test:watch for watch mode)
 npm test
 
 # Type check
@@ -29,45 +29,27 @@ npm run build
 2. Create a feature branch: `git checkout -b feat/my-feature`
 3. Make your changes
 4. Add tests for new functionality
-5. Ensure all checks pass:
+5. Ensure the quality gate passes (same command CI runs):
    ```bash
-   npm run lint
-   npm run typecheck
-   npm test
-   npm run build
+   npm run check
    ```
 6. Commit with conventional commit messages
 7. Submit a pull request
 
 ## Project Structure
 
-```
-src/
-├── cli.ts              # CLI entry point
-├── index.ts            # Server setup and tool registration
-├── services/
-│   └── yuque-client.ts # Yuque API client
-├── tools/
-│   ├── doc.ts          # Document tools (CRUD)
-│   ├── group.ts        # Group/team tools
-│   ├── repo.ts         # Repository tools (CRUD)
-│   ├── search.ts       # Search tool
-│   ├── stats.ts        # Statistics tools
-│   ├── toc.ts          # Table of contents tools
-│   ├── user.ts         # User tools
-│   └── version.ts      # Document version tools
-└── utils/
-    ├── error.ts        # Error handling
-    └── format.ts       # Response formatting
-```
+The authoritative description of entry points, layers, and data flow lives in
+[docs/core-architecture.md](./docs/core-architecture.md). Start with the reading
+order in [docs/README.md](./docs/README.md) — those documents are maintained in
+sync with the code, so this file intentionally does not duplicate them.
 
 ## Adding a New Tool
 
-1. Add the API method to `src/services/yuque-client.ts`
-2. Create or update the tool definition in `src/tools/`
-3. Register the tool in `src/index.ts`
-4. Add tests in `tests/`
-5. Update README.md with the new tool
+1. Add the API method to `src/services/yuque-client.ts` (and its types to `src/services/types.ts`)
+2. Add the tool definition (`description`, `inputSchema`, `handler`) in the matching domain file under `src/tools/`
+3. If you created a new domain file, merge its tools in `src/server.ts`
+4. Add tests in `tests/tools/` and update the contract in `tests/mcp/tool-registry-contract.test.ts`
+5. Update [docs/capability-scope.md](./docs/capability-scope.md) following the maintenance rules in [AGENTS.md](./AGENTS.md)
 
 ## Coding Standards
 
@@ -82,15 +64,22 @@ src/
 We use [Vitest](https://vitest.dev/) for testing.
 
 ```bash
-# Run all tests
+# Run all tests once
 npm test
+
+# Watch mode
+npm run test:watch
 
 # Run with coverage
 npm run test:coverage
 
 # Run specific test file
-npx vitest --run tests/services/yuque-client.test.ts
+npx vitest run tests/services/yuque-client.test.ts
 ```
+
+Real Yuque API smoke tests are skipped by default; see
+[docs/technical-stack.md](./docs/technical-stack.md) for the environment
+variables that enable them.
 
 ## Commit Messages
 
