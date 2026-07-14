@@ -1,0 +1,43 @@
+name: Real API Smoke
+
+# Read-path smoke tests against the real Yuque API.
+# Requires the repo secret YUQUE_MCP_TEST_TOKEN (token of a dedicated test
+# account) and optionally the repo variable YUQUE_REAL_REPO_ID.
+# Write-path tests (YUQUE_REAL_WRITE) are intentionally never enabled in CI.
+#
+# Triggers:
+# - manually via workflow_dispatch
+# - weekly, to catch upstream Yuque API drift
+# - on pull requests labeled `real-api` (label can only be added by
+#   maintainers, which is the authorization gate)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 1'
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  smoke:
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'real-api')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run real API smoke tests (read paths only)
+        env:
+          YUQUE_REAL_API: '1'
+          YUQUE_MCP_TEST_TOKEN: ${{ secrets.YUQUE_MCP_TEST_TOKEN }}
+          YUQUE_REAL_REPO_ID: ${{ vars.YUQUE_REAL_REPO_ID }}
+        run: npx vitest run tests/real-api/smoke.test.ts

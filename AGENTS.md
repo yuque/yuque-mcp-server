@@ -22,15 +22,30 @@
 - 改 server 分层、tool 注册、service API wrapper 或文档读写路径时，同步更新 `docs/core-architecture.md`。
 - 当前代码和 contract tests 是 authoritative source（权威来源）；文档要跟随真实实现更新。
 
+## 环境自举
+
+- Fresh clone 后先执行 `npm ci`，再跑任何命令。
+- 任何命令报 `command not found`，先跑 `npm ci` 再重试。
+- Node 版本以 `.nvmrc` 为准（CI 会覆盖 18/20/22/24）。
+
 ## 常用命令
 
 ```bash
-npm run lint        # ESLint 检查 src 和 tests
-npm run typecheck   # tsc --noEmit 类型检查
-npm test            # 全量单元 + contract tests，单次运行（watch 用 npm run test:watch）
-npm run build       # 编译到 dist/
+npm run check       # 质量门：lint + format:check + typecheck + test + build
+npm run lint        # 单跑 ESLint（src 和 tests）
+npm run typecheck   # 单跑 tsc --noEmit
+npm test            # 单跑全量测试，单次运行（watch 用 npm run test:watch）
 ```
 
-- 跑单个测试文件：`npx vitest run tests/tools/doc.test.ts`。
-- 提交前四条命令全部跑通；CI 还会跑 `npm run format:check` 和两个 dist smoke tests（`smoke:dist`、`smoke:pack-install`）。
+- 完成的定义：`npm run check` 退出码为 0。提交前必须跑通，CI 跑的是同一条命令。
+- 迭代期间跑单个测试文件更快：`npx vitest run tests/tools/doc.test.ts`。
+- CI 额外跑两个 dist smoke tests（`smoke:dist`、`smoke:pack-install`）。
 - Real API smoke tests 默认跳过，开启所需的环境变量见 `docs/technical-stack.md`。
+
+## 标准工作流
+
+执行常见变更前，先读 `docs/workflows/` 下对应的步骤文档：
+
+- 新增 MCP tool: `docs/workflows/add-tool.md`（可先跑 `npm run new:tool -- <domain> <yuque_tool_name>` 生成骨架）
+- 修改现有 tool 参数或行为: `docs/workflows/modify-tool.md`
+- 修复 bug: `docs/workflows/fix-bug.md`

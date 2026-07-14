@@ -17,7 +17,9 @@
   ],
   "scripts": {
     "build": "tsc && chmod +x dist/cli.js",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
     "dev": "tsx watch src/cli.ts",
+    "new:tool": "node scripts/new-tool.js",
     "smoke:dist": "node scripts/smoke-dist-cli.js",
     "smoke:pack-install": "node scripts/smoke-packed-install.js",
     "test": "vitest run",
