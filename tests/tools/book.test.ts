@@ -3,6 +3,7 @@ import { bookTools } from '../../src/tools/book.js';
 import type { YuqueClient } from '../../src/services/yuque-client.js';
 
 const mockClient = {
+  getUser: vi.fn(),
   listUserRepos: vi.fn(),
   getRepo: vi.fn(),
   createUserRepo: vi.fn(),
@@ -30,7 +31,32 @@ describe('bookTools', () => {
       } as never);
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed).toHaveLength(1);
-      expect(mockClient.listUserRepos).toHaveBeenCalledWith('user');
+      expect(mockClient.listUserRepos).toHaveBeenCalledWith('user', {
+        offset: undefined,
+        limit: undefined,
+      });
+      expect(mockClient.getUser).not.toHaveBeenCalled();
+    });
+
+    it('should default to the current user when login is omitted', async () => {
+      (mockClient.getUser as ReturnType<typeof vi.fn>).mockResolvedValue({ login: 'me' });
+      (mockClient.listUserRepos as ReturnType<typeof vi.fn>).mockResolvedValue([mockRepo]);
+      await bookTools.yuque_list_books.handler(mockClient, {} as never);
+      expect(mockClient.getUser).toHaveBeenCalled();
+      expect(mockClient.listUserRepos).toHaveBeenCalledWith('me', {
+        offset: undefined,
+        limit: undefined,
+      });
+    });
+
+    it('should pass pagination options through', async () => {
+      (mockClient.listUserRepos as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+      await bookTools.yuque_list_books.handler(mockClient, {
+        login: 'user',
+        offset: 20,
+        limit: 10,
+      } as never);
+      expect(mockClient.listUserRepos).toHaveBeenCalledWith('user', { offset: 20, limit: 10 });
     });
   });
 

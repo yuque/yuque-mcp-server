@@ -15,19 +15,6 @@ export interface YuqueUser {
   updated_at: string;
 }
 
-export interface YuqueGroup {
-  id: number;
-  login: string;
-  name: string;
-  description: string;
-  avatar_url: string;
-  books_count: number;
-  public_books_count: number;
-  members_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface YuqueRepo {
   id: number;
   type: string;
@@ -178,36 +165,6 @@ export interface YuqueSearchResult {
   total: number;
 }
 
-export interface YuqueDocVersion {
-  id: number;
-  doc_id: number;
-  title: string;
-  body: string;
-  body_draft: string;
-  format: string;
-  user_id: number;
-  user?: YuqueUser;
-  created_at: string;
-}
-
-export interface YuqueGroupMember {
-  id: number;
-  group_id: number;
-  user_id: number;
-  user?: YuqueUser;
-  role: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface YuqueStatistics {
-  books_count: number;
-  docs_count: number;
-  members_count: number;
-  public_books_count: number;
-  public_docs_count: number;
-}
-
 export interface YuqueApiResponse<T> {
   data: T;
 }
@@ -251,7 +208,6 @@ export interface UpdateDocData {
   format?: string;
   public?: number;
 }
-// 添加到 src/services/types.ts 的小记类型定义
 
 export interface YuqueNoteContent {
   updated_at: string;

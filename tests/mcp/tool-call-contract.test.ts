@@ -166,7 +166,7 @@ const toolCases: ToolCase[] = [
     },
     assert: (http, result) => {
       expect(parseJson(result)[0]).toMatchObject({ namespace: 'user/book', public: true });
-      expect(http.get).toHaveBeenCalledWith('/users/tester/repos');
+      expect(http.get).toHaveBeenCalledWith('/users/tester/repos', { params: {} });
     },
   },
   {
@@ -216,7 +216,7 @@ const toolCases: ToolCase[] = [
     },
     assert: (http, result) => {
       expect(parseJson(result)[0]).toMatchObject({ title: 'Doc' });
-      expect(http.get).toHaveBeenCalledWith('/repos/1/docs');
+      expect(http.get).toHaveBeenCalledWith('/repos/1/docs', { params: {} });
     },
   },
   {

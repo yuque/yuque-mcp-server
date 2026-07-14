@@ -18,15 +18,20 @@
 
 ## Configuration and Authentication
 
-当前运行时配置在 CLI / HTTP 入口解析，然后传给 server 和 `YuqueClient`：
+当前运行时配置由 `src/config.ts` 统一解析（CLI 和 HTTP 入口共用），然后传给 server 和 `YuqueClient`：
 
-- Token 读取优先级：`YUQUE_PERSONAL_TOKEN` -> `--token`。
-- Base URL 读取优先级：`YUQUE_BASE_URL` -> `--base-url`。
-- `--base-url` 需要传完整 API base URL，例如 `https://yuque.example.com/api/v2`。
+- Token 读取优先级：`YUQUE_TOKEN` -> `YUQUE_PERSONAL_TOKEN` -> `--token`。
+- Host / Base URL 读取优先级：`YUQUE_HOST` -> `--host` -> `YUQUE_BASE_URL` -> `--base-url`。
+- `YUQUE_HOST` / `--host` 传站点或空间地址（如 `https://your-space.yuque.com`），会自动补全 `/api/v2`；`YUQUE_BASE_URL` / `--base-url` 传完整 API base URL。
 - 默认语雀 API base URL 由 `YuqueClient` 提供：`https://www.yuque.com/api/v2`。
 - 请求认证 header 为 `X-Auth-Token`。
 - HTTP 入口（`src/index.ts`）监听 `PORT`，默认 `3000`。
 - 所有环境变量直接从进程环境读取，项目不加载 `.env` 文件。
+
+HTTP 入口（`src/index.ts`）额外支持：
+
+- `PORT`: 监听端口，默认 `3000`。
+- `HOST`: 绑定地址，默认 `127.0.0.1`（回环）。默认开启 DNS rebinding 防护（校验 Host header）；显式设置为非回环地址时防护关闭，网络暴露需自行加认证层。
 
 ## Development Tooling
 

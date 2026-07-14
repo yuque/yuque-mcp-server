@@ -15,6 +15,7 @@ MCP server for [Yuque (语雀)](https://www.yuque.com/) — expose your knowledg
 ### 1. Get Your Yuque API Token
 
 Visit [Yuque Developer Settings](https://www.yuque.com/settings/tokens) to create a personal access token.
+If you use a team token from a Yuque space, also prepare that space host, for example `https://your-space.yuque.com`.
 
 ### 2. Quick Install (Recommended)
 
@@ -51,7 +52,7 @@ claude mcp add yuque-mcp -- npx -y yuque-mcp --token=YOUR_TOKEN
 Or using environment variables:
 
 ```bash
-export YUQUE_PERSONAL_TOKEN=YOUR_TOKEN
+export YUQUE_TOKEN=YOUR_TOKEN
 claude mcp add yuque-mcp -- npx -y yuque-mcp
 ```
 
@@ -72,7 +73,7 @@ Add to your `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -93,7 +94,7 @@ Add to `.vscode/mcp.json` in your workspace:
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -116,7 +117,7 @@ Add to your Cursor MCP configuration (`~/.cursor/mcp.json`):
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -137,7 +138,7 @@ Add to your Windsurf MCP configuration (`~/.windsurf/mcp.json`):
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -158,7 +159,7 @@ Add to your Cline MCP settings (`~/Library/Application Support/Code/User/globalS
       "command": "npx",
       "args": ["-y", "yuque-mcp"],
       "env": {
-        "YUQUE_PERSONAL_TOKEN": "YOUR_TOKEN"
+        "YUQUE_TOKEN": "YOUR_TOKEN"
       }
     }
   }
@@ -174,13 +175,13 @@ In Trae, open **Settings** and navigate to the **MCP** section, then add a new s
 
 - **Command:** `npx`
 - **Args:** `-y yuque-mcp`
-- **Env:** `YUQUE_PERSONAL_TOKEN=YOUR_TOKEN`
+- **Env:** `YUQUE_TOKEN=YOUR_TOKEN`
 
 See [Trae MCP documentation](https://docs.trae.ai/ide/model-context-protocol) for detailed instructions.
 
 </details>
 
-> **More clients:** Any MCP-compatible client that supports stdio transport can use yuque-mcp. The general pattern is: command = `npx`, args = `["-y", "yuque-mcp"]`, env = `YUQUE_PERSONAL_TOKEN`.
+> **More clients:** Any MCP-compatible client that supports stdio transport can use yuque-mcp. The general pattern is: command = `npx`, args = `["-y", "yuque-mcp"]`, env = `YUQUE_TOKEN`.
 
 </details>
 
@@ -196,27 +197,33 @@ The server supports multiple ways to provide your Yuque API token:
 
 | Method | Environment Variable / Flag | Description |
 |--------|---------------------------|-------------|
-| **Personal Token** (recommended) | `YUQUE_PERSONAL_TOKEN` | For accessing your personal Yuque account |
+| **Token** | `YUQUE_TOKEN` | Personal or team Yuque API token |
+| **Host** | `YUQUE_HOST` / `--host=https://your-space.yuque.com` | Yuque site or space host; required for team tokens tied to a specific space |
 | **CLI Argument** | `--token=YOUR_TOKEN` | Pass directly as a command-line argument |
 
-**Priority order:** `YUQUE_PERSONAL_TOKEN` > `--token`
+**Token priority order:** `YUQUE_TOKEN` > `YUQUE_PERSONAL_TOKEN` > `--token`
 
-### Private Deployment
+**Host priority order:** `YUQUE_HOST` > `--host` > `YUQUE_BASE_URL` > `--base-url`
 
-For privately deployed Yuque instances, set the `YUQUE_BASE_URL` environment variable or use the `--base-url` CLI argument:
+`YUQUE_PERSONAL_TOKEN`, `YUQUE_BASE_URL`, and `--base-url` are kept as legacy fallbacks for existing configs. New configs should use `YUQUE_TOKEN` and `YUQUE_HOST`.
+
+### Team Tokens and Private Deployment
+
+For team tokens, privately deployed Yuque instances, or custom Yuque spaces, set `YUQUE_HOST` or pass `--host`:
 
 ```bash
 # Environment variable
-export YUQUE_BASE_URL=https://yuque.example.com/api/v2
+export YUQUE_TOKEN=YOUR_TOKEN
+export YUQUE_HOST=https://your-space.yuque.com
 
 # CLI argument
-npx yuque-mcp --token=YOUR_TOKEN --base-url=https://yuque.example.com/api/v2
+npx yuque-mcp --token=YOUR_TOKEN --host=https://your-space.yuque.com
 
-# Install with custom base URL
-npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --base-url=https://yuque.example.com/api/v2
+# Install with custom host
+npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --host=https://your-space.yuque.com
 ```
 
-When not set, the default is `https://www.yuque.com/api/v2`.
+The host may be a Yuque site root such as `https://www.yuque.com` or a full API base URL such as `https://www.yuque.com/api/v2`. Host roots are normalized to `/api/v2` at runtime. When not set, the default API base URL is `https://www.yuque.com/api/v2`.
 
 ---
 
@@ -238,7 +245,7 @@ When not set, the default is `https://www.yuque.com/api/v2`.
 
 | Error | Solution |
 |-------|----------|
-| `YUQUE_PERSONAL_TOKEN is required` | Set the environment variable `YUQUE_PERSONAL_TOKEN` or pass `--token=YOUR_TOKEN` |
+| `YUQUE_TOKEN ... is required` | Set `YUQUE_TOKEN=YOUR_TOKEN` or pass `--token=YOUR_TOKEN` |
 | `401 Unauthorized` | Token is invalid or expired — regenerate at [Yuque Settings](https://www.yuque.com/settings/tokens) |
 | `429 Rate Limited` | Too many requests — wait a moment and retry |
 | `410 Gone` | The resource has been permanently deleted or the API endpoint is deprecated — verify the target document/repo still exists |

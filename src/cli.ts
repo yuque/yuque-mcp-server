@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { createRequire } from 'node:module';
 import { handleCliSubcommands } from './cli-install.js';
+import { MISSING_TOKEN_MESSAGE, resolveYuqueBaseURL, resolveYuqueToken } from './config.js';
 import { runStdioServer } from './server.js';
 
 // Handle install/setup subcommands before starting the MCP server
@@ -9,14 +10,10 @@ if (handleCliSubcommands(process.argv)) {
   // For async subcommands (setup), the process will exit when done.
 } else {
   // Normal MCP server startup
-  const token =
-    process.env.YUQUE_PERSONAL_TOKEN ||
-    process.argv.find((arg) => arg.startsWith('--token='))?.split('=')[1];
+  const token = resolveYuqueToken();
 
   if (!token) {
-    console.error(
-      'Error: YUQUE_PERSONAL_TOKEN environment variable or --token argument is required'
-    );
+    console.error(MISSING_TOKEN_MESSAGE);
     process.exit(1);
   }
 
@@ -48,9 +45,7 @@ if (handleCliSubcommands(process.argv)) {
     process.exit(0);
   }
 
-  const baseURL =
-    process.env.YUQUE_BASE_URL ||
-    process.argv.find((arg) => arg.startsWith('--base-url='))?.split('=')[1];
+  const baseURL = resolveYuqueBaseURL();
 
   runStdioServer(token, baseURL).catch((error) => {
     console.error('Fatal error:', error);

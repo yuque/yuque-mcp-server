@@ -9,7 +9,6 @@ const mockClient = {
   createDoc: vi.fn(),
   updateDoc: vi.fn(),
   updateYmdDoc: vi.fn(),
-  deleteDoc: vi.fn(),
   updateToc: vi.fn(),
 } as unknown as YuqueClient;
 
@@ -33,29 +32,31 @@ describe('docTools', () => {
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed).toHaveLength(1);
       expect(parsed[0]).toHaveProperty('title', 'Doc 1');
-      expect(mockClient.listDocs).toHaveBeenCalledWith(1);
+      expect(mockClient.listDocs).toHaveBeenCalledWith(1, { offset: undefined, limit: undefined });
     });
 
     it('should accept namespace string', async () => {
       (mockClient.listDocs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
       await docTools.yuque_list_docs.handler(mockClient, { repo_id: 'user/repo' } as never);
-      expect(mockClient.listDocs).toHaveBeenCalledWith('user/repo');
+      expect(mockClient.listDocs).toHaveBeenCalledWith('user/repo', {
+        offset: undefined,
+        limit: undefined,
+      });
+    });
+
+    it('should pass pagination options through', async () => {
+      (mockClient.listDocs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+      await docTools.yuque_list_docs.handler(mockClient, {
+        repo_id: 1,
+        offset: 100,
+        limit: 50,
+      } as never);
+      expect(mockClient.listDocs).toHaveBeenCalledWith(1, { offset: 100, limit: 50 });
     });
   });
 
   describe('yuque_get_doc', () => {
-    it('should get doc with YMD-compatible content by default', async () => {
-      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1,
-        slug: 'doc1',
-        title: 'Doc 1',
-        body: '# Hello',
-        body_html: '<h1>Hello</h1>',
-        format: 'markdown',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-02',
-        word_count: 100,
-      });
+    it('should read only through the YMD API by default with a numeric doc id', async () => {
       (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         doc_id: 1,
         title: 'Doc 1',
@@ -73,11 +74,37 @@ describe('docTools', () => {
       expect(parsed).toHaveProperty('format', 'markdown');
       expect(parsed).toHaveProperty('updated_at', '2024-01-03');
       expect(parsed).not.toHaveProperty('body_lake');
-      expect(mockClient.getDoc).toHaveBeenCalledWith(1, 1);
       expect(mockClient.getYmdDoc).toHaveBeenCalledWith(1);
+      expect(mockClient.getDoc).not.toHaveBeenCalled();
     });
 
-    it('should include body_lake when include_lake is true', async () => {
+    it('should resolve a slug to a numeric id before the YMD read', async () => {
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 7,
+        slug: 'doc-slug',
+        title: 'Doc 7',
+        body: '# Legacy body',
+        format: 'markdown',
+      });
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        doc_id: 7,
+        title: 'Doc 7',
+        url: '/user/repo/doc-slug',
+        yfm: '# Hello from YMD',
+        updated_at: '2024-01-03',
+      });
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 'user/repo',
+        doc_id: 'doc-slug',
+        include_lake: false,
+      } as never);
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveProperty('body', '# Hello from YMD');
+      expect(mockClient.getDoc).toHaveBeenCalledWith('user/repo', 'doc-slug');
+      expect(mockClient.getYmdDoc).toHaveBeenCalledWith(7);
+    });
+
+    it('should use only the legacy API when include_lake is true', async () => {
       (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 1,
         slug: 'doc1',
@@ -90,24 +117,18 @@ describe('docTools', () => {
         updated_at: '2024-01-02',
         word_count: 100,
       });
-      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        doc_id: 1,
-        title: 'Doc 1',
-        url: '/user/repo/doc1',
-        yfm: '# Hello from YMD',
-        updated_at: '2024-01-03',
-      });
       const result = await docTools.yuque_get_doc.handler(mockClient, {
         repo_id: 1,
         doc_id: 1,
         include_lake: true,
       } as never);
       const parsed = JSON.parse(result.content[0].text);
-      expect(parsed).toHaveProperty('body', '# Hello from YMD');
+      expect(parsed).toHaveProperty('body', '# Hello');
       expect(parsed).toHaveProperty('body_lake', '<!doctype lake><p>Hello</p>');
+      expect(mockClient.getYmdDoc).not.toHaveBeenCalled();
     });
 
-    it('should use legacy doc content when read format is lake', async () => {
+    it('should use only the legacy API when read format is lake', async () => {
       (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 1,
         slug: 'doc1',
@@ -229,29 +250,12 @@ describe('docTools', () => {
     });
 
     it.each([undefined, 'markdown'] as const)(
-      'should update markdown body through YMD flow when format is %s',
+      'should update a markdown body only through the YMD API when format is %s',
       async (format) => {
-        (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-          id: 1,
-          slug: 'doc1',
-          title: 'Doc 1',
-          body: 'Old content',
-          format: 'markdown',
-          created_at: '2024-01-01',
-          updated_at: '2024-01-02',
-          word_count: 2,
-        });
         (mockClient.updateYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
           doc_id: 1,
           title: 'Doc 1',
           url: '/user/repo/doc1',
-          updated_at: '2024-01-03',
-        });
-        (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-          doc_id: 1,
-          title: 'Doc 1',
-          url: '/user/repo/doc1',
-          yfm: '# Updated YMD',
           updated_at: '2024-01-03',
         });
 
@@ -263,66 +267,56 @@ describe('docTools', () => {
         } as never);
 
         const parsed = JSON.parse(result.content[0].text);
-        expect(parsed).toHaveProperty('body', '# Updated YMD');
-        expect(parsed).toHaveProperty('format', 'markdown');
-        expect(mockClient.getDoc).toHaveBeenCalledWith(1, 1);
+        expect(parsed).toMatchObject({
+          id: 1,
+          title: 'Doc 1',
+          url: '/user/repo/doc1',
+          updated_at: '2024-01-03',
+        });
         expect(mockClient.updateYmdDoc).toHaveBeenCalledWith(1, '# Updated YMD');
-        expect(mockClient.getYmdDoc).toHaveBeenCalledWith(1);
+        expect(mockClient.getDoc).not.toHaveBeenCalled();
+        expect(mockClient.getYmdDoc).not.toHaveBeenCalled();
         expect(mockClient.updateDoc).not.toHaveBeenCalled();
       }
     );
 
-    it('should update metadata and markdown body through mixed legacy/YMD flow', async () => {
+    it('should resolve a slug to a numeric id before the YMD write', async () => {
       (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1,
-        slug: 'doc1',
-        title: 'Doc 1',
-        body: 'Old content',
+        id: 7,
+        slug: 'doc-slug',
+        title: 'Doc 7',
         format: 'markdown',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-02',
-        word_count: 2,
-      });
-      (mockClient.updateDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: 1,
-        slug: 'doc1',
-        title: 'Updated',
-        body: 'Old content',
-        format: 'markdown',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-03',
-        word_count: 2,
       });
       (mockClient.updateYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        doc_id: 1,
-        title: 'Updated',
-        url: '/user/repo/doc1',
-        updated_at: '2024-01-04',
-      });
-      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
-        doc_id: 1,
-        title: 'Updated',
-        url: '/user/repo/doc1',
-        yfm: '# Updated YMD',
-        updated_at: '2024-01-04',
+        doc_id: 7,
+        title: 'Doc 7',
+        url: '/user/repo/doc-slug',
+        updated_at: '2024-01-03',
       });
 
-      const result = await docTools.yuque_update_doc.handler(mockClient, {
-        repo_id: 1,
-        doc_id: 1,
-        title: 'Updated',
+      await docTools.yuque_update_doc.handler(mockClient, {
+        repo_id: 'user/repo',
+        doc_id: 'doc-slug',
         body: '# Updated YMD',
       } as never);
 
-      const parsed = JSON.parse(result.content[0].text);
-      expect(parsed).toHaveProperty('title', 'Updated');
-      expect(parsed).toHaveProperty('body', '# Updated YMD');
-      expect(mockClient.updateDoc).toHaveBeenCalledWith(
-        1,
-        1,
-        expect.objectContaining({ title: 'Updated' })
-      );
-      expect(mockClient.updateYmdDoc).toHaveBeenCalledWith(1, '# Updated YMD');
+      expect(mockClient.getDoc).toHaveBeenCalledWith('user/repo', 'doc-slug');
+      expect(mockClient.updateYmdDoc).toHaveBeenCalledWith(7, '# Updated YMD');
+      expect(mockClient.updateDoc).not.toHaveBeenCalled();
+    });
+
+    it('should reject mixed metadata + markdown body updates', async () => {
+      await expect(
+        docTools.yuque_update_doc.handler(mockClient, {
+          repo_id: 1,
+          doc_id: 1,
+          title: 'Updated',
+          body: '# Updated YMD',
+        } as never)
+      ).rejects.toThrow('cannot change title/slug/public in the same call');
+
+      expect(mockClient.updateDoc).not.toHaveBeenCalled();
+      expect(mockClient.updateYmdDoc).not.toHaveBeenCalled();
     });
 
     it('should use legacy doc update when body format is lake', async () => {

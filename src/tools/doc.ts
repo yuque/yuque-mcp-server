@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
-import type { YuqueDoc, YuqueYmdDoc } from '../services/types.js';
-import { formatDocSummary, formatDoc } from '../utils/format.js';
+import {
+  formatDocSummary,
+  formatDoc,
+  formatYmdDoc,
+  formatYmdDocWriteResult,
+} from '../utils/format.js';
 
 async function appendDocToToc(
   client: YuqueClient,
@@ -27,26 +31,46 @@ function shouldUseYmd(format?: string): boolean {
   return !format || format === 'markdown';
 }
 
-function withYmdBody(doc: YuqueDoc, ymdDoc: YuqueYmdDoc): YuqueDoc {
-  return {
-    ...doc,
-    title: ymdDoc.title || doc.title,
-    body: ymdDoc.yfm,
-    format: 'markdown',
-    updated_at: ymdDoc.updated_at || doc.updated_at,
-  };
+/** The YMD API only accepts numeric doc IDs, so slugs need one extra lookup. */
+async function resolveDocId(
+  client: YuqueClient,
+  repoId: string | number,
+  docId: string | number
+): Promise<number> {
+  if (typeof docId === 'number') return docId;
+  const doc = await client.getDoc(repoId, docId);
+  return doc.id;
 }
 
 export const docTools = {
   yuque_list_docs: {
-    description: 'List all documents in a repo/book',
+    description: 'List documents in a repo/book with optional pagination',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
         .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
+      offset: z
+        .number()
+        .int()
+        .min(0)
+        .optional()
+        .describe('Pagination offset (number of docs to skip)'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Number of docs per page (default and max: 100)'),
     }),
-    handler: async (client: YuqueClient, args: { repo_id: string | number }) => {
-      const docs = await client.listDocs(args.repo_id);
+    handler: async (
+      client: YuqueClient,
+      args: { repo_id: string | number; offset?: number; limit?: number }
+    ) => {
+      const docs = await client.listDocs(args.repo_id, {
+        offset: args.offset,
+        limit: args.limit,
+      });
       return {
         content: [
           {
@@ -59,23 +83,28 @@ export const docTools = {
   },
 
   yuque_get_doc: {
-    description: 'Get a specific document with full content',
+    description:
+      'Get a specific document with full content. By default (format omitted or markdown) the body is read through the YMD markdown API; use format lake/html or include_lake to read through the legacy document API instead.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
         .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
-      doc_id: z.union([z.string(), z.number()]).describe('Document ID or slug'),
+      doc_id: z
+        .union([z.string(), z.number()])
+        .describe('Document ID or slug. A numeric ID saves one lookup call on the markdown path.'),
       format: z
         .enum(['markdown', 'lake', 'html'])
         .optional()
         .describe(
-          'Content format to read. Omit or use markdown to read through the YMD-compatible flow; use lake/html for the legacy document API.'
+          'Content format to read. Omit or use markdown for the YMD markdown API; use lake/html for the legacy document API.'
         ),
       include_lake: z
         .boolean()
         .optional()
         .default(false)
-        .describe('Include raw Lake format body (preserves Mermaid source code, diagrams, etc.)'),
+        .describe(
+          'Include raw Lake format body (preserves Mermaid source code, diagrams, etc.). Forces the legacy document API path.'
+        ),
     }),
     handler: async (
       client: YuqueClient,
@@ -86,19 +115,25 @@ export const docTools = {
         include_lake: boolean;
       }
     ) => {
+      if (shouldUseYmd(args.format) && !args.include_lake) {
+        const docId = await resolveDocId(client, args.repo_id, args.doc_id);
+        const ymdDoc = await client.getYmdDoc(docId);
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(formatYmdDoc(ymdDoc), null, 2),
+            },
+          ],
+        };
+      }
+
       const doc = await client.getDoc(args.repo_id, args.doc_id);
-      const formattedDoc = shouldUseYmd(args.format)
-        ? withYmdBody(doc, await client.getYmdDoc(doc.id))
-        : doc;
       return {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify(
-              formatDoc(formattedDoc, { includeLake: args.include_lake }),
-              null,
-              2
-            ),
+            text: JSON.stringify(formatDoc(doc, { includeLake: args.include_lake }), null, 2),
           },
         ],
       };
@@ -151,12 +186,15 @@ export const docTools = {
   },
 
   yuque_update_doc: {
-    description: 'Update an existing document',
+    description:
+      'Update an existing document. Exactly one Yuque write API is used per call: a markdown body (format omitted or markdown) goes through the YMD markdown API and cannot be combined with title/slug/public changes — update metadata in a separate call. Metadata-only updates and lake/html bodies go through the legacy document API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
         .describe('Repo ID or namespace (e.g., "mygroup/mybook")'),
-      doc_id: z.union([z.string(), z.number()]).describe('Document ID or slug'),
+      doc_id: z
+        .union([z.string(), z.number()])
+        .describe('Document ID or slug. A numeric ID saves one lookup call on the markdown path.'),
       title: z.string().optional().describe('New document title'),
       slug: z.string().optional().describe('New document slug'),
       body: z.string().optional().describe('New document content'),
@@ -164,7 +202,7 @@ export const docTools = {
         .enum(['markdown', 'lake', 'html'])
         .optional()
         .describe(
-          'Content format for body. Omit or use markdown to write through the YMD-compatible flow; use lake/html for the legacy document API.'
+          'Content format for body. Omit or use markdown for the YMD markdown API; use lake/html for the legacy document API.'
         ),
       public: z.number().optional().describe('Public visibility: 0 (private) or 1 (public)'),
     }),
@@ -188,17 +226,19 @@ export const docTools = {
       const hasMetadataUpdate = Object.values(metadata).some((value) => value !== undefined);
 
       if (args.body !== undefined && shouldUseYmd(args.format)) {
-        const currentDoc = await client.getDoc(args.repo_id, args.doc_id);
-        const doc = hasMetadataUpdate
-          ? await client.updateDoc(args.repo_id, args.doc_id, metadata)
-          : currentDoc;
-        await client.updateYmdDoc(currentDoc.id, args.body);
-        const ymdDoc = await client.getYmdDoc(currentDoc.id);
+        if (hasMetadataUpdate) {
+          throw new Error(
+            'A markdown body update goes through the YMD API and cannot change title/slug/public in the same call. ' +
+              'Call yuque_update_doc twice: once with only metadata fields, once with only body.'
+          );
+        }
+        const docId = await resolveDocId(client, args.repo_id, args.doc_id);
+        const writeResult = await client.updateYmdDoc(docId, args.body);
         return {
           content: [
             {
               type: 'text' as const,
-              text: JSON.stringify(formatDoc(withYmdBody(doc, ymdDoc)), null, 2),
+              text: JSON.stringify(formatYmdDocWriteResult(writeResult), null, 2),
             },
           ],
         };

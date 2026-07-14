@@ -38,7 +38,7 @@ const expectedToolNames = [
 
 const requiredFieldsByTool: Record<string, string[]> = {
   yuque_get_user: [],
-  yuque_list_books: ['login'],
+  yuque_list_books: [],
   yuque_get_book: ['repo_id'],
   yuque_create_book: ['login', 'name', 'slug'],
   yuque_update_book: ['repo_id'],

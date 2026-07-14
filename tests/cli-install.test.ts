@@ -185,7 +185,7 @@ describe('installToClient', () => {
           command: 'npx',
           args: ['-y', 'yuque-mcp'],
           env: {
-            YUQUE_PERSONAL_TOKEN: 'test-token-123',
+            YUQUE_TOKEN: 'test-token-123',
           },
         },
       },
@@ -206,7 +206,7 @@ describe('installToClient', () => {
           command: 'npx',
           args: ['-y', 'yuque-mcp'],
           env: {
-            YUQUE_PERSONAL_TOKEN: 'vsc-token',
+            YUQUE_TOKEN: 'vsc-token',
           },
         },
       },
@@ -247,7 +247,7 @@ describe('installToClient', () => {
       command: 'npx',
       args: ['-y', 'yuque-mcp'],
       env: {
-        YUQUE_PERSONAL_TOKEN: 'merge-token',
+        YUQUE_TOKEN: 'merge-token',
       },
     });
   });
@@ -264,7 +264,7 @@ describe('installToClient', () => {
               command: 'npx',
               args: ['-y', 'yuque-mcp'],
               env: {
-                YUQUE_PERSONAL_TOKEN: 'old-token',
+                YUQUE_TOKEN: 'old-token',
               },
             },
           },
@@ -279,7 +279,7 @@ describe('installToClient', () => {
     installToClient({ token: 'new-token', client: 'cursor' });
 
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(content.mcpServers['yuque'].env.YUQUE_PERSONAL_TOKEN).toBe('new-token');
+    expect(content.mcpServers['yuque'].env.YUQUE_TOKEN).toBe('new-token');
     // Should only have one entry
     expect(Object.keys(content.mcpServers)).toEqual(['yuque']);
   });
@@ -308,7 +308,24 @@ describe('installToClient', () => {
     expect(content.mcpServers.yuque).toBeDefined();
   });
 
-  it('should include custom base URL in standard client env', () => {
+  it('should include custom host in standard client env', () => {
+    const configPath = path.join(tmpDir, 'host', 'mcp.json');
+    mockConfigPath('cursor', configPath);
+
+    installToClient({
+      token: 'host-token',
+      client: 'cursor',
+      host: 'https://yuque.internal',
+    });
+
+    const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    expect(content.mcpServers.yuque.env).toEqual({
+      YUQUE_TOKEN: 'host-token',
+      YUQUE_HOST: 'https://yuque.internal',
+    });
+  });
+
+  it('should keep legacy baseURL callers working', () => {
     const configPath = path.join(tmpDir, 'base-url', 'mcp.json');
     mockConfigPath('cursor', configPath);
 
@@ -320,8 +337,8 @@ describe('installToClient', () => {
 
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     expect(content.mcpServers.yuque.env).toEqual({
-      YUQUE_PERSONAL_TOKEN: 'base-token',
-      YUQUE_BASE_URL: 'https://yuque.internal/api/v2',
+      YUQUE_TOKEN: 'base-token',
+      YUQUE_HOST: 'https://yuque.internal/api/v2',
     });
   });
 
@@ -333,7 +350,7 @@ describe('installToClient', () => {
 
     expect(fs.existsSync(configPath)).toBe(true);
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(content.mcpServers.yuque.env.YUQUE_PERSONAL_TOKEN).toBe('deep-token');
+    expect(content.mcpServers.yuque.env.YUQUE_TOKEN).toBe('deep-token');
   });
 
   it('should throw for unknown client', () => {
@@ -354,7 +371,7 @@ describe('installToClient', () => {
     expect(fs.existsSync(configPath + '.backup')).toBe(true);
     // New valid config should exist
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(content.mcpServers.yuque.env.YUQUE_PERSONAL_TOKEN).toBe('fix-token');
+    expect(content.mcpServers.yuque.env.YUQUE_TOKEN).toBe('fix-token');
   });
 
   it('should work for claude-desktop client', () => {
@@ -407,7 +424,7 @@ describe('installToClient', () => {
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     expect(content.mcpServers.yuque).toBeDefined();
     expect(content.mcpServers.yuque.command).toBe('npx');
-    expect(content.mcpServers.yuque.env.YUQUE_PERSONAL_TOKEN).toBe('qoder-tok');
+    expect(content.mcpServers.yuque.env.YUQUE_TOKEN).toBe('qoder-tok');
   });
 
   it('should work for opencode client with custom format', () => {
@@ -422,7 +439,7 @@ describe('installToClient', () => {
       type: 'local',
       command: ['npx', '-y', 'yuque-mcp'],
       environment: {
-        YUQUE_PERSONAL_TOKEN: 'opencode-tok',
+        YUQUE_TOKEN: 'opencode-tok',
       },
       enabled: true,
     });
@@ -430,20 +447,20 @@ describe('installToClient', () => {
     expect(content.mcpServers).toBeUndefined();
   });
 
-  it('should include custom base URL in opencode environment', () => {
-    const configPath = path.join(tmpDir, 'opencode-base-url', 'opencode.json');
+  it('should include custom host in opencode environment', () => {
+    const configPath = path.join(tmpDir, 'opencode-host', 'opencode.json');
     mockConfigPath('opencode', configPath);
 
     installToClient({
-      token: 'opencode-base-token',
+      token: 'opencode-host-token',
       client: 'opencode',
-      baseURL: 'https://yuque.internal/api/v2',
+      host: 'https://yuque.internal',
     });
 
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     expect(content.mcp.yuque.environment).toEqual({
-      YUQUE_PERSONAL_TOKEN: 'opencode-base-token',
-      YUQUE_BASE_URL: 'https://yuque.internal/api/v2',
+      YUQUE_TOKEN: 'opencode-host-token',
+      YUQUE_HOST: 'https://yuque.internal',
     });
   });
 
@@ -484,7 +501,7 @@ describe('installToClient', () => {
       type: 'local',
       command: ['npx', '-y', 'yuque-mcp'],
       environment: {
-        YUQUE_PERSONAL_TOKEN: 'oc-merge-tok',
+        YUQUE_TOKEN: 'oc-merge-tok',
       },
       enabled: true,
     });
@@ -518,7 +535,7 @@ describe('installToClient', () => {
     expect(content.servers['github-copilot']).toBeDefined();
     // Yuque added under 'servers' (not 'mcpServers')
     expect(content.servers['yuque']).toBeDefined();
-    expect(content.servers['yuque'].env.YUQUE_PERSONAL_TOKEN).toBe('vsc-merge-tok');
+    expect(content.servers['yuque'].env.YUQUE_TOKEN).toBe('vsc-merge-tok');
     // No mcpServers key should exist
     expect(content.mcpServers).toBeUndefined();
   });
@@ -530,6 +547,21 @@ describe('runInstall', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     mockConfigPath('cursor', configPath);
 
+    runInstall(['--token=token=with=equals', '--client=cursor', '--host=https://yuque.internal']);
+
+    const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    expect(content.mcpServers.yuque.env).toEqual({
+      YUQUE_TOKEN: 'token=with=equals',
+      YUQUE_HOST: 'https://yuque.internal',
+    });
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('Successfully configured'));
+  });
+
+  it('should accept legacy --base-url in CLI arguments', () => {
+    const configPath = path.join(tmpDir, 'run-install-base-url', 'mcp.json');
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    mockConfigPath('cursor', configPath);
+
     runInstall([
       '--token=token=with=equals',
       '--client=cursor',
@@ -538,10 +570,9 @@ describe('runInstall', () => {
 
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     expect(content.mcpServers.yuque.env).toEqual({
-      YUQUE_PERSONAL_TOKEN: 'token=with=equals',
-      YUQUE_BASE_URL: 'https://yuque.internal/api/v2',
+      YUQUE_TOKEN: 'token=with=equals',
+      YUQUE_HOST: 'https://yuque.internal/api/v2',
     });
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('Successfully configured'));
   });
 
   it('should exit when token argument is missing', () => {
