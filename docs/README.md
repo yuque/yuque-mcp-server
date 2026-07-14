@@ -1,6 +1,6 @@
 # Project Documentation
 
-这个目录放项目级维护文档，重点描述当前代码的真实边界，而不是安装说明。安装和用户接入请优先看根目录 `README.md` / `README.zh-CN.md`。
+这个目录放项目级维护文档，重点描述当前代码的真实边界，而不是安装说明。安装和用户接入请优先看根目录 `README.md` / `README.zh-CN.md`；各 MCP 客户端的手动配置路径见 [Client Configuration](./clients.md)。
 
 ## 阅读顺序
 
@@ -21,3 +21,5 @@
 - 改动 runtime、认证、host/base URL、CLI 入口或发布链路时，同步更新 [Technical Stack](./technical-stack.md)。
 - 改动入口、transport（传输层）、tool 注册、client 封装或数据流时，同步更新 [Core Architecture](./core-architecture.md)。
 - 新增、删除或修改 MCP tool、参数 schema、格式 enum 或资源类型时，同步更新 [Capability Scope](./capability-scope.md)，并确认 `tests/mcp/tool-registry-contract.test.ts` 覆盖对应 contract（契约）。
+- 根目录两份 README 的工具表由 `tests/docs/tool-surface-docs.test.ts` 锁定，[Capability Scope](./capability-scope.md) 由 `tests/mcp/capability-scope-docs.test.ts` 锁定，tool surface 变化时按测试失败提示同步更新文档。
+- 改动用户可见配置（环境变量、CLI 参数、支持的客户端列表）时，同步更新 `README.md`、`README.zh-CN.md` 和 [Client Configuration](./clients.md)；两份 README 保持逐节对应。
