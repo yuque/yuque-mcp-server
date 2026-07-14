@@ -4,8 +4,9 @@
 
 ## 0. 前置确认
 
-- 明确 tool 名称、参数和返回值。命名遵循 `yuque_<动词>_<资源>`，参考 [capability-scope.md](../capability-scope.md) 中现有 tool 的命名。
+- 明确 tool 名称、参数和返回值。命名遵循 `yuque_<动词>_<资源>`，参考 [capability-scope.md](../capability-scope.md) 中现有 tool 的命名。需求来自 issue 时，优先使用 Tool Request 模板里的结构化字段（tool 名、API endpoint、参数表、验收标准）作为规格。
 - 确认该能力不在 capability-scope.md 的 "Out of Scope" 清单里；如果在，先和维护者确认是否调整边界，不要直接实现。
+- 可用脚手架生成骨架并打印剩余步骤清单：`npm run new:tool -- <domain> <yuque_tool_name>`。新 domain 会生成 tool 文件和占位测试；已有 domain 会打印待粘贴的代码片段，不改动现有文件。
 
 ## 1. Service 层：封装语雀 API
 

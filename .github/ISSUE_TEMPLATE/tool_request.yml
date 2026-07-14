@@ -1,0 +1,64 @@
+name: Tool Request
+description: Request a new MCP tool with a structured spec that can be delivered directly
+title: "[Tool] yuque_"
+labels: ["enhancement"]
+body:
+  - type: input
+    id: tool-name
+    attributes:
+      label: Tool Name
+      description: Follow `yuque_<verb>_<resource>`, consistent with existing names in docs/capability-scope.md
+      placeholder: yuque_list_comments
+    validations:
+      required: true
+
+  - type: input
+    id: api-endpoint
+    attributes:
+      label: Yuque API Endpoint
+      description: The upstream API this tool wraps (HTTP method + path)
+      placeholder: GET /repos/{repo_id}/docs/{doc_id}/comments
+    validations:
+      required: true
+
+  - type: dropdown
+    id: access-type
+    attributes:
+      label: Access Type
+      options:
+        - Read only
+        - Write (creates or updates data)
+    validations:
+      required: true
+
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Parameters
+      description: Each parameter with type, required/optional, and any enum values or defaults
+      placeholder: |
+        - repo_id (string, required): repo id or namespace
+        - doc_id (string, required): doc id or slug
+        - page (number, optional, default 1)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Verifiable statements that define done — expected behavior, example calls and outputs
+      placeholder: |
+        - tools/list exposes the tool with the schema above
+        - Calling it with repo_id=X and doc_id=Y returns the comment list as formatted JSON
+        - Contract tests and docs/capability-scope.md updated; npm run check passes
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scope-check
+    attributes:
+      label: Scope Check
+      options:
+        - label: I checked the "Out of Scope" list in docs/capability-scope.md — this capability is not deliberately excluded, or this request explicitly proposes changing that boundary
+          required: true

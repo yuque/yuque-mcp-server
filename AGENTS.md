@@ -46,6 +46,6 @@ npm test            # 单跑全量测试，单次运行（watch 用 npm run test
 
 执行常见变更前，先读 `docs/workflows/` 下对应的步骤文档：
 
-- 新增 MCP tool: `docs/workflows/add-tool.md`
+- 新增 MCP tool: `docs/workflows/add-tool.md`（可先跑 `npm run new:tool -- <domain> <yuque_tool_name>` 生成骨架）
 - 修改现有 tool 参数或行为: `docs/workflows/modify-tool.md`
 - 修复 bug: `docs/workflows/fix-bug.md`

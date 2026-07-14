@@ -22,6 +22,17 @@ body:
       required: true
 
   - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know this is done? Prefer verifiable statements — expected behavior, example calls and outputs, checks that must pass.
+      placeholder: |
+        - yuque_get_doc with include_lake=true returns the raw Lake body
+        - Contract tests and docs/capability-scope.md updated; npm run check passes
+    validations:
+      required: false
+
+  - type: textarea
     id: alternatives
     attributes:
       label: Alternatives Considered
