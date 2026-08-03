@@ -151,6 +151,28 @@ describe('format utilities', () => {
       expect(result).toHaveProperty('description', 'Test description');
     });
 
+    it('should include body_table for laketable documents', () => {
+      const bodyTable = JSON.stringify({
+        records: [{ values: [{ value: 'Demo task' }] }],
+        pageSize: 100,
+        page: 1,
+        totalCount: 1,
+      });
+      const result = formatDoc({
+        ...doc,
+        format: 'laketable',
+        body_table: bodyTable,
+      });
+
+      expect(result).toHaveProperty('body_table', bodyTable);
+    });
+
+    it('should not include body_table when the API omits it', () => {
+      const result = formatDoc(doc);
+      expect(result).not.toHaveProperty('body_table');
+    });
+
+
     it('should not include body_lake by default', () => {
       const result = formatDoc(doc);
       expect(result).not.toHaveProperty('body_lake');

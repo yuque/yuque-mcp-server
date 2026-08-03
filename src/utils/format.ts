@@ -53,6 +53,7 @@ export function formatDoc(doc: YuqueDoc, options?: { includeLake?: boolean }) {
   return {
     ...formatDocSummary(doc),
     body: doc.body,
+    ...(doc.body_table !== undefined && { body_table: doc.body_table }),
     body_html: doc.body_html,
     description: doc.description,
     ...(options?.includeLake && { body_lake: doc.body_lake }),

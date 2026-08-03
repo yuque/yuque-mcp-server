@@ -44,6 +44,7 @@ export interface YuqueDoc {
   user?: YuqueUser;
   format: string;
   body: string;
+  body_table?: string;
   body_draft: string;
   body_html: string;
   body_lake: string;
