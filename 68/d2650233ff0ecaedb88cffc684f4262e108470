@@ -1,0 +1,20 @@
+docs/capability-scope.md
+  h_f7403adfdbae37 64
+src/services/types.ts
+  h_f7403adfdbae37 266-271
+src/tools/note.ts
+  h_f7403adfdbae37 148-150,174-177,182
+tests/tools/note.test.ts
+  h_f7403adfdbae37 214,242,245
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "68d2650233ff0ecaedb88cffc684f4262e108470",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
