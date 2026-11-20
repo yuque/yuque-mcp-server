@@ -334,7 +334,7 @@ describe('YuqueClient', () => {
       });
       expect(result).toEqual(mockResult);
       expect(mockClient.get).toHaveBeenCalledWith('/yfm/boards', {
-        params: { doc_id: 1, src: 'board-1' },
+        params: { doc_id: 1, resource_id: 'board-1' },
       });
     });
 
@@ -416,7 +416,7 @@ describe('YuqueClient', () => {
       expect(result).toEqual(mockResult);
       expect(mockClient.put).toHaveBeenCalledWith('/yfm/boards', {
         url: 'https://www.yuque.com/user/repo/doc',
-        src: 'board-1',
+        resource_id: 'board-1',
         dsl: nextDsl,
       });
     });

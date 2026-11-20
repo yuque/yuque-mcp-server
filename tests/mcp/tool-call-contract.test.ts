@@ -399,7 +399,7 @@ const toolCases: ToolCase[] = [
     assert: (http, result) => {
       expect(parseJson(result)).toMatchObject({ board: { resource: { id: 'board-1' } } });
       expect(http.get).toHaveBeenCalledWith('/yfm/boards', {
-        params: { doc_id: 2, src: 'board-1' },
+        params: { doc_id: 2, resource_id: 'board-1' },
       });
     },
   },
@@ -428,7 +428,7 @@ const toolCases: ToolCase[] = [
       expect(parseJson(result)).toMatchObject({ board: { resource: { id: 'board-1' } } });
       expect(http.put).toHaveBeenCalledWith('/yfm/boards', {
         doc_id: 2,
-        src: 'board-1',
+        resource_id: 'board-1',
         text: '- next',
       });
     },
