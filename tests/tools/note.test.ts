@@ -211,7 +211,7 @@ describe('noteTools', () => {
         source: '# 旧内容',
         html: '<h1>旧内容</h1>',
         abstract: '旧内容',
-        status: 'archived',
+        status: 9,
       });
     });
 
@@ -239,10 +239,10 @@ describe('noteTools', () => {
 
       const payload = (mockClient.updateNote as ReturnType<typeof vi.fn>).mock.calls[0][1] as {
         html: string;
-        status: string;
+        status: number;
       };
       expect(payload.html).toContain('<h1>新内容</h1>');
-      expect(payload.status).toBe('archived');
+      expect(payload.status).toBe(9);
       expect(mockClient.getNote).not.toHaveBeenCalled();
     });
 

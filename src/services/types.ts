@@ -263,6 +263,10 @@ export interface UpdateNoteData {
   source: string;
   html: string;
   abstract: string;
-  /** 0 / 'unarchived' keeps the note in the inbox, 9 / 'archived' archives it. */
-  status?: number | 'unarchived' | 'archived';
+  /**
+   * 0 keeps the note in the inbox, 9 archives it. The API also accepts the strings
+   * 'unarchived' / 'archived' in its validation but then silently ignores them, so only the
+   * numeric values actually change the state.
+   */
+  status?: 0 | 9;
 }

@@ -61,7 +61,7 @@ Notes 对应语雀小记：
 - `yuque_list_notes`: 分页列出当前用户小记，可按 status 过滤。
 - `yuque_get_note`: 按 note ID 读取小记。
 - `yuque_create_note`: 创建小记。
-- `yuque_update_note`: 更新小记内容或归档状态。`body` 可选（markdown，服务端渲染成 `html` 并取纯文本前 200 字作 `abstract`）；`status` 可选，`archived` 归档、`unarchived` 恢复到收件箱。只归档时不传 `body`，服务端会先读一次小记并复用它的 `source`/`html`/`abstract`（`PUT /notes/:id` 要求三个字段齐全）。`body` 和 `status` 至少要给一个。`body` 按 markdown 处理：服务端用 marked 渲染出 `html`，并截取纯文本前 200 字作为 `abstract`，因为 `PUT /notes/:id` 必须同时提交 `source` / `html` / `abstract`（只传 markdown 会被 API 拒绝）。
+- `yuque_update_note`: 更新小记内容或归档状态。`body` 可选（markdown，服务端渲染成 `html` 并取纯文本前 200 字作 `abstract`）；`status` 可选，`archived` 归档、`unarchived` 恢复到收件箱（API 只认数字 `9` / `0`，传字符串会被静默忽略，工具内部做了映射）。只归档时不传 `body`，服务端会先读一次小记并复用它的 `source`/`html`/`abstract`（`PUT /notes/:id` 要求三个字段齐全）。`body` 和 `status` 至少要给一个。`body` 按 markdown 处理：服务端用 marked 渲染出 `html`，并截取纯文本前 200 字作为 `abstract`，因为 `PUT /notes/:id` 必须同时提交 `source` / `html` / `abstract`（只传 markdown 会被 API 拒绝）。
 
 ## Resources
 

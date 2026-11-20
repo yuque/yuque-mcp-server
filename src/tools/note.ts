@@ -145,7 +145,9 @@ export const noteTools = {
         status: z
           .enum(['unarchived', 'archived'])
           .optional()
-          .describe('archived removes the note from the inbox, unarchived restores it'),
+          .describe(
+            'archived moves the note out of the inbox (API status 9), unarchived restores it (status 0)'
+          ),
       })
       .refine((value) => value.body !== undefined || value.status !== undefined, {
         message: 'Provide body, status, or both',
@@ -169,11 +171,15 @@ export const noteTools = {
               abstract: current?.content?.abstract ?? '',
             }
           : { source: args.body, ...renderNoteBody(args.body) };
+      // The API only honours the numeric status (0 = inbox, 9 = archived); the string
+      // values 'unarchived' / 'archived' pass validation but are then silently ignored.
+      const status: 0 | 9 | undefined =
+        args.status === undefined ? undefined : args.status === 'archived' ? 9 : 0;
       const note = await client.updateNote(args.note_id, {
         source: content.source,
         html: content.html,
         abstract: content.abstract,
-        ...(args.status !== undefined && { status: args.status }),
+        ...(status !== undefined && { status }),
       });
       return {
         content: [
