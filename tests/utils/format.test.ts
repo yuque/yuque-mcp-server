@@ -7,6 +7,7 @@ import {
   formatSheet,
   formatDocVersion,
   formatDocVersionDetail,
+  formatYmdDoc,
   formatToc,
 } from '../../src/utils/format.js';
 import type { YuqueUser, YuqueRepo, YuqueDoc, YuqueTocItem } from '../../src/services/types.js';
@@ -453,6 +454,40 @@ describe('format utilities', () => {
       });
 
       expect(detail).toHaveProperty('body', '<!doctype lake><p>Raw</p>');
+    });
+  });
+
+  describe('formatYmdDoc', () => {
+    const ymdDoc = {
+      doc_id: 1,
+      title: 'Doc',
+      url: '/user/repo/doc',
+      updated_at: '2024-01-02',
+    };
+
+    it('should rewrite HTML images as Markdown image syntax', () => {
+      const result = formatYmdDoc({
+        ...ymdDoc,
+        yfm: '<p>看图</p>\n<img src="https://cdn.nlark.com/a.png" width="353" height="471" />',
+      });
+
+      expect(result.body).toBe('<p>看图</p>\n![](https://cdn.nlark.com/a.png)');
+    });
+
+    it('should keep every image and preserve the alt text', () => {
+      const result = formatYmdDoc({
+        ...ymdDoc,
+        yfm: '<img alt="东京" src="https://cdn.nlark.com/a.png" /><img src="https://cdn.nlark.com/b.png">',
+      });
+
+      expect(result.body).toBe(
+        '![东京](https://cdn.nlark.com/a.png)![](https://cdn.nlark.com/b.png)'
+      );
+    });
+
+    it('should leave tags without a src attribute and non-image HTML untouched', () => {
+      const yfm = '<img data-src="x" /><div>文字</div>';
+      expect(formatYmdDoc({ ...ymdDoc, yfm }).body).toBe(yfm);
     });
   });
 

@@ -80,6 +80,26 @@ describe('docTools', () => {
       expect(mockClient.getDoc).not.toHaveBeenCalled();
     });
 
+    it('should expose image links from the YMD body as Markdown images', async () => {
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        doc_id: 1,
+        title: 'Doc 1',
+        url: '/user/repo/doc1',
+        yfm: '<img src="https://cdn.nlark.com/a.png" width="353" height="471" />',
+        updated_at: '2024-01-03',
+      });
+
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 1,
+        include_lake: false,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.body).toBe('![](https://cdn.nlark.com/a.png)');
+      expect(parsed.body).not.toContain('<img');
+    });
+
     it('should resolve a slug to a numeric id before the YMD read', async () => {
       (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 7,
