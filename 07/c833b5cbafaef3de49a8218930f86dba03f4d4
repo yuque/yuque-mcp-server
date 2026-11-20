@@ -1,0 +1,40 @@
+README.md
+  h_f7403adfdbae37 11,88,104-105
+README.zh-CN.md
+  h_f7403adfdbae37 11,88,104-105
+docs/capability-scope.md
+  h_f7403adfdbae37 7,14,50-59,98,105
+src/services/types.ts
+  h_f7403adfdbae37 268-287
+src/services/yuque-client.ts
+  h_f7403adfdbae37 10-11,262-283
+src/tools/doc.ts
+  h_f7403adfdbae37 8-9,265-306
+src/utils/format.ts
+  h_f7403adfdbae37 9-10,86-109
+tests/mcp/openapi-contract.test.ts
+  h_f7403adfdbae37 195-216
+tests/mcp/tool-call-contract.test.ts
+  h_f7403adfdbae37 343-392
+tests/mcp/tool-registry-contract.test.ts
+  h_f7403adfdbae37 27-28,51-52
+tests/server.test.ts
+  h_f7403adfdbae37 58,67
+tests/services/yuque-client.test.ts
+  h_f7403adfdbae37 425-474
+tests/tools/doc.test.ts
+  h_f7403adfdbae37 13-14,160-212
+tests/utils/format.test.ts
+  h_f7403adfdbae37 7-8,172-246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "07c833b5cbafaef3de49a8218930f86dba03f4d4",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
