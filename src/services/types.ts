@@ -42,8 +42,14 @@ export interface YuqueDoc {
   book?: YuqueRepo;
   user_id: number;
   user?: YuqueUser;
+  /** Doc, Sheet, Table, Board, Thread or HtmlDoc. Absent on some list responses. */
+  type?: string;
   format: string;
   body: string;
+  /** Cell data of a 表格 (Sheet) document, as a JSON string. */
+  body_sheet?: string;
+  /** Record data of a 数据表 (Table) document, as a JSON string. */
+  body_table?: string;
   body_draft: string;
   body_html: string;
   body_lake: string;

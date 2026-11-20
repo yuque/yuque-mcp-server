@@ -4,6 +4,7 @@ import {
   formatRepo,
   formatDocSummary,
   formatDoc,
+  formatSheet,
   formatToc,
 } from '../../src/utils/format.js';
 import type { YuqueUser, YuqueRepo, YuqueDoc, YuqueTocItem } from '../../src/services/types.js';
@@ -164,6 +165,217 @@ describe('format utilities', () => {
     it('should not include body_lake when includeLake is false', () => {
       const result = formatDoc(doc, { includeLake: false });
       expect(result).not.toHaveProperty('body_lake');
+    });
+
+    it('should expose the doc type in the summary only when the API returns it', () => {
+      expect(formatDocSummary(doc)).not.toHaveProperty('type');
+      expect(formatDocSummary({ ...doc, type: 'Sheet' })).toHaveProperty('type', 'Sheet');
+    });
+
+    it('should render sheet documents as a Markdown table', () => {
+      const result = formatDoc({
+        ...doc,
+        type: 'Sheet',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: JSON.stringify({
+          version: '1.0',
+          data: [
+            {
+              name: 'Sheet1',
+              table: [
+                ['参数名', '类型'],
+                ['name', 'string'],
+              ],
+            },
+          ],
+        }),
+      });
+
+      expect(result.body).toContain('### Sheet1');
+      expect(result.body).toContain('| 参数名 | 类型 |');
+      expect(result.body).toContain('| name | string |');
+      expect(result).toHaveProperty('format_note', 'Sheet formatted as a Markdown table');
+    });
+
+    it('should fall back to raw sheet data when formatting fails', () => {
+      const raw = 'not-json';
+      const result = formatDoc({ ...doc, type: 'Sheet', format: 'lakesheet', body_sheet: raw });
+
+      expect(result.body).toBe(raw);
+      expect(result).toHaveProperty('body_sheet', raw);
+      expect(result).toHaveProperty(
+        'format_note',
+        'Raw sheet data (Markdown table formatting failed)'
+      );
+    });
+
+    it('should expose body_table for 数据表 documents without dropping body', () => {
+      const bodyTable = JSON.stringify({
+        totalCount: 1,
+        pageSize: 100,
+        page: 1,
+        records: [{ values: [{ value: '写文档' }, { value: '进行中' }] }],
+      });
+      const result = formatDoc({
+        ...doc,
+        type: 'Table',
+        format: 'laketable',
+        body_table: bodyTable,
+      });
+
+      expect(result).toHaveProperty('body', 'Test content');
+      expect(result).toHaveProperty('body_table', bodyTable);
+    });
+
+    it('should not include body_table for ordinary documents', () => {
+      expect(formatDoc(doc)).not.toHaveProperty('body_table');
+    });
+  });
+
+  describe('formatSheet', () => {
+    const sheetDoc: YuqueDoc = {
+      id: 1,
+      slug: 'test-sheet',
+      title: 'Test Sheet',
+      book_id: 1,
+      user_id: 1,
+      type: 'Sheet',
+      format: 'lakesheet',
+      body: '',
+      body_draft: '',
+      body_html: '',
+      body_lake: '',
+      creator_id: 1,
+      public: 1,
+      status: 1,
+      likes_count: 0,
+      comments_count: 0,
+      content_updated_at: '2024-01-01',
+      deleted_at: null,
+      created_at: '2024-01-01',
+      updated_at: '2024-01-02',
+      published_at: '2024-01-01',
+      first_published_at: '2024-01-01',
+      word_count: 0,
+      cover: null,
+      description: '',
+    };
+
+    function sheetWith(data: unknown[]): YuqueDoc {
+      return { ...sheetDoc, body_sheet: JSON.stringify({ version: '1.0', data }) };
+    }
+
+    it('should render one table per tab and keep every tab', () => {
+      const doc = sheetWith([
+        {
+          name: '销量',
+          table: [
+            ['月份', '收入'],
+            ['一月', '100'],
+            ['二月', '200'],
+          ],
+        },
+        {
+          name: '用户',
+          table: [
+            ['姓名', '年龄'],
+            ['小明', '30'],
+          ],
+        },
+        { name: '空表', table: [] },
+      ]);
+
+      const result = formatSheet(doc);
+
+      expect(result.success).toBe(true);
+      expect(result.formatted).toContain('### 销量');
+      expect(result.formatted).toContain('| 月份 | 收入 |');
+      expect(result.formatted).toContain('| 二月 | 200 |');
+      expect(result.formatted).toContain('### 用户');
+      expect(result.formatted).toContain('| 小明 | 30 |');
+      expect(result.formatted).not.toContain('### 空表');
+    });
+
+    it('should use the first non-blank row as the header', () => {
+      const doc = sheetWith([
+        { name: 'Sheet1', table: [[], ['', ''], ['参数名', '类型'], ['name', 'string']] },
+      ]);
+
+      const result = formatSheet(doc);
+
+      expect(result.success).toBe(true);
+      expect(result.formatted).toContain('| 参数名 | 类型 |');
+      expect(result.formatted).toContain('| --- | --- |');
+      expect(result.formatted).not.toContain('| --- | --- |\n| 参数名');
+    });
+
+    it('should pad short rows and keep wide rows so no cell is lost', () => {
+      const doc = sheetWith([
+        {
+          name: 'Sheet1',
+          table: [
+            ['参数名', '类型', '必填'],
+            ['name', 'string'],
+            ['flag', 'boolean', '0', '备注'],
+          ],
+        },
+      ]);
+
+      const result = formatSheet(doc);
+      const lines = result.formatted.split('\n');
+
+      // Header is padded to the widest row (4 columns).
+      expect(lines[2]).toBe('| 参数名 | 类型 | 必填 |  |');
+      // Short row keeps its column alignment.
+      expect(lines[4]).toBe('| name | string |  |  |');
+      // Wide row is fully preserved.
+      expect(lines[5]).toBe('| flag | boolean | 0 | 备注 |');
+    });
+
+    it('should deduplicate identical tab names', () => {
+      const doc = sheetWith([
+        { table: [['A'], ['1']] },
+        { name: 'Sheet1', table: [['C'], ['3']] },
+        { table: [['E'], ['5']] },
+      ]);
+
+      const result = formatSheet(doc);
+
+      expect(result.formatted).toContain('### Sheet1\n');
+      expect(result.formatted).toContain('### Sheet1 (2)');
+      expect(result.formatted).toContain('### Sheet1 (3)');
+    });
+
+    it('should escape cells that would break the table', () => {
+      const doc = sheetWith([
+        {
+          name: 'Sheet1',
+          table: [
+            ['a', 'b'],
+            ['x|y', '第一行\n第二行'],
+          ],
+        },
+      ]);
+
+      const result = formatSheet(doc);
+
+      expect(result.formatted).toContain('| x\\|y | 第一行 第二行 |');
+    });
+
+    it('should fall back to raw data when there is nothing to render', () => {
+      const raw = JSON.stringify({ version: '1.0', data: [] });
+      const result = formatSheet({ ...sheetDoc, body_sheet: raw });
+
+      expect(result.success).toBe(false);
+      expect(result.formatted).toBe(raw);
+    });
+
+    it('should fall back to raw data when the payload is not JSON', () => {
+      const result = formatSheet({ ...sheetDoc, body_sheet: 'not-json' });
+
+      expect(result.success).toBe(false);
+      expect(result.formatted).toBe('not-json');
     });
   });
 

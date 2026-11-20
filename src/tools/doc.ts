@@ -1,11 +1,17 @@
 import { z } from 'zod';
 import type { YuqueClient } from '../services/yuque-client.js';
+import type { YuqueDoc, YuqueYmdDoc } from '../services/types.js';
 import {
   formatDocSummary,
   formatDoc,
   formatYmdDoc,
   formatYmdDocWriteResult,
 } from '../utils/format.js';
+import {
+  isNonMarkdownDoc,
+  assertBodyWritable,
+  assertCreateFormatSupported,
+} from '../utils/doc-type.js';
 
 async function appendDocToToc(
   client: YuqueClient,
@@ -32,14 +38,25 @@ function shouldUseYmd(format?: string): boolean {
 }
 
 /** The YMD API only accepts numeric doc IDs, so slugs need one extra lookup. */
-async function resolveDocId(
+async function resolveDoc(
   client: YuqueClient,
   repoId: string | number,
   docId: string | number
-): Promise<number> {
-  if (typeof docId === 'number') return docId;
+): Promise<{ id: number; doc?: YuqueDoc }> {
+  if (typeof docId === 'number') return { id: docId };
   const doc = await client.getDoc(repoId, docId);
-  return doc.id;
+  return { id: doc.id, doc };
+}
+
+function toTextResult(payload: unknown) {
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify(payload, null, 2),
+      },
+    ],
+  };
 }
 
 export const docTools = {
@@ -84,7 +101,7 @@ export const docTools = {
 
   yuque_get_doc: {
     description:
-      'Get a specific document with full content. By default (format omitted or markdown) the body is read through the YMD markdown API; use format lake/html or include_lake to read through the legacy document API instead.',
+      'Get a specific document with full content. By default (format omitted or markdown) the body is read through the YMD markdown API; use format lake/html or include_lake to read through the legacy document API instead. 表格 (Sheet) documents are returned as a Markdown table and 数据表 (Table) documents expose body_table, both read through the legacy document API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -116,32 +133,49 @@ export const docTools = {
       }
     ) => {
       if (shouldUseYmd(args.format) && !args.include_lake) {
-        const docId = await resolveDocId(client, args.repo_id, args.doc_id);
-        const ymdDoc = await client.getYmdDoc(docId);
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify(formatYmdDoc(ymdDoc), null, 2),
-            },
-          ],
-        };
+        const { id: docId, doc: resolvedDoc } = await resolveDoc(client, args.repo_id, args.doc_id);
+
+        // Sheet / Table / Board / Thread documents have no markdown body: /yfm/docs
+        // either fails or returns an empty document for them.
+        let ymdDoc: YuqueYmdDoc | undefined;
+        let ymdError: unknown;
+        try {
+          ymdDoc = await client.getYmdDoc(docId);
+        } catch (error) {
+          ymdError = error;
+        }
+
+        if (ymdDoc?.yfm?.trim()) {
+          return toTextResult(formatYmdDoc(ymdDoc));
+        }
+
+        // Either the YMD read failed or it returned nothing: fall back to the legacy
+        // document API so the sheet / table body stays visible.
+        let doc = resolvedDoc;
+        if (!doc) {
+          try {
+            doc = await client.getDoc(args.repo_id, docId);
+          } catch (fallbackError) {
+            throw ymdError ?? fallbackError;
+          }
+        }
+
+        if (!isNonMarkdownDoc(doc)) {
+          if (ymdDoc) return toTextResult(formatYmdDoc(ymdDoc));
+          throw ymdError;
+        }
+
+        return toTextResult(formatDoc(doc, { includeLake: args.include_lake }));
       }
 
       const doc = await client.getDoc(args.repo_id, args.doc_id);
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(formatDoc(doc, { includeLake: args.include_lake }), null, 2),
-          },
-        ],
-      };
+      return toTextResult(formatDoc(doc, { includeLake: args.include_lake }));
     },
   },
 
   yuque_create_doc: {
-    description: 'Create a new document in a repo/book',
+    description:
+      'Create a new document in a repo/book. Sheet (lakesheet) and Table (laketable) documents cannot be created through the Open API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -163,6 +197,8 @@ export const docTools = {
         public?: number;
       }
     ) => {
+      assertCreateFormatSupported(args.format);
+
       const data = {
         title: args.title,
         slug: args.slug,
@@ -187,7 +223,7 @@ export const docTools = {
 
   yuque_update_doc: {
     description:
-      'Update an existing document. Exactly one Yuque write API is used per call: a markdown body (format omitted or markdown) goes through the YMD markdown API and cannot be combined with title/slug/public changes — update metadata in a separate call. Metadata-only updates and lake/html bodies go through the legacy document API.',
+      'Update an existing document. Exactly one Yuque write API is used per call: a markdown body (format omitted or markdown) goes through the YMD markdown API and cannot be combined with title/slug/public changes — update metadata in a separate call. Metadata-only updates and lake/html bodies go through the legacy document API. Sheet/Table/Board/Thread documents only accept metadata updates (title, slug, public); their body cannot be written through the Open API.',
     inputSchema: z.object({
       repo_id: z
         .union([z.string(), z.number()])
@@ -232,16 +268,11 @@ export const docTools = {
               'Call yuque_update_doc twice: once with only metadata fields, once with only body.'
           );
         }
-        const docId = await resolveDocId(client, args.repo_id, args.doc_id);
+        const { id: docId, doc: resolvedDoc } = await resolveDoc(client, args.repo_id, args.doc_id);
+        // A slug lookup already returned the document, so guard sheet/table bodies for free.
+        if (resolvedDoc) assertBodyWritable(resolvedDoc);
         const writeResult = await client.updateYmdDoc(docId, args.body);
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify(formatYmdDocWriteResult(writeResult), null, 2),
-            },
-          ],
-        };
+        return toTextResult(formatYmdDocWriteResult(writeResult));
       }
 
       const data = {

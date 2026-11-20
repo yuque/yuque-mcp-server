@@ -153,9 +153,161 @@ describe('docTools', () => {
       expect(parsed).toHaveProperty('format', 'lake');
       expect(mockClient.getYmdDoc).not.toHaveBeenCalled();
     });
+
+    it('should fall back to the legacy API and render a sheet when the YMD read is empty', async () => {
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        doc_id: 2,
+        title: 'Sheet 1',
+        url: '/user/repo/sheet1',
+        yfm: '   ',
+        updated_at: '2024-01-03',
+      });
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 2,
+        type: 'Sheet',
+        slug: 'sheet1',
+        title: 'Sheet 1',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: JSON.stringify({
+          version: '1.0',
+          data: [
+            {
+              name: 'Sheet1',
+              table: [
+                ['参数名', '类型'],
+                ['name', 'string'],
+              ],
+            },
+          ],
+        }),
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 2,
+        include_lake: false,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveProperty('type', 'Sheet');
+      expect(parsed.body).toContain('| 参数名 | 类型 |');
+      expect(parsed).toHaveProperty('format_note', 'Sheet formatted as a Markdown table');
+      expect(mockClient.getDoc).toHaveBeenCalledTimes(1);
+      expect(mockClient.getDoc).toHaveBeenCalledWith(1, 2);
+    });
+
+    it('should fall back to the legacy API when the YMD read fails on a table doc', async () => {
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('unsupported document type')
+      );
+      const bodyTable = JSON.stringify({
+        totalCount: 1,
+        records: [{ values: [{ value: '进行中' }] }],
+      });
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 3,
+        type: 'Table',
+        slug: 'table1',
+        title: '数据表',
+        format: 'laketable',
+        body: '{"meta":{}}',
+        body_table: bodyTable,
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 3,
+        include_lake: false,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveProperty('type', 'Table');
+      expect(parsed).toHaveProperty('body_table', bodyTable);
+    });
+
+    it('should keep the YMD view for a regular doc whose YMD body is empty', async () => {
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        doc_id: 1,
+        title: 'Doc 1',
+        url: '/user/repo/doc1',
+        yfm: '',
+        updated_at: '2024-01-03',
+      });
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 1,
+        type: 'Doc',
+        slug: 'doc1',
+        title: 'Doc 1',
+        format: 'markdown',
+        body: '',
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      const result = await docTools.yuque_get_doc.handler(mockClient, {
+        repo_id: 1,
+        doc_id: 1,
+        include_lake: false,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toMatchObject({ id: 1, title: 'Doc 1', body: '', format: 'markdown' });
+    });
+
+    it('should surface the YMD error when the fallback doc is a regular doc', async () => {
+      (mockClient.getYmdDoc as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('YMD temporarily unavailable')
+      );
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 1,
+        type: 'Doc',
+        slug: 'doc1',
+        title: 'Doc 1',
+        format: 'markdown',
+        body: 'legacy body',
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 2,
+      });
+
+      await expect(
+        docTools.yuque_get_doc.handler(mockClient, {
+          repo_id: 1,
+          doc_id: 1,
+          include_lake: false,
+        } as never)
+      ).rejects.toThrow('YMD temporarily unavailable');
+    });
   });
 
   describe('yuque_create_doc', () => {
+    it.each(['lakesheet', 'laketable'])(
+      'should reject the %s create format before calling the API',
+      async (format) => {
+        await expect(
+          docTools.yuque_create_doc.handler(mockClient, {
+            repo_id: 1,
+            title: 'Sheet',
+            format,
+          } as never)
+        ).rejects.toThrow(/Cannot create/);
+
+        expect(mockClient.createDoc).not.toHaveBeenCalled();
+      }
+    );
+
     it('should create doc with title and body', async () => {
       (mockClient.createDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 2,
@@ -317,6 +469,33 @@ describe('docTools', () => {
 
       expect(mockClient.updateDoc).not.toHaveBeenCalled();
       expect(mockClient.updateYmdDoc).not.toHaveBeenCalled();
+    });
+
+    it('should reject body writes when a slug lookup reveals a sheet doc', async () => {
+      (mockClient.getDoc as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 2,
+        type: 'Sheet',
+        slug: 'sheet1',
+        title: 'Sheet 1',
+        format: 'lakesheet',
+        body: '',
+        body_sheet: '{}',
+        body_html: '',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-02',
+        word_count: 0,
+      });
+
+      await expect(
+        docTools.yuque_update_doc.handler(mockClient, {
+          repo_id: 'user/repo',
+          doc_id: 'sheet1',
+          body: '# nope',
+        } as never)
+      ).rejects.toThrow(/Cannot update the body of a "Sheet" document/);
+
+      expect(mockClient.updateYmdDoc).not.toHaveBeenCalled();
+      expect(mockClient.updateDoc).not.toHaveBeenCalled();
     });
 
     it('should use legacy doc update when body format is lake', async () => {
