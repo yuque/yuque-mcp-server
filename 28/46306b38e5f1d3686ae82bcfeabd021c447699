@@ -1,0 +1,18 @@
+src/services/yuque-client.ts
+  h_f7403adfdbae37 200,222
+tests/mcp/tool-call-contract.test.ts
+  h_f7403adfdbae37 352,381
+tests/services/yuque-client.test.ts
+  h_f7403adfdbae37 337,419
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2846306b38e5f1d3686ae82bcfeabd021c447699",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
