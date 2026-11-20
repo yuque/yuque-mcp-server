@@ -44,17 +44,6 @@ function toResourcePayload<T extends { resource_type: string }>(data: T): Record
   );
 }
 
-function toBoardResourcePayload<T extends { resource_type: string; resource_id?: string }>(
-  data: T
-): Record<string, unknown> {
-  const { resource_id: resourceId, ...payload } = toResourcePayload(data);
-  // The public v2 board API names this field src, but expects the raw resource id.
-  return {
-    ...payload,
-    ...(resourceId !== undefined && { src: resourceId }),
-  };
-}
-
 export class YuqueClient {
   private client: AxiosInstance;
 
@@ -208,7 +197,7 @@ export class YuqueClient {
   async getResource(data: YuqueResourceGetData): Promise<YuqueResourceResult> {
     return withErrorHandling(async () => {
       const r = await this.client.get<YuqueApiResponse<YuqueResourceResult>>('/yfm/boards', {
-        params: toBoardResourcePayload(data),
+        params: toResourcePayload(data),
       });
       return r.data.data;
     });
@@ -230,7 +219,7 @@ export class YuqueClient {
     return withErrorHandling(async () => {
       const r = await this.client.put<YuqueApiResponse<YuqueResourceResult>>(
         '/yfm/boards',
-        toBoardResourcePayload(data)
+        toResourcePayload(data)
       );
       return r.data.data;
     });
