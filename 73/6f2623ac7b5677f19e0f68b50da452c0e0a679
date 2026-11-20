@@ -1,0 +1,22 @@
+docs/capability-scope.md
+  h_f7403adfdbae37 64
+src/services/types.ts
+  h_f7403adfdbae37 266-267
+src/tools/note.ts
+  h_f7403adfdbae37 139-171,173-176
+tests/mcp/tool-registry-contract.test.ts
+  h_f7403adfdbae37 55
+tests/tools/note.test.ts
+  h_f7403adfdbae37 174-256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "736f2623ac7b5677f19e0f68b50da452c0e0a679",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
