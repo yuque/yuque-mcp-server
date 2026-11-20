@@ -1,0 +1,18 @@
+CHANGELOG.md
+  h_f7403adfdbae37 1-18
+package-lock.json
+  h_f7403adfdbae37 3,9
+package.json
+  h_f7403adfdbae37 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9306eb1d523e6b365ff5d7f298c6a310e77aa913",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
