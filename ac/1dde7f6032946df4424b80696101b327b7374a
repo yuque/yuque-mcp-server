@@ -1,0 +1,28 @@
+docs/capability-scope.md
+  h_f7403adfdbae37 42,44,50-58
+src/services/types.ts
+  h_f7403adfdbae37 45-46,49-52
+src/tools/doc.ts
+  h_f7403adfdbae37 3,10-14,41,45-46,48-59,104,136-168,172,177-178,200-201,226,271-273,275
+src/utils/doc-type.ts
+  h_f7403adfdbae37 1-61
+src/utils/format.ts
+  h_f7403adfdbae37 10,45,55,61-151
+tests/tools/doc.test.ts
+  h_f7403adfdbae37 156-292,296-310,474-500
+tests/utils/doc-type.test.ts
+  h_f7403adfdbae37 1-80
+tests/utils/format.test.ts
+  h_f7403adfdbae37 7,169-379
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ac1dde7f6032946df4424b80696101b327b7374a",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
