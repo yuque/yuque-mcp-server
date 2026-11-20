@@ -153,6 +153,20 @@ function escapeMarkdownCell(cell: unknown): string {
     .trim();
 }
 
+/**
+ * Rewrite HTML <img> tags as Markdown image syntax.
+ * The YMD writer emits images as <img src="..." width="..." height="..." />, which hides the
+ * image URL from Markdown readers and from the model when it rewrites the document.
+ */
+function htmlImagesToMarkdown(markdown: string): string {
+  return markdown.replace(/<img\b[^>]*>/gi, (tag) => {
+    const src = /(?:^|\s)src\s*=\s*(["'])(.*?)\1/i.exec(tag)?.[2];
+    if (!src) return tag;
+    const alt = (/(?:^|\s)alt\s*=\s*(["'])(.*?)\1/i.exec(tag)?.[2] ?? '').replace(/[[\]]/g, '');
+    return `![${alt}](${src})`;
+  });
+}
+
 /** Format a YMD markdown doc view. */
 export function formatYmdDoc(doc: YuqueYmdDoc) {
   return {
@@ -160,7 +174,7 @@ export function formatYmdDoc(doc: YuqueYmdDoc) {
     title: doc.title,
     url: doc.url,
     format: 'markdown',
-    body: doc.yfm,
+    body: htmlImagesToMarkdown(doc.yfm),
     updated_at: doc.updated_at,
   };
 }

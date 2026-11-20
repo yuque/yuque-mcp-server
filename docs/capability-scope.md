@@ -44,6 +44,7 @@ Docs 对应语雀文档：
 - `yuque_get_doc`: format 省略或 `markdown` 时先走 YMD markdown API，返回 YMD 视图（`id`、`title`、`url`、`format`、`body`、`updated_at`）；YMD 报错或返回空 body 时回退一次 legacy document API，用于识别非普通文档（见下）。format 为 `lake` / `html` 或 `include_lake: true` 时只走 legacy document API，返回完整文档字段。
 - `yuque_update_doc`: markdown body 只走 YMD markdown API，且不能与 `title` / `slug` / `public` 混在同一次调用（会显式报错，提示分两次调用）；纯元数据更新或 `lake` / `html` body 只走 legacy document API。
 - YMD API 只接受数字 doc ID；传 slug 时会先做一次 ID 解析调用，传数字 ID 可省掉这次调用。
+- YMD markdown 正文里的图片是 `<img src=... />` HTML 标签，读取时会转成 Markdown 图片语法（`![](url)`），保证图片链接对模型可见、写回时不丢图。
 
 `yuque_get_doc` 还支持 `include_lake`，用于在需要保留 Mermaid source、diagram 等 Lake 内容时返回 raw Lake body（强制走 legacy 路径）。
 
