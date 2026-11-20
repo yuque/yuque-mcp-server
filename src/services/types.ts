@@ -263,5 +263,6 @@ export interface UpdateNoteData {
   source: string;
   html: string;
   abstract: string;
-  status?: number;
+  /** 0 / 'unarchived' keeps the note in the inbox, 9 / 'archived' archives it. */
+  status?: number | 'unarchived' | 'archived';
 }

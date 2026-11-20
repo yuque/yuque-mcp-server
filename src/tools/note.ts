@@ -136,17 +136,44 @@ export const noteTools = {
   },
 
   yuque_update_note: {
-    description: 'Update an existing note',
-    inputSchema: z.object({
-      note_id: z.number().describe('Note ID'),
-      body: z.string().describe('New note content (plain text or markdown)'),
-    }),
-    handler: async (client: YuqueClient, args: { note_id: number; body: string }) => {
-      const { html, abstract } = renderNoteBody(args.body);
+    description:
+      'Update an existing note: replace its content and/or archive or restore it. Provide body to rewrite the content (markdown), status to archive (archived) or restore (unarchived); at least one of them is required.',
+    inputSchema: z
+      .object({
+        note_id: z.number().describe('Note ID'),
+        body: z.string().optional().describe('New note content (plain text or markdown)'),
+        status: z
+          .enum(['unarchived', 'archived'])
+          .optional()
+          .describe('archived removes the note from the inbox, unarchived restores it'),
+      })
+      .refine((value) => value.body !== undefined || value.status !== undefined, {
+        message: 'Provide body, status, or both',
+        path: ['body'],
+      }),
+    handler: async (
+      client: YuqueClient,
+      args: { note_id: number; body?: string; status?: 'unarchived' | 'archived' }
+    ) => {
+      if (args.body === undefined && args.status === undefined) {
+        throw new Error('yuque_update_note requires body, status, or both');
+      }
+      // PUT /notes/:id always needs the full content, so an archive-only update reuses the
+      // note's current source/html/abstract instead of asking the caller to resend the body.
+      const current = args.body === undefined ? await client.getNote(args.note_id) : undefined;
+      const content =
+        args.body === undefined
+          ? {
+              source: current?.content?.source ?? '',
+              html: current?.content?.html ?? '',
+              abstract: current?.content?.abstract ?? '',
+            }
+          : { source: args.body, ...renderNoteBody(args.body) };
       const note = await client.updateNote(args.note_id, {
-        source: args.body,
-        html,
-        abstract,
+        source: content.source,
+        html: content.html,
+        abstract: content.abstract,
+        ...(args.status !== undefined && { status: args.status }),
       });
       return {
         content: [
