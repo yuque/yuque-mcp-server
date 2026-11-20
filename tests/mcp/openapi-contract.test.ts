@@ -193,6 +193,28 @@ const openApiBackedToolContracts: ToolOpenApiContract[] = [
     ],
   },
   {
+    tool: 'yuque_list_doc_versions',
+    operations: [
+      {
+        method: 'get',
+        path: '/api/v2/doc_versions',
+        operationId: 'doc_api_v2_doc_version_list',
+        requiredQueryParams: ['doc_id'],
+      },
+    ],
+  },
+  {
+    tool: 'yuque_get_doc_version',
+    operations: [
+      {
+        method: 'get',
+        path: '/api/v2/doc_versions/{id}',
+        operationId: 'doc_api_v2_doc_version_show',
+        requiredPathParams: ['id'],
+      },
+    ],
+  },
+  {
     tool: 'yuque_get_toc',
     operations: [
       {

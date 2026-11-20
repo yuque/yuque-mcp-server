@@ -422,6 +422,56 @@ describe('YuqueClient', () => {
     });
   });
 
+  describe('doc version operations', () => {
+    it('should list doc versions by doc id', async () => {
+      const versions = [
+        {
+          id: 11,
+          doc_id: 2,
+          slug: 'doc',
+          title: 'Doc',
+          user_id: 1,
+          created_at: '2024-03-01T00:00:00.000Z',
+          updated_at: '2024-03-01T00:00:00.000Z',
+        },
+      ];
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: versions } });
+
+      const result = await client.listDocVersions(2);
+
+      expect(result).toEqual(versions);
+      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions', {
+        params: { doc_id: 2 },
+      });
+    });
+
+    it('should get a single doc version', async () => {
+      const version = {
+        id: 11,
+        doc_id: 2,
+        slug: 'doc',
+        title: 'Doc',
+        user_id: 1,
+        format: 'markdown',
+        body: '# Doc',
+        body_md: '# Doc',
+        body_html: '<h1>Doc</h1>',
+        body_asl: '<!doctype lake><p>Doc</p>',
+        diff: '+# Doc',
+        created_at: '2024-03-01T00:00:00.000Z',
+        updated_at: '2024-03-01T00:00:00.000Z',
+      };
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: version } });
+
+      const result = await client.getDocVersion(11);
+
+      expect(result).toEqual(version);
+      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions/11');
+    });
+  });
+
   describe('toc operations', () => {
     it('should get toc', async () => {
       const mockToc = [{ title: 'Intro', uuid: 'u1', doc_id: 1 }];

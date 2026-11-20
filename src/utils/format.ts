@@ -6,6 +6,8 @@ import type {
   YuqueYmdDocWriteResult,
   YuqueTocItem,
   YuqueSearchResult,
+  YuqueDocVersion,
+  YuqueDocVersionDetail,
 } from '../services/types.js';
 import { isSheetDoc, sheetSource } from './doc-type.js';
 
@@ -170,6 +172,30 @@ export function formatYmdDocWriteResult(result: YuqueYmdDocWriteResult) {
     title: result.title,
     url: result.url,
     updated_at: result.updated_at,
+  };
+}
+
+/** Format a document version entry — metadata only, no body. */
+export function formatDocVersion(version: YuqueDocVersion) {
+  return {
+    id: version.id,
+    doc_id: version.doc_id,
+    title: version.title,
+    slug: version.slug,
+    created_at: version.created_at,
+    ...(version.user && {
+      user: { id: version.user.id, login: version.user.login, name: version.user.name },
+    }),
+  };
+}
+
+/** Format a document version including its body and diff. */
+export function formatDocVersionDetail(version: YuqueDocVersionDetail) {
+  return {
+    ...formatDocVersion(version),
+    format: version.format,
+    body: version.body_md || version.body,
+    diff: version.diff,
   };
 }
 

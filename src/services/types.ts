@@ -271,3 +271,23 @@ export interface UpdateNoteData {
   abstract: string;
   status?: number;
 }
+
+export interface YuqueDocVersion {
+  id: number;
+  doc_id: number;
+  slug: string;
+  title: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  user?: YuqueUser;
+}
+
+export interface YuqueDocVersionDetail extends YuqueDocVersion {
+  format: string;
+  body: string;
+  body_html: string;
+  body_md: string;
+  body_asl: string;
+  diff: string;
+}

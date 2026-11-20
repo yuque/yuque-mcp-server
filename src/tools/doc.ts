@@ -6,6 +6,8 @@ import {
   formatDoc,
   formatYmdDoc,
   formatYmdDocWriteResult,
+  formatDocVersion,
+  formatDocVersionDetail,
 } from '../utils/format.js';
 import {
   isNonMarkdownDoc,
@@ -286,6 +288,48 @@ export const docTools = {
           {
             type: 'text' as const,
             text: JSON.stringify(formatDoc(doc), null, 2),
+          },
+        ],
+      };
+    },
+  },
+
+  yuque_list_doc_versions: {
+    description:
+      'List the published version history of a document (up to 100 versions, newest first): version id, title, slug and publish time. Use yuque_get_doc_version to read a version body or diff.',
+    inputSchema: z.object({
+      doc_id: z
+        .number()
+        .int()
+        .positive()
+        .describe('Document ID (numeric). Resolve a slug with yuque_get_doc first.'),
+    }),
+    handler: async (client: YuqueClient, args: { doc_id: number }) => {
+      const versions = await client.listDocVersions(args.doc_id);
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(versions.map(formatDocVersion), null, 2),
+          },
+        ],
+      };
+    },
+  },
+
+  yuque_get_doc_version: {
+    description:
+      'Read one document version: markdown body (body_md, falling back to the raw body) plus the diff against the previous version.',
+    inputSchema: z.object({
+      version_id: z.number().int().positive().describe('Version ID from yuque_list_doc_versions'),
+    }),
+    handler: async (client: YuqueClient, args: { version_id: number }) => {
+      const version = await client.getDocVersion(args.version_id);
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(formatDocVersionDetail(version), null, 2),
           },
         ],
       };

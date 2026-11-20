@@ -10,6 +10,8 @@ const mockClient = {
   updateDoc: vi.fn(),
   updateYmdDoc: vi.fn(),
   updateToc: vi.fn(),
+  listDocVersions: vi.fn(),
+  getDocVersion: vi.fn(),
 } as unknown as YuqueClient;
 
 beforeEach(() => vi.clearAllMocks());
@@ -289,6 +291,59 @@ describe('docTools', () => {
           include_lake: false,
         } as never)
       ).rejects.toThrow('YMD temporarily unavailable');
+    });
+  });
+
+  describe('yuque_list_doc_versions', () => {
+    it('should list versions for a numeric doc id', async () => {
+      (mockClient.listDocVersions as ReturnType<typeof vi.fn>).mockResolvedValue([
+        {
+          id: 11,
+          doc_id: 2,
+          slug: 'doc',
+          title: 'Doc',
+          user_id: 1,
+          created_at: '2024-03-01T00:00:00.000Z',
+          updated_at: '2024-03-01T00:00:00.000Z',
+        },
+      ]);
+
+      const result = await docTools.yuque_list_doc_versions.handler(mockClient, {
+        doc_id: 2,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toHaveLength(1);
+      expect(parsed[0]).toMatchObject({ id: 11, doc_id: 2, title: 'Doc' });
+      expect(mockClient.listDocVersions).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe('yuque_get_doc_version', () => {
+    it('should return the version body and diff', async () => {
+      (mockClient.getDocVersion as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 11,
+        doc_id: 2,
+        slug: 'doc',
+        title: 'Doc',
+        user_id: 1,
+        format: 'markdown',
+        body: '# Raw',
+        body_md: '# Markdown',
+        body_html: '<h1>Raw</h1>',
+        body_asl: '',
+        diff: '+# Markdown',
+        created_at: '2024-03-01T00:00:00.000Z',
+        updated_at: '2024-03-01T00:00:00.000Z',
+      });
+
+      const result = await docTools.yuque_get_doc_version.handler(mockClient, {
+        version_id: 11,
+      } as never);
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed).toMatchObject({ id: 11, body: '# Markdown', diff: '+# Markdown' });
+      expect(mockClient.getDocVersion).toHaveBeenCalledWith(11);
     });
   });
 

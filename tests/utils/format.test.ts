@@ -5,6 +5,8 @@ import {
   formatDocSummary,
   formatDoc,
   formatSheet,
+  formatDocVersion,
+  formatDocVersionDetail,
   formatToc,
 } from '../../src/utils/format.js';
 import type { YuqueUser, YuqueRepo, YuqueDoc, YuqueTocItem } from '../../src/services/types.js';
@@ -376,6 +378,81 @@ describe('format utilities', () => {
 
       expect(result.success).toBe(false);
       expect(result.formatted).toBe('not-json');
+    });
+  });
+
+  describe('formatDocVersion', () => {
+    const version = {
+      id: 11,
+      doc_id: 2,
+      slug: 'doc',
+      title: 'Doc',
+      user_id: 1,
+      created_at: '2024-03-01T00:00:00.000Z',
+      updated_at: '2024-03-02T00:00:00.000Z',
+    };
+
+    it('should format a version without body', () => {
+      const result = formatDocVersion(version);
+
+      expect(result).toEqual({
+        id: 11,
+        doc_id: 2,
+        title: 'Doc',
+        slug: 'doc',
+        created_at: '2024-03-01T00:00:00.000Z',
+      });
+      expect(result).not.toHaveProperty('body');
+    });
+
+    it('should include a trimmed user when the API returns one', () => {
+      const result = formatDocVersion({
+        ...version,
+        user: {
+          id: 1,
+          type: 'User',
+          login: 'alice',
+          name: 'Alice',
+          description: 'desc',
+          avatar_url: '',
+          books_count: 0,
+          public_books_count: 0,
+          followers_count: 0,
+          following_count: 0,
+          created_at: '',
+          updated_at: '',
+        },
+      });
+
+      expect(result).toHaveProperty('user', { id: 1, login: 'alice', name: 'Alice' });
+    });
+
+    it('should prefer body_md and keep the diff', () => {
+      const detail = formatDocVersionDetail({
+        ...version,
+        format: 'markdown',
+        body: '# Raw',
+        body_html: '<h1>Raw</h1>',
+        body_md: '# Markdown',
+        body_asl: '<!doctype lake><p>Raw</p>',
+        diff: '+# Markdown',
+      });
+
+      expect(detail).toMatchObject({ format: 'markdown', body: '# Markdown', diff: '+# Markdown' });
+    });
+
+    it('should fall back to the raw body when body_md is empty', () => {
+      const detail = formatDocVersionDetail({
+        ...version,
+        format: 'lake',
+        body: '<!doctype lake><p>Raw</p>',
+        body_html: '',
+        body_md: '',
+        body_asl: '',
+        diff: '',
+      });
+
+      expect(detail).toHaveProperty('body', '<!doctype lake><p>Raw</p>');
     });
   });
 
