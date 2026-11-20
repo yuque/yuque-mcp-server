@@ -8,7 +8,7 @@ Let AI assistants read and write your [Yuque (语雀)](https://www.yuque.com/) k
 
 [![CI][ci-image]][ci-url] [![npm version][npm-image]][npm-url] [![npm downloads][download-image]][download-url] [![License][license-image]][license-url]
 
-[Quick Start](#quick-start) · [Tools](#tools-19) · [Troubleshooting](#troubleshooting) · [Docs](./docs/README.md) · [中文文档](./README.zh-CN.md)
+[Quick Start](#quick-start) · [Tools](#tools-21) · [Troubleshooting](#troubleshooting) · [Docs](./docs/README.md) · [中文文档](./README.zh-CN.md)
 
 </div>
 
@@ -85,7 +85,7 @@ npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --host=https://your-spa
 
 </details>
 
-## Tools (19)
+## Tools (21)
 
 Each tool maps to exactly one Yuque API route.
 
@@ -101,6 +101,8 @@ Each tool maps to exactly one Yuque API route.
 |             | `yuque_get_doc`         | Get full content — markdown, `lake`, or `html`           |
 |             | `yuque_create_doc`      | Create a doc in a book                                   |
 |             | `yuque_update_doc`      | Update a doc's body or metadata                          |
+|             | `yuque_list_doc_versions` | List published versions of a doc                       |
+|             | `yuque_get_doc_version` | Read a version's markdown body and diff                  |
 | **TOC**     | `yuque_get_toc`         | Get a book's table of contents                           |
 |             | `yuque_update_toc`      | Append or move a single TOC node                         |
 | **Notes**   | `yuque_list_notes`      | List notes (小记), with paging and status filter         |

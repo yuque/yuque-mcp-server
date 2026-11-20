@@ -55,7 +55,7 @@ describe('createServer', () => {
     expect(server).toBeDefined();
   });
 
-  it('should register all 19 tools', async () => {
+  it('should register all 21 tools', async () => {
     const server = createServer('test-token');
     const listToolsHandler = getRequestHandler<{ tools: Array<{ name: string }> }>(
       server,
@@ -64,7 +64,7 @@ describe('createServer', () => {
 
     const result = await listToolsHandler?.({ method: 'tools/list', params: {} }, {});
 
-    expect(result?.tools).toHaveLength(19);
+    expect(result?.tools).toHaveLength(21);
     expect(result?.tools.map((tool) => tool.name)).toEqual(
       expect.arrayContaining([
         'yuque_get_resource',

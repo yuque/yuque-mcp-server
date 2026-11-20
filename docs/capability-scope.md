@@ -4,14 +4,14 @@
 
 ## Tool Summary
 
-当前对外暴露 19 个 MCP tools：
+当前对外暴露 21 个 MCP tools：
 
 | Category  | Tools                                                                          |
 | --------- | ------------------------------------------------------------------------------ |
 | User      | `yuque_get_user`                                                               |
 | Search    | `yuque_search`                                                                 |
 | Books     | `yuque_list_books`, `yuque_get_book`, `yuque_create_book`, `yuque_update_book` |
-| Docs      | `yuque_list_docs`, `yuque_get_doc`, `yuque_create_doc`, `yuque_update_doc`     |
+| Docs      | `yuque_list_docs`, `yuque_get_doc`, `yuque_create_doc`, `yuque_update_doc`, `yuque_list_doc_versions`, `yuque_get_doc_version` |
 | TOC       | `yuque_get_toc`, `yuque_update_toc`                                            |
 | Notes     | `yuque_list_notes`, `yuque_get_note`, `yuque_create_note`, `yuque_update_note` |
 | Resources | `yuque_get_resource`, `yuque_create_resource`, `yuque_update_resource`         |
@@ -56,6 +56,16 @@ Docs 对应语雀文档：
 - `yuque_update_doc` 对这类文档只支持元数据更新；slug 解析路径能拿到文档类型时会显式拒绝 body 写入，数字 ID 路径由语雀 API 拒绝。
 - `type` 字段在文档摘要与详情中出现（语雀 API 返回时）。
 
+## Doc Versions
+
+文档版本（历史发布版本）只读查询，对应 `/api/v2/doc_versions`：
+
+- `yuque_list_doc_versions`: 按 `doc_id` 列出已发布版本，最多 100 条、按时间倒序，返回 version id、doc_id、title、slug、created_at 和发版人。
+- `yuque_get_doc_version`: 按 `version_id` 读取单个版本，返回 markdown 正文（优先 `body_md`，缺失时回退 `body`）和 `diff`。
+
+- `doc_id` / `version_id` 都是数字；传 slug 时要先用 `yuque_get_doc` 解析出数字 doc ID。
+- 版本只读：没有创建、回滚或删除版本的 tool。
+
 ## TOC
 
 TOC 对应知识库目录：
@@ -94,12 +104,13 @@ Resource locator（资源定位）要求：
 
 ## Out of Scope for Current Tool Surface
 
-以下能力不属于当前 19 个 MCP tools 的稳定 public surface：
+以下能力不属于当前 21 个 MCP tools 的稳定 public surface：
 
 - 文档评论读写。
 - 附件上传或文件管理。
 - 权限、成员、协作设置管理。
 - 文档分段读取或增量 section update。
 - 除 board 以外的结构化资源类型。
+- 版本回滚 / 版本删除（只支持只读查询版本列表和详情）。
 
 如果需要加入这些能力，应先定义 MCP tool contract，再补齐 tool implementation、service API wrapper 和 contract tests。

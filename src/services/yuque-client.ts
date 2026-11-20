@@ -7,6 +7,8 @@ import type {
   YuqueYmdDocWriteResult,
   YuqueTocItem,
   YuqueSearchResult,
+  YuqueDocVersion,
+  YuqueDocVersionDetail,
   YuqueApiResponse,
   CreateRepoData,
   UpdateRepoData,
@@ -252,6 +254,28 @@ export class YuqueClient {
       const r = await this.client.put<YuqueApiResponse<YuqueTocItem[]>>(
         `/repos/${repoId}/toc`,
         data
+      );
+      return r.data.data;
+    });
+  }
+
+  // ── Doc version APIs ───────────────────────────────────────
+
+  /** List published versions of a document, newest first (API returns up to 100). */
+  async listDocVersions(docId: number): Promise<YuqueDocVersion[]> {
+    return withErrorHandling(async () => {
+      const r = await this.client.get<YuqueApiResponse<YuqueDocVersion[]>>('/doc_versions', {
+        params: { doc_id: docId },
+      });
+      return r.data.data;
+    });
+  }
+
+  /** Get one document version with its body and diff. */
+  async getDocVersion(versionId: number): Promise<YuqueDocVersionDetail> {
+    return withErrorHandling(async () => {
+      const r = await this.client.get<YuqueApiResponse<YuqueDocVersionDetail>>(
+        `/doc_versions/${versionId}`
       );
       return r.data.data;
     });
