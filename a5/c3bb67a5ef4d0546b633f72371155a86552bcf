@@ -1,0 +1,22 @@
+docs/capability-scope.md
+  h_f7403adfdbae37 64
+package-lock.json
+  h_f7403adfdbae37 14,3703-3714
+package.json
+  h_f7403adfdbae37 64
+src/tools/note.ts
+  h_f7403adfdbae37 2,6-19,145,148-149
+tests/tools/note.test.ts
+  h_f7403adfdbae37 141-173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a5c3bb67a5ef4d0546b633f72371155a86552bcf",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
