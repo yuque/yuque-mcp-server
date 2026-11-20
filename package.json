@@ -1,6 +1,6 @@
 {
   "name": "yuque-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MCP server for Yuque (语雀) — expose Yuque knowledge base to AI assistants via Model Context Protocol",
   "mcpName": "io.github.yuque/yuque-mcp",
   "type": "module",

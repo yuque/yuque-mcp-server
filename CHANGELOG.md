@@ -1,3 +1,21 @@
+# [1.1.0](https://github.com/yuque/yuque-mcp-server/compare/v1.0.0...v1.1.0) (2026-11-20)
+
+
+### Bug Fixes
+
+* expose document images as Markdown image links ([4ae20f3](https://github.com/yuque/yuque-mcp-server/commit/4ae20f3e963d515749d1bfc205ec199300e4256d))
+* render markdown when updating a note ([a5c3bb6](https://github.com/yuque/yuque-mcp-server/commit/a5c3bb67a5ef4d0546b633f72371155a86552bcf))
+* route doc read/write per format and harden transport/tool surface ([055516a](https://github.com/yuque/yuque-mcp-server/commit/055516a80f37f0a8748fd55ada97df3d4341e965))
+* send resource_id to the board resource API ([2846306](https://github.com/yuque/yuque-mcp-server/commit/2846306b38e5f1d3686ae82bcfeabd021c447699))
+* send the numeric note status the API actually honours ([68d2650](https://github.com/yuque/yuque-mcp-server/commit/68d2650233ff0ecaedb88cffc684f4262e108470))
+
+
+### Features
+
+* add document version history tools ([4a546fb](https://github.com/yuque/yuque-mcp-server/commit/4a546fb024932b9a89400ff39bef6b8c060624b6))
+* add new:tool scaffold with skeleton and step checklist ([bd04e73](https://github.com/yuque/yuque-mcp-server/commit/bd04e735a868d3b661fb757cb1ea42d7e141f52c))
+* archive and restore notes through yuque_update_note ([736f262](https://github.com/yuque/yuque-mcp-server/commit/736f2623ac7b5677f19e0f68b50da452c0e0a679))
+* read sheet and table documents through the legacy API ([ac1dde7](https://github.com/yuque/yuque-mcp-server/commit/ac1dde7f6032946df4424b80696101b327b7374a))
 # [1.0.0](https://github.com/yuque/yuque-mcp-server/compare/v0.1.13...v1.0.0) (2026-05-27)
 
 
