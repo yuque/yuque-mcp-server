@@ -1,0 +1,20 @@
+src/utils/format.ts
+  h_f7403adfdbae37 154-167,175
+tests/utils/format.test.ts
+  h_f7403adfdbae37 8,383-416
+tests/tools/doc.test.ts
+  h_f7403adfdbae37 81-100
+docs/capability-scope.md
+  h_f7403adfdbae37 47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bd7b658971675d73960e9a055032feeadcf2eda7",
+  "prompts": {},
+  "humans": {
+    "h_f7403adfdbae37": {
+      "author": "季初 <jichu@U-4WQG022M-1941.local>"
+    }
+  }
+}
