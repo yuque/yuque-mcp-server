@@ -56,7 +56,7 @@ const requiredFieldsByTool: Record<string, string[]> = {
   yuque_list_notes: [],
   yuque_get_note: ['note_id'],
   yuque_create_note: ['body'],
-  yuque_update_note: ['note_id', 'body'],
+  yuque_update_note: ['note_id'],
   yuque_get_resource: ['resource_type', 'resource_id'],
   yuque_create_resource: ['resource_type', 'type', 'dsl'],
   yuque_update_resource: ['resource_type', 'resource_id'],

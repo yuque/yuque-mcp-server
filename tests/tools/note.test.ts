@@ -138,6 +138,122 @@ describe('noteTools', () => {
   });
 
   describe('yuque_update_note', () => {
+    it('should render markdown instead of escaping it', async () => {
+      (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 4,
+        slug: 'updated',
+        content: { source: '# 标题', html: '<h1>标题</h1>' },
+        word_count: 2,
+        tags: [],
+        created_at: '2024-03-01',
+        updated_at: '2024-03-02',
+        published_at: null,
+        pinned_at: null,
+        likes_count: 0,
+        comments_count: 0,
+        status: 0,
+      });
+
+      await noteTools.yuque_update_note.handler(mockClient, {
+        note_id: 4,
+        body: '# 标题\n\n- 一\n- 二',
+      } as never);
+
+      const payload = (mockClient.updateNote as ReturnType<typeof vi.fn>).mock.calls[0][1] as {
+        source: string;
+        html: string;
+        abstract: string;
+      };
+      expect(payload.source).toBe('# 标题\n\n- 一\n- 二');
+      expect(payload.html).toContain('<h1>标题</h1>');
+      expect(payload.html).toContain('<li>一</li>');
+      expect(payload.html).not.toContain('&lt;h1&gt;');
+      expect(payload.abstract).toBe('标题 一 二');
+    });
+
+    it('should archive a note without resending its body', async () => {
+      (mockClient.getNote as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 4,
+        slug: 'note',
+        content: { source: '# 旧内容', html: '<h1>旧内容</h1>', abstract: '旧内容' },
+        word_count: 4,
+        tags: [],
+        created_at: '2024-03-01',
+        updated_at: '2024-03-02',
+        published_at: null,
+        pinned_at: null,
+        likes_count: 0,
+        comments_count: 0,
+        status: 0,
+      });
+      (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 4,
+        slug: 'note',
+        content: { source: '# 旧内容', html: '<h1>旧内容</h1>', abstract: '旧内容' },
+        word_count: 4,
+        tags: [],
+        created_at: '2024-03-01',
+        updated_at: '2024-03-03',
+        published_at: null,
+        pinned_at: null,
+        likes_count: 0,
+        comments_count: 0,
+        status: 9,
+      });
+
+      await noteTools.yuque_update_note.handler(mockClient, {
+        note_id: 4,
+        status: 'archived',
+      } as never);
+
+      expect(mockClient.getNote).toHaveBeenCalledWith(4);
+      expect(mockClient.updateNote).toHaveBeenCalledWith(4, {
+        source: '# 旧内容',
+        html: '<h1>旧内容</h1>',
+        abstract: '旧内容',
+        status: 9,
+      });
+    });
+
+    it('should overwrite the body and archive in one call', async () => {
+      (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 4,
+        slug: 'note',
+        content: { source: '# 新内容', html: '<h1>新内容</h1>', abstract: '新内容' },
+        word_count: 4,
+        tags: [],
+        created_at: '2024-03-01',
+        updated_at: '2024-03-03',
+        published_at: null,
+        pinned_at: null,
+        likes_count: 0,
+        comments_count: 0,
+        status: 9,
+      });
+
+      await noteTools.yuque_update_note.handler(mockClient, {
+        note_id: 4,
+        body: '# 新内容',
+        status: 'archived',
+      } as never);
+
+      const payload = (mockClient.updateNote as ReturnType<typeof vi.fn>).mock.calls[0][1] as {
+        html: string;
+        status: number;
+      };
+      expect(payload.html).toContain('<h1>新内容</h1>');
+      expect(payload.status).toBe(9);
+      expect(mockClient.getNote).not.toHaveBeenCalled();
+    });
+
+    it('should reject an update with neither body nor status', async () => {
+      await expect(
+        noteTools.yuque_update_note.handler(mockClient, { note_id: 4 } as never)
+      ).rejects.toThrow('requires body, status, or both');
+
+      expect(mockClient.updateNote).not.toHaveBeenCalled();
+    });
+
     it('should update source, html, and abstract from body', async () => {
       (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 4,

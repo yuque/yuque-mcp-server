@@ -1,14 +1,22 @@
 import { z } from 'zod';
+import { marked } from 'marked';
 import type { YuqueClient } from '../services/yuque-client.js';
 import type { YuqueNote } from '../services/types.js';
 
-/** Escape HTML special characters so note content cannot break the HTML wrapper. */
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+/**
+ * PUT /notes/:id requires source, html and abstract together. createNote accepts markdown and
+ * lets the API render it, so the update path has to render the same markdown itself —
+ * otherwise headings, lists and links show up as literal text in the note.
+ */
+export function renderNoteBody(markdown: string): { html: string; abstract: string } {
+  const html = marked.parse(markdown, { async: false }).trim();
+  const abstract = html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&[a-z#0-9]+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 200);
+  return { html, abstract };
 }
 
 /** Format note summary — excludes full content to reduce token usage. */
@@ -128,16 +136,50 @@ export const noteTools = {
   },
 
   yuque_update_note: {
-    description: 'Update an existing note',
-    inputSchema: z.object({
-      note_id: z.number().describe('Note ID'),
-      body: z.string().describe('New note content (plain text or markdown)'),
-    }),
-    handler: async (client: YuqueClient, args: { note_id: number; body: string }) => {
+    description:
+      'Update an existing note: replace its content and/or archive or restore it. Provide body to rewrite the content (markdown), status to archive (archived) or restore (unarchived); at least one of them is required.',
+    inputSchema: z
+      .object({
+        note_id: z.number().describe('Note ID'),
+        body: z.string().optional().describe('New note content (plain text or markdown)'),
+        status: z
+          .enum(['unarchived', 'archived'])
+          .optional()
+          .describe(
+            'archived moves the note out of the inbox (API status 9), unarchived restores it (status 0)'
+          ),
+      })
+      .refine((value) => value.body !== undefined || value.status !== undefined, {
+        message: 'Provide body, status, or both',
+        path: ['body'],
+      }),
+    handler: async (
+      client: YuqueClient,
+      args: { note_id: number; body?: string; status?: 'unarchived' | 'archived' }
+    ) => {
+      if (args.body === undefined && args.status === undefined) {
+        throw new Error('yuque_update_note requires body, status, or both');
+      }
+      // PUT /notes/:id always needs the full content, so an archive-only update reuses the
+      // note's current source/html/abstract instead of asking the caller to resend the body.
+      const current = args.body === undefined ? await client.getNote(args.note_id) : undefined;
+      const content =
+        args.body === undefined
+          ? {
+              source: current?.content?.source ?? '',
+              html: current?.content?.html ?? '',
+              abstract: current?.content?.abstract ?? '',
+            }
+          : { source: args.body, ...renderNoteBody(args.body) };
+      // The API only honours the numeric status (0 = inbox, 9 = archived); the string
+      // values 'unarchived' / 'archived' pass validation but are then silently ignored.
+      const status: 0 | 9 | undefined =
+        args.status === undefined ? undefined : args.status === 'archived' ? 9 : 0;
       const note = await client.updateNote(args.note_id, {
-        source: args.body,
-        html: `<p>${escapeHtml(args.body)}</p>`,
-        abstract: args.body.substring(0, 200),
+        source: content.source,
+        html: content.html,
+        abstract: content.abstract,
+        ...(status !== undefined && { status }),
       });
       return {
         content: [

@@ -269,7 +269,12 @@ export interface UpdateNoteData {
   source: string;
   html: string;
   abstract: string;
-  status?: number;
+  /**
+   * 0 keeps the note in the inbox, 9 archives it. The API also accepts the strings
+   * 'unarchived' / 'archived' in its validation but then silently ignores them, so only the
+   * numeric values actually change the state.
+   */
+  status?: 0 | 9;
 }
 
 export interface YuqueDocVersion {
