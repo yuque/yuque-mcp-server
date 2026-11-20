@@ -138,6 +138,39 @@ describe('noteTools', () => {
   });
 
   describe('yuque_update_note', () => {
+    it('should render markdown instead of escaping it', async () => {
+      (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: 4,
+        slug: 'updated',
+        content: { source: '# 标题', html: '<h1>标题</h1>' },
+        word_count: 2,
+        tags: [],
+        created_at: '2024-03-01',
+        updated_at: '2024-03-02',
+        published_at: null,
+        pinned_at: null,
+        likes_count: 0,
+        comments_count: 0,
+        status: 0,
+      });
+
+      await noteTools.yuque_update_note.handler(mockClient, {
+        note_id: 4,
+        body: '# 标题\n\n- 一\n- 二',
+      } as never);
+
+      const payload = (mockClient.updateNote as ReturnType<typeof vi.fn>).mock.calls[0][1] as {
+        source: string;
+        html: string;
+        abstract: string;
+      };
+      expect(payload.source).toBe('# 标题\n\n- 一\n- 二');
+      expect(payload.html).toContain('<h1>标题</h1>');
+      expect(payload.html).toContain('<li>一</li>');
+      expect(payload.html).not.toContain('&lt;h1&gt;');
+      expect(payload.abstract).toBe('标题 一 二');
+    });
+
     it('should update source, html, and abstract from body', async () => {
       (mockClient.updateNote as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: 4,
