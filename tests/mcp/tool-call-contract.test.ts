@@ -341,6 +341,56 @@ const toolCases: ToolCase[] = [
     },
   },
   {
+    name: 'yuque_list_doc_versions',
+    args: { doc_id: 2 },
+    setup: (http) => {
+      http.get.mockReturnValue(
+        apiResponse([
+          {
+            id: 11,
+            doc_id: 2,
+            slug: 'doc',
+            title: 'Doc',
+            user_id: 1,
+            created_at: '2024-03-01T00:00:00.000Z',
+            updated_at: '2024-03-01T00:00:00.000Z',
+          },
+        ])
+      );
+    },
+    assert: (http, result) => {
+      expect(parseJson(result)).toMatchObject([{ id: 11, doc_id: 2, title: 'Doc' }]);
+      expect(http.get).toHaveBeenCalledWith('/doc_versions', { params: { doc_id: 2 } });
+    },
+  },
+  {
+    name: 'yuque_get_doc_version',
+    args: { version_id: 11 },
+    setup: (http) => {
+      http.get.mockReturnValue(
+        apiResponse({
+          id: 11,
+          doc_id: 2,
+          slug: 'doc',
+          title: 'Doc',
+          user_id: 1,
+          format: 'markdown',
+          body: '# Doc',
+          body_md: '# Doc',
+          body_html: '<h1>Doc</h1>',
+          body_asl: '<!doctype lake><p>Doc</p>',
+          diff: '+# Doc',
+          created_at: '2024-03-01T00:00:00.000Z',
+          updated_at: '2024-03-01T00:00:00.000Z',
+        })
+      );
+    },
+    assert: (http, result) => {
+      expect(parseJson(result)).toMatchObject({ id: 11, body: '# Doc', diff: '+# Doc' });
+      expect(http.get).toHaveBeenCalledWith('/doc_versions/11');
+    },
+  },
+  {
     name: 'yuque_get_resource',
     args: { resource_type: 'board', doc_id: 2, resource_id: 'board-1' },
     setup: (http) => {
@@ -349,7 +399,7 @@ const toolCases: ToolCase[] = [
     assert: (http, result) => {
       expect(parseJson(result)).toMatchObject({ board: { resource: { id: 'board-1' } } });
       expect(http.get).toHaveBeenCalledWith('/yfm/boards', {
-        params: { doc_id: 2, src: 'board-1' },
+        params: { doc_id: 2, resource_id: 'board-1' },
       });
     },
   },
@@ -378,7 +428,7 @@ const toolCases: ToolCase[] = [
       expect(parseJson(result)).toMatchObject({ board: { resource: { id: 'board-1' } } });
       expect(http.put).toHaveBeenCalledWith('/yfm/boards', {
         doc_id: 2,
-        src: 'board-1',
+        resource_id: 'board-1',
         text: '- next',
       });
     },

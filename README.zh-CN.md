@@ -8,7 +8,7 @@
 
 [![CI][ci-image]][ci-url] [![npm version][npm-image]][npm-url] [![npm downloads][download-image]][download-url] [![License][license-image]][license-url]
 
-[快速开始](#快速开始) · [工具列表](#工具列表19-个) · [常见问题](#常见问题) · [文档](./docs/README.md) · [English](./README.md)
+[快速开始](#快速开始) · [工具列表](#工具列表21-个) · [常见问题](#常见问题) · [文档](./docs/README.md) · [English](./README.md)
 
 </div>
 
@@ -85,7 +85,7 @@ npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --host=https://your-spa
 
 </details>
 
-## 工具列表（19 个）
+## 工具列表（21 个）
 
 每次调用只走一条语雀 API 链路。
 
@@ -101,6 +101,8 @@ npx yuque-mcp install --token=YOUR_TOKEN --client=cursor --host=https://your-spa
 |            | `yuque_get_doc`         | 读取完整内容——默认 markdown，可选 `lake` / `html` |
 |            | `yuque_create_doc`      | 在知识库中创建文档                            |
 |            | `yuque_update_doc`      | 更新文档正文或元数据                          |
+|            | `yuque_list_doc_versions` | 列出文档已发布的版本                        |
+|            | `yuque_get_doc_version` | 读取某个版本的正文和 diff                     |
 | **目录**   | `yuque_get_toc`         | 读取知识库目录                                |
 |            | `yuque_update_toc`      | 追加或移动单个目录节点                        |
 | **小记**   | `yuque_list_notes`      | 分页列出小记，可按状态过滤                    |

@@ -42,8 +42,14 @@ export interface YuqueDoc {
   book?: YuqueRepo;
   user_id: number;
   user?: YuqueUser;
+  /** Doc, Sheet, Table, Board, Thread or HtmlDoc. Absent on some list responses. */
+  type?: string;
   format: string;
   body: string;
+  /** Cell data of a 表格 (Sheet) document, as a JSON string. */
+  body_sheet?: string;
+  /** Record data of a 数据表 (Table) document, as a JSON string. */
+  body_table?: string;
   body_draft: string;
   body_html: string;
   body_lake: string;
@@ -269,4 +275,24 @@ export interface UpdateNoteData {
    * numeric values actually change the state.
    */
   status?: 0 | 9;
+}
+
+export interface YuqueDocVersion {
+  id: number;
+  doc_id: number;
+  slug: string;
+  title: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  user?: YuqueUser;
+}
+
+export interface YuqueDocVersionDetail extends YuqueDocVersion {
+  format: string;
+  body: string;
+  body_html: string;
+  body_md: string;
+  body_asl: string;
+  diff: string;
 }

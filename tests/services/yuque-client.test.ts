@@ -334,7 +334,7 @@ describe('YuqueClient', () => {
       });
       expect(result).toEqual(mockResult);
       expect(mockClient.get).toHaveBeenCalledWith('/yfm/boards', {
-        params: { doc_id: 1, src: 'board-1' },
+        params: { doc_id: 1, resource_id: 'board-1' },
       });
     });
 
@@ -416,9 +416,59 @@ describe('YuqueClient', () => {
       expect(result).toEqual(mockResult);
       expect(mockClient.put).toHaveBeenCalledWith('/yfm/boards', {
         url: 'https://www.yuque.com/user/repo/doc',
-        src: 'board-1',
+        resource_id: 'board-1',
         dsl: nextDsl,
       });
+    });
+  });
+
+  describe('doc version operations', () => {
+    it('should list doc versions by doc id', async () => {
+      const versions = [
+        {
+          id: 11,
+          doc_id: 2,
+          slug: 'doc',
+          title: 'Doc',
+          user_id: 1,
+          created_at: '2024-03-01T00:00:00.000Z',
+          updated_at: '2024-03-01T00:00:00.000Z',
+        },
+      ];
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: versions } });
+
+      const result = await client.listDocVersions(2);
+
+      expect(result).toEqual(versions);
+      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions', {
+        params: { doc_id: 2 },
+      });
+    });
+
+    it('should get a single doc version', async () => {
+      const version = {
+        id: 11,
+        doc_id: 2,
+        slug: 'doc',
+        title: 'Doc',
+        user_id: 1,
+        format: 'markdown',
+        body: '# Doc',
+        body_md: '# Doc',
+        body_html: '<h1>Doc</h1>',
+        body_asl: '<!doctype lake><p>Doc</p>',
+        diff: '+# Doc',
+        created_at: '2024-03-01T00:00:00.000Z',
+        updated_at: '2024-03-01T00:00:00.000Z',
+      };
+      const mockClient = client['client'] as { get: ReturnType<typeof vi.fn> };
+      mockClient.get.mockResolvedValue({ data: { data: version } });
+
+      const result = await client.getDocVersion(11);
+
+      expect(result).toEqual(version);
+      expect(mockClient.get).toHaveBeenCalledWith('/doc_versions/11');
     });
   });
 
